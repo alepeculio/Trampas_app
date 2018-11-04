@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+
+    <item android:title="Trampas">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_mostrar_exitentes"
+                    android:icon="@drawable/ic_lista"
+                    android:title="Mostrar existentes" />
+                <item
+                    android:id="@+id/nav_mostrar_colocadas"
+                    android:icon="@drawable/ic_mapa"
+                    android:title="Mostrar colocadas" />
+                <item
+                    android:id="@+id/nav_colocar"
+                    android:icon="@drawable/ic_colorar_trampa"
+                    android:title="Colocar" />
+                <item
+                    android:id="@+id/nav_extraer"
+                    android:icon="@drawable/ic_extraer_trampa"
+                    android:title="Extraer" />
+            </group>
+        </menu>
+    </item>
+
+    <group android:checkableBehavior="single">
+        <item android:title="Usuario">
+            <menu>
+                <item
+                    android:id="@+id/nav_perfil"
+                    android:icon="@drawable/ic_perfil"
+                    android:title="Mi perfil" />
+            </menu>
+        </item>
+    </group>
+
+    <group
+        android:id="@+id/group_cerrar_sesion"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_cerrar_sesion"
+            android:icon="@drawable/ic_cerrar_sesion"
+            android:title="Cerrar sesión" />
+    </group>
+
+</menu>
