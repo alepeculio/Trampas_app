@@ -1,33 +1,23 @@
 package com.trampas.trampas.Adaptadores;
 
-import android.Manifest;
-import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.trampas.trampas.BD.BDCliente;
 import com.trampas.trampas.BD.BDInterface;
 import com.trampas.trampas.BD.Respuesta;
-import com.trampas.trampas.Clases.Colocacion;
 import com.trampas.trampas.Clases.Trampa;
 import com.trampas.trampas.Clases.Usuario;
-import com.trampas.trampas.MostrarTrampasColocadasInterface;
 import com.trampas.trampas.R;
 
 import java.util.ArrayList;
@@ -45,22 +35,16 @@ public class AdaptadorListaTrampasColocar extends RecyclerView.Adapter<Adaptador
     private Context mContext;
     private double lat;
     private double lon;
+    private LocalizacionInterface li;
 
-    public AdaptadorListaTrampasColocar(List<Trampa> trampas, Context mContext) {
+    public AdaptadorListaTrampasColocar(List<Trampa> trampas, Context mContext, LocalizacionInterface li) {
         this.trampas = trampas;
         this.mContext = mContext;
+        this.li = li;
     }
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
-    }
-
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    public void setLon(double lon) {
-        this.lon = lon;
     }
 
     @NonNull
@@ -114,58 +98,70 @@ public class AdaptadorListaTrampasColocar extends RecyclerView.Adapter<Adaptador
             });
         }
 
-        public void colocar(final Trampa trampa, final int posicion) {
-            if (lat != 0 && lon != 0) {
-                BDInterface bd = BDCliente.getClient().create(BDInterface.class);
-                Call<Respuesta> call = bd.colocarTrampa(lat, lon, trampa.getId(), usuario.getId());
-                call.enqueue(new Callback<Respuesta>() {
-                    @Override
-                    public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {
-                        if (response.body() != null) {
-                            if (!response.body().getCodigo().equals("0")) {
-                                //cargando(false);
+        public void colocar(Trampa trampa, int posicion) {
+            if (lat != 0 && lon != 0)
+                enviarDatos(trampa, posicion);
+            else {
+                Location location = li.obtenerLocalizacion();
+                if (location != null) {
+                    lat = location.getLatitude();
+                    lon = location.getLongitude();
+                    enviarDatos(trampa, posicion);
+                }
+            }
 
-                                trampas.remove(trampa);
-                                notifyItemRemoved(posicion);
+        }
 
-                                final String codigo = response.body().getCodigo();
-                                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                                builder.setTitle("Trampa colocada");
-                                builder.setMessage("¿Quiere ver su ubicación en el mapa?");
+        public void enviarDatos(final Trampa trampa, final int posicion) {
+            BDInterface bd = BDCliente.getClient().create(BDInterface.class);
+            Call<Respuesta> call = bd.colocarTrampa(lat, lon, trampa.getId(), usuario.getId());
+            call.enqueue(new Callback<Respuesta>() {
+                @Override
+                public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {
+                    if (response.body() != null) {
+                        if (!response.body().getCodigo().equals("0")) {
+                            //cargando(false);
 
-                                builder.setPositiveButton("Continuar", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        mpi.irAlMapa(codigo);
-                                    }
-                                });
+                            trampas.remove(trampa);
+                            notifyItemRemoved(posicion);
 
-                                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
+                            final String codigo = response.body().getCodigo();
+                            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                            builder.setTitle("Trampa colocada");
+                            builder.setMessage("¿Quiere ver su ubicación en el mapa?");
 
-                                    }
-                                });
+                            builder.setPositiveButton("Continuar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mpi.irAlMapa(codigo);
+                                }
+                            });
 
-                                AlertDialog alertDialog = builder.create();
-                                alertDialog.show();
-                            } else {
-                                Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
-                                //cargando(false);
-                            }
+                            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+
+                            AlertDialog alertDialog = builder.create();
+                            alertDialog.show();
                         } else {
-                            Toast.makeText(mContext, "Error interno del servidor, reintente.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
                             //cargando(false);
                         }
+                    } else {
+                        Toast.makeText(mContext, "Error interno del servidor, reintente.", Toast.LENGTH_SHORT).show();
+                        //cargando(false);
                     }
+                }
 
-                    @Override
-                    public void onFailure(Call<Respuesta> call, Throwable t) {
-                        Toast.makeText(mContext, "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        // cargando(false);
-                    }
-                });
-            }
+                @Override
+                public void onFailure(Call<Respuesta> call, Throwable t) {
+                    Toast.makeText(mContext, "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    // cargando(false);
+                }
+            });
         }
 
     }

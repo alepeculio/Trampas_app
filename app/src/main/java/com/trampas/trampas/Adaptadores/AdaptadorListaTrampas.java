@@ -1,6 +1,5 @@
 package com.trampas.trampas.Adaptadores;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -15,12 +14,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.trampas.trampas.AgregarTrampa;
 import com.trampas.trampas.Clases.Colocacion;
 import com.trampas.trampas.Clases.Trampa;
-import com.trampas.trampas.ColocarTrampa;
 import com.trampas.trampas.DatosTrampa;
-import com.trampas.trampas.MostrarTrampasColocadasInterface;
 import com.trampas.trampas.R;
 
 import java.text.ParseException;

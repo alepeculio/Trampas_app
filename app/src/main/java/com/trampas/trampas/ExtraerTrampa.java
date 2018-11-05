@@ -2,6 +2,7 @@ package com.trampas.trampas;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -209,10 +210,15 @@ public class ExtraerTrampa extends Fragment {
                     }
 
                     if (readMessage.contains("Tmax") && readMessage.contains("Tmin")) {
-                        String[] splitT = readMessage.split("T");
-                        tempMin = Float.valueOf(splitT[2].substring(3, 8));
-                        tempMax = Float.valueOf(splitT[1].substring(3, 8));
+                        try {
+                            String[] splitT = readMessage.split("T");
+                            tempMin = Float.valueOf(splitT[2].substring(3, 8));
+                            tempMax = Float.valueOf(splitT[1].substring(3, 8));
+                        } catch (NumberFormatException nfe) {
+                            mConnectedThread.write("c"); //Si el dato está corrupto volver a perdirlo.
+                        }
 
+                        //Delay de 100ms
                         new android.os.Handler().postDelayed(
                                 new Runnable() {
                                     public void run() {
@@ -222,10 +228,15 @@ public class ExtraerTrampa extends Fragment {
                                 100);
 
                     } else if (readMessage.contains("Hmax") && readMessage.contains("Hmin")) {
-                        String[] splitH = readMessage.split("H");
-                        humMin = Float.valueOf(splitH[2].substring(3, 8));
-                        humMax = Float.valueOf(splitH[1].substring(3, 8));
+                        try {
+                            String[] splitH = readMessage.split("H");
+                            humMin = Float.valueOf(splitH[2].substring(3, 8));
+                            humMax = Float.valueOf(splitH[1].substring(3, 8));
+                        } catch (NumberFormatException nfe) {
+                            mConnectedThread.write("d"); //Si el dato está corrupto volver a perdirlo.
+                        }
 
+                        //Delay de 100ms
                         new android.os.Handler().postDelayed(
                                 new Runnable() {
                                     public void run() {
@@ -235,23 +246,30 @@ public class ExtraerTrampa extends Fragment {
                                 100);
 
                     } else if (readMessage.contains("H") && readMessage.contains("T")) {
-                        promH = Float.valueOf(readMessage.substring(1, 5));
-                        promT = Float.valueOf(readMessage.substring(7, 11));
 
-                        tvDatosRecibidos.setText("Datos de " + trampa.getNombre() + " recibidos");
+                        try {
+                            promH = Float.valueOf(readMessage.substring(1, 5));
+                            promT = Float.valueOf(readMessage.substring(7, 11));
+
+                        } catch (NumberFormatException nfe) {
+                            mConnectedThread.write("b"); //Si el dato está corrupto volver a perdirlo.
+                        }
+                        mConnectedThread.cancel();
+
+                        tvEstado.setText("Desconectado, datos recibidos");
+                        Activity activity = getActivity();
+                        if (activity != null)
+                            tvEstado.setTextColor(getResources().getColor(R.color.colorVerde));
 
                         //Mostrar datos en los TextViews
+                        tvDatosRecibidos.setText("Datos de " + trampa.getNombre() + " recibidos");
                         tvTempMin.setText(String.valueOf(tempMin) + "°C");
                         tvTempMax.setText(String.valueOf(tempMax) + "°C");
                         tvHumMin.setText(String.valueOf(humMin) + "%");
                         tvHumMax.setText(String.valueOf(humMax) + "%");
                         tvHumProm.setText(String.valueOf(promH) + "%");
                         tvTempProm.setText(String.valueOf(promT) + "°C");
-
-                        mConnectedThread.cancel();
                         getLlProgressBarDatos.setVisibility(View.GONE);
-                        tvEstado.setText("Desconectado, datos recibidos");
-                        tvEstado.setTextColor(getResources().getColor(R.color.colorVerde));
                     }
                 }
 
@@ -259,7 +277,9 @@ public class ExtraerTrampa extends Fragment {
                     if (msg.arg1 == 1) {
                         String estado = "Conectado al dispositivo: " + (String) (msg.obj);
                         tvEstado.setText(estado.trim());
-                        tvEstado.setTextColor(getResources().getColor(R.color.colorVerde));
+                        Activity activity = getActivity();
+                        if (activity != null)
+                            tvEstado.setTextColor(getResources().getColor(R.color.colorVerde));
                         getLlProgressBarDatos.setVisibility(View.VISIBLE);
                         mConnectedThread.write("c"); //Obtener dato de Temperatura.
                     } else {

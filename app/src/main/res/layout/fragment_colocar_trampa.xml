@@ -25,13 +25,41 @@
             app:cardMaxElevation="@dimen/cardview_default_radius"
             app:cardPreventCornerOverlap="true">
 
-            <TextView
-                android:id="@+id/textView"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="Mantenga presionando sobre una trampa para colocarla en su ubicación actual."
-                android:textAlignment="center" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="Mantenga presionando sobre una trampa para colocarla en su ubicación actual."
+                    android:textAlignment="center" />
+
+                <LinearLayout
+                    android:id="@+id/llProgressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="5dp"
+                    android:visibility="gone">
+
+                    <ProgressBar
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:indeterminateTint="#000" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Obteniendo su ubicacion..."
+                        android:textColor="#000" />
+                </LinearLayout>
+            </LinearLayout>
         </android.support.v7.widget.CardView>
 
         <android.support.v4.widget.SwipeRefreshLayout

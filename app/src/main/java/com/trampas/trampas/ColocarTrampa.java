@@ -1,17 +1,26 @@
 package com.trampas.trampas;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,9 +32,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.trampas.trampas.Adaptadores.AdaptadorListaTrampasColocar;
+import com.trampas.trampas.Adaptadores.LocalizacionInterface;
+import com.trampas.trampas.Adaptadores.MostrarTrampasColocadasInterface;
 import com.trampas.trampas.BD.BDCliente;
 import com.trampas.trampas.BD.BDInterface;
 import com.trampas.trampas.BD.RespuestaTrampas;
@@ -42,21 +57,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class ColocarTrampa extends Fragment {
+public class ColocarTrampa extends Fragment implements LocalizacionInterface {
+    Usuario usuario;
+    List<Trampa> trampas;
     private MostrarTrampasColocadasInterface mpi;
     private FusedLocationProviderClient mFusedLocationClient;
     public static final int SOLICITUD_OBTENER_POSICION_ACTUAL = 111;
-    Usuario usuario;
-    List<Trampa> trampas;
     private AdaptadorListaTrampasColocar adaptadorListaTrampasColocar;
     private SearchView searchView = null;
     private SearchView.OnQueryTextListener queryTextListener;
     private String ultimaBusqueda = null;
-
-    /*@BindView(R.id.progressBar)
-    ProgressBar progressBar;*/
-    /*@BindView(R.id.progressBarSpinner)
-    ProgressBar progressBarSpinner;*/
 
     @BindView(R.id.listaTrampas)
     RecyclerView mRecyclerView;
@@ -69,6 +79,15 @@ public class ColocarTrampa extends Fragment {
 
     @BindView(R.id.tvNoHayTrampas)
     TextView tvNoHayTrampas;
+
+    @BindView(R.id.llProgressBar)
+    LinearLayout llProgressBar;
+
+    LocationManager locationManager;
+    LocationListener locationListener;
+    Location ubicacionActual = null;
+
+    private boolean ubicacionSolicitada = false;
 
     public ColocarTrampa() {
     }
@@ -89,7 +108,32 @@ public class ColocarTrampa extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_colocar_trampa, container, false);
         ButterKnife.bind(this, view);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                ubicacionActual = location;
+                llProgressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+                llProgressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+                llProgressBar.setVisibility(View.GONE);
+            }
+        };
+
+
+        iniciarLocalizacion();
         setAdaptadorListaTrampas();
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -101,14 +145,42 @@ public class ColocarTrampa extends Fragment {
         return view;
     }
 
+    public void iniciarLocalizacion() {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        } else {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                llProgressBar.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (grantResults.length > 0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                    if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                        llProgressBar.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        } else {
+            Toast.makeText(getActivity(), "Su ubicación es necesaria para colocar la trampa.", Toast.LENGTH_LONG).show();
+        }
+    }
+
     public void setAdaptadorListaTrampas() {
         if (adaptadorListaTrampasColocar == null) {
-            adaptadorListaTrampasColocar = new AdaptadorListaTrampasColocar(new ArrayList<Trampa>(), getActivity());
+            adaptadorListaTrampasColocar = new AdaptadorListaTrampasColocar(new ArrayList<Trampa>(), getActivity(), this);
             adaptadorListaTrampasColocar.setUsuario(usuario);
             mRecyclerView.setAdapter(adaptadorListaTrampasColocar);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             mRecyclerView.setHasFixedSize(true);
-            obtenerLocalizacion();
         }
     }
 
@@ -223,116 +295,6 @@ public class ColocarTrampa extends Fragment {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case SOLICITUD_OBTENER_POSICION_ACTUAL: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    obtenerLocalizacion();
-                } else {
-                    if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        Toast.makeText(getContext(), "Su ubicación es necesaria para colocar la trampa.", Toast.LENGTH_LONG).show();
-                        //cargando(false);
-                    }
-                }
-            }
-        }
-    }
-
-   /* public void cargando(boolean cargando) {
-        if (cargando) {
-            btnColocar.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
-        } else {
-            btnColocar.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
-        }
-    }*/
-
-    public void obtenerLocalizacion() {
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, SOLICITUD_OBTENER_POSICION_ACTUAL);
-        } else {
-            mFusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                       adaptadorListaTrampasColocar.setLat(location.getLatitude());
-                       adaptadorListaTrampasColocar.setLon(location.getLongitude());
-                    } else {
-                        Toast.makeText(getContext(), "No se pudo obtener su ubicación, compruebe la configuración de localización del dispositivo.", Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
-        }
-    }
-
-   /* private void colocarTrampa(final Double lat, final Double lon) {
-        if (trampaSeleccionada == null) {
-            Toast.makeText(getContext(), "Debe seleccionar una trampa", Toast.LENGTH_LONG).show();
-            cargando(false);
-        } else {
-            int idTrampa = Integer.parseInt(trampaSeleccionada);
-
-            BDInterface bd = BDCliente.getClient().create(BDInterface.class);
-            Call<Respuesta> call = bd.colocarTrampa(lat, lon, idTrampa, usuario.getId());
-            call.enqueue(new Callback<Respuesta>() {
-                @Override
-                public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {
-                    if (response.body() != null) {
-                        if (!response.body().getCodigo().equals("0")) {
-                            cargando(false);
-
-                            final String codigo = response.body().getCodigo();
-
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            builder.setTitle("Trampa colocada");
-                            builder.setMessage("¿Quiere ver su ubicación en el mapa?");
-
-                            builder.setPositiveButton("Continuar", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mpi.irAlMapa(codigo);
-                                }
-                            });
-
-                            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    cargarTrampas();
-                                }
-                            });
-
-                            AlertDialog alertDialog = builder.create();
-                            alertDialog.show();
-
-                            /*
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-
-                            }, 1000);*/
-
-    /* } else {
-         Toast.makeText(getActivity(), response.body().getMensaje(), Toast.LENGTH_SHORT).show();
-         cargando(false);
-     }
- } else {
-     Toast.makeText(getActivity(), "Error interno del servidor, reintente.", Toast.LENGTH_SHORT).show();
-     cargando(false);
- }
-}
-
-@Override
-public void onFailure(Call<Respuesta> call, Throwable t) {
- Toast.makeText(getActivity(), "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
- cargando(false);
-}
-});
-}
-}
-*/
-    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof MostrarTrampasColocadasInterface) {
@@ -346,6 +308,46 @@ public void onFailure(Call<Respuesta> call, Throwable t) {
     public void onDetach() {
         super.onDetach();
         mpi = null;
+        locationManager = null;
+        locationListener = null;
     }
+
+    @Override
+    public Location obtenerLocalizacion() {
+        if (ubicacionActual == null) {
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    mensajeEncenderGPS();
+                } else {
+                    Toast.makeText(getActivity(), "Estableciendo ubicación, aguarde porfavor.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                iniciarLocalizacion();
+            }
+        }
+
+        return ubicacionActual;
+    }
+
+    public void mensajeEncenderGPS() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+        alertDialog.setTitle("GPS requerido!");
+        alertDialog.setMessage("Es necesario el GPS para colocar la trampa de forma precisa, ¿quiere ir al menu para activarlo? ");
+        alertDialog.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                getActivity().startActivity(intent);
+            }
+        });
+        alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        alertDialog.show();
+    }
+
 
 }

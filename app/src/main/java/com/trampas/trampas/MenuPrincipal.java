@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.trampas.trampas.Adaptadores.MostrarTrampasColocadasInterface;
 import com.trampas.trampas.Clases.Usuario;
 
 public class MenuPrincipal extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MostrarTrampasColocadasInterface {
@@ -89,8 +90,10 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
 
         try {
             int opcion = obtenerOpcionSeleccionada();
-            onNavigationItemSelected(navigationView.getMenu().findItem(opcion));
-            navigationView.setCheckedItem(opcion);
+            if (opcion != 0) {
+                onNavigationItemSelected(navigationView.getMenu().findItem(opcion));
+                navigationView.setCheckedItem(opcion);
+            }
         } catch (NumberFormatException nfe) {
             onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_mostrar_exitentes));
             navigationView.setCheckedItem(R.id.nav_mostrar_exitentes);

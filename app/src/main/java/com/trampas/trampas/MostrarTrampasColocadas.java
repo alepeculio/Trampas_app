@@ -1,19 +1,14 @@
 package com.trampas.trampas;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,14 +38,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class MostrarTrampasColocadas extends Fragment {
+public class MostrarTrampasColocadas extends Fragment{
     private SupportMapFragment mapFragment;
     private GoogleMap mMap;
     private Marker marcador;
     private List<Marker> marcadores;
     private List<Colocacion> colocaciones;
     private String idColocacionCreada;
-
     private FusedLocationProviderClient mFusedLocationClient;
     public static final int SOLICITUD_OBTENER_POSICION_ACTUAL = 111;
 
