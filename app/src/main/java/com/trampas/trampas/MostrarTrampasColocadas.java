@@ -164,10 +164,10 @@ public class MostrarTrampasColocadas extends Fragment{
                         } catch (SecurityException se) {
                             se.printStackTrace();
                         }
-                        centrarMapa(location.getLatitude(), location.getLongitude());
+                        centrarMapa(0.0,0.0);
                     } else {
                         centrarMapa(0.0, 0.0);
-                        Toast.makeText(getContext(), "No se pudo obtener su ubicación, compruebe la configuración de localización del dispositivo.", Toast.LENGTH_LONG).show();
+                       // Toast.makeText(getContext(), "No se pudo obtener su ubicación, compruebe la configuración de localización del dispositivo.", Toast.LENGTH_LONG).show();
                     }
                 }
             });

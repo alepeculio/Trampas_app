@@ -53,6 +53,7 @@
                         android:indeterminateTint="#000" />
 
                     <TextView
+                        android:id="@+id/tvProgressBar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"

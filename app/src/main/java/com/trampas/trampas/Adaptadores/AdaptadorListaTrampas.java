@@ -1,8 +1,11 @@
 package com.trampas.trampas.Adaptadores;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -12,10 +15,17 @@ import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.trampas.trampas.BD.BDCliente;
+import com.trampas.trampas.BD.BDInterface;
+import com.trampas.trampas.BD.Respuesta;
+import com.trampas.trampas.BD.RespuestaTrampas;
 import com.trampas.trampas.Clases.Colocacion;
 import com.trampas.trampas.Clases.Trampa;
+import com.trampas.trampas.Clases.Usuario;
 import com.trampas.trampas.DatosTrampa;
 import com.trampas.trampas.R;
 
@@ -27,14 +37,22 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTrampas.TrampaViewHolder> {
     private List<Trampa> trampas;
     private Context mContext;
+    private Usuario usuario;
 
     public AdaptadorListaTrampas(List<Trampa> trampas, Context mContext) {
         this.trampas = trampas;
         this.mContext = mContext;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     @NonNull
@@ -97,6 +115,10 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
         Button btnIrAlMapa;
         @BindView(R.id.btnDatosTrampa)
         Button btnDatosTrampa;
+        @BindView(R.id.btnEliminarTrampa)
+        Button btnEliminar;
+        @BindView(R.id.progressBarEliminar)
+        ProgressBar progressBarEliminar;
 
         public TrampaViewHolder(View itemView) {
             super(itemView);
@@ -118,6 +140,9 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
                     expandir(v);
                 }
             });
+
+            if (usuario.getAdmin() != 1)
+                btnEliminar.setVisibility(View.GONE);
         }
 
         public void expandir(View v) {
@@ -149,6 +174,12 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
             tvNombre.setText(trampa.getNombre());
             tvId.setText(String.valueOf(trampa.getId()));
             tvMac.setText(trampa.getMac());
+            btnEliminar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    confirmarEliminarTrampa(trampa, getAdapterPosition());
+                }
+            });
 
             Colocacion c = trampa.getColocacion();
             if (c != null) {
@@ -200,6 +231,65 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
                 tvFechaInicio.setText(convertFormat(c.getFechaInicio()));
             }
 
+        }
+
+        public void confirmarEliminarTrampa(final Trampa trampa, final int position) {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+            alertDialog.setTitle("Confirmar eliminación");
+            alertDialog.setMessage("¿Está seguro que desea eliminar la trampa?");
+            alertDialog.setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    eliminarTrampa(trampa, position);
+                }
+            });
+            alertDialog.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            alertDialog.show();
+        }
+
+        public void eliminarTrampa(final Trampa trampa, final int position) {
+            progressBarEliminar.setVisibility(View.VISIBLE);
+            btnEliminar.setVisibility(View.GONE);
+            BDInterface bd = BDCliente.getClient().create(BDInterface.class);
+            Call<Respuesta> call = bd.eliminarTrampa(trampa.getId());
+            call.enqueue(new Callback<Respuesta>() {
+                @Override
+                public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {
+                    if (response.body() != null) {
+                        if (response.body().getCodigo().equals("1")) {
+                            trampas.remove(trampa);
+                            notifyItemRemoved(position);
+                            Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            progressBarEliminar.setVisibility(View.GONE);
+                            btnEliminar.setVisibility(View.VISIBLE);
+                            if (mContext != null) {
+                                Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    } else {
+                        progressBarEliminar.setVisibility(View.GONE);
+                        btnEliminar.setVisibility(View.VISIBLE);
+                        if (mContext != null) {
+                            Toast.makeText(mContext, "Error interno del servidor, Reintente", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Respuesta> call, Throwable t) {
+                    progressBarEliminar.setVisibility(View.GONE);
+                    btnEliminar.setVisibility(View.VISIBLE);
+                    if (mContext != null) {
+                        Toast.makeText(mContext, "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
 
         //Transformar fechas.

@@ -33,6 +33,7 @@ import com.trampas.trampas.BD.BDInterface;
 import com.trampas.trampas.BD.Respuesta;
 import com.trampas.trampas.BD.RespuestaTrampas;
 import com.trampas.trampas.Clases.Trampa;
+import com.trampas.trampas.Clases.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,9 +67,14 @@ public class MostrarTrampasExistentes extends Fragment {
     @BindView(R.id.btnMostrarAgregarTrampa)
     FloatingActionButton btnMostrarAgregarTrampa;
 
+    Usuario usuario;
 
     public MostrarTrampasExistentes() {
         // Required empty public constructor
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     @Override
@@ -82,6 +88,11 @@ public class MostrarTrampasExistentes extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mostrar_trampas_existentes, container, false);
         ButterKnife.bind(this, view);
+
+        if (usuario.getAdmin() != 1)
+            btnMostrarAgregarTrampa.setVisibility(View.GONE);
+
+
         setAdaptadorListaTrampas();
         swipeRefresh.setRefreshing(true);
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -90,6 +101,7 @@ public class MostrarTrampasExistentes extends Fragment {
                 cargarTrampas();
             }
         });
+
 
         btnMostrarAgregarTrampa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,6 +150,7 @@ public class MostrarTrampasExistentes extends Fragment {
     public void setAdaptadorListaTrampas() {
         if (adaptadorListaTrampas == null) {
             adaptadorListaTrampas = new AdaptadorListaTrampas(new ArrayList<Trampa>(), getActivity());
+            adaptadorListaTrampas.setUsuario(usuario);
             mRecyclerView.setAdapter(adaptadorListaTrampas);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             mRecyclerView.setHasFixedSize(true);
@@ -163,7 +176,6 @@ public class MostrarTrampasExistentes extends Fragment {
                         tvNoHayTrampas.setText("No hay trampas");
                     }
                 }
-
 
             } else {
                 trampasFinal = trampas;

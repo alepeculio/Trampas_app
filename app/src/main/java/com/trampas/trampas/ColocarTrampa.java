@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -20,7 +21,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,12 +32,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.trampas.trampas.Adaptadores.AdaptadorListaTrampasColocar;
 import com.trampas.trampas.Adaptadores.LocalizacionInterface;
 import com.trampas.trampas.Adaptadores.MostrarTrampasColocadasInterface;
@@ -61,8 +55,6 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     Usuario usuario;
     List<Trampa> trampas;
     private MostrarTrampasColocadasInterface mpi;
-    private FusedLocationProviderClient mFusedLocationClient;
-    public static final int SOLICITUD_OBTENER_POSICION_ACTUAL = 111;
     private AdaptadorListaTrampasColocar adaptadorListaTrampasColocar;
     private SearchView searchView = null;
     private SearchView.OnQueryTextListener queryTextListener;
@@ -83,8 +75,12 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     @BindView(R.id.llProgressBar)
     LinearLayout llProgressBar;
 
+    @BindView(R.id.tvProgressBar)
+    TextView tvProgressBar;
+
     LocationManager locationManager;
-    LocationListener locationListener;
+    LocationListener locationListenerCoarse;
+    LocationListener locationListenerFine;
     Location ubicacionActual = null;
 
     private boolean ubicacionSolicitada = false;
@@ -110,7 +106,8 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
         ButterKnife.bind(this, view);
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
+
+        locationListenerFine = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 ubicacionActual = location;
@@ -119,19 +116,43 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
+                if (ubicacionActual == null) {
+                    tvProgressBar.setText("Obteniendo ubicación por GPS...");
+                    llProgressBar.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-                llProgressBar.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onProviderDisabled(String provider) {
-                llProgressBar.setVisibility(View.GONE);
             }
         };
+        locationListenerCoarse = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                ubicacionActual = location;
+                llProgressBar.setVisibility(View.GONE);
+            }
 
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                if (ubicacionActual == null) {
+                    tvProgressBar.setText("Obteniendo ubicación por la red...");
+                    llProgressBar.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+            }
+        };
 
         iniciarLocalizacion();
         setAdaptadorListaTrampas();
@@ -149,12 +170,55 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         } else {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                llProgressBar.setVisibility(View.VISIBLE);
+            Location g = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location n = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            if (g != null)
+                ubicacionActual = g;
+            else if (n != null)
+                ubicacionActual = n;
+
+            String fineProvider = locationManager.getBestProvider(createFineCriteria(), false);
+            String coarseProvider = locationManager.getBestProvider(createCoarseCriteria(), true);
+
+            if (fineProvider != null) {
+                locationManager.requestLocationUpdates(fineProvider, 0, 0f, locationListenerFine);
+                locationListenerFine.onStatusChanged(fineProvider, 1, null);
             }
+
+            if (coarseProvider != null) {
+                locationManager.requestLocationUpdates(coarseProvider, 2000, 20f, locationListenerCoarse);
+                locationListenerCoarse.onStatusChanged(coarseProvider, 1, null);
+            }
+
+
         }
+
     }
+
+    public static Criteria createFineCriteria() {
+        Criteria c = new Criteria();
+        c.setAccuracy(Criteria.ACCURACY_FINE);
+        c.setAltitudeRequired(false);
+        c.setBearingRequired(false);
+        c.setSpeedRequired(false);
+        c.setCostAllowed(true);
+        c.setPowerRequirement(Criteria.POWER_HIGH);
+        return c;
+    }
+
+    public static Criteria createCoarseCriteria() {
+        Criteria c = new Criteria();
+        c.setAccuracy(Criteria.ACCURACY_COARSE);
+        c.setAltitudeRequired(false);
+        c.setBearingRequired(false);
+        c.setSpeedRequired(false);
+        c.setCostAllowed(true);
+        c.setPowerRequirement(Criteria.POWER_HIGH);
+        return c;
+
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -163,10 +227,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
         if (grantResults.length > 0) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-                    if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                        llProgressBar.setVisibility(View.VISIBLE);
-                    }
+                    iniciarLocalizacion();
                 }
             }
         } else {
@@ -308,31 +369,29 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     public void onDetach() {
         super.onDetach();
         mpi = null;
-        locationManager = null;
-        locationListener = null;
+        locationManager.removeUpdates(locationListenerFine);
+        locationManager.removeUpdates(locationListenerCoarse);
     }
 
     @Override
     public Location obtenerLocalizacion() {
         if (ubicacionActual == null) {
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    mensajeEncenderGPS();
-                } else {
-                    Toast.makeText(getActivity(), "Estableciendo ubicación, aguarde porfavor.", Toast.LENGTH_SHORT).show();
-                }
-            } else {
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 iniciarLocalizacion();
+            } else if (llProgressBar.getVisibility() == View.VISIBLE) {
+                Toast.makeText(getActivity(), "Estableciendo ubicación, aguarde porfavor.", Toast.LENGTH_SHORT).show();
+
+            } else {
+                mensajeEncenderGPS();
             }
         }
-
         return ubicacionActual;
     }
 
     public void mensajeEncenderGPS() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-        alertDialog.setTitle("GPS requerido!");
-        alertDialog.setMessage("Es necesario el GPS para colocar la trampa de forma precisa, ¿quiere ir al menu para activarlo? ");
+        alertDialog.setTitle("No se pudo acceder a su ubicación!");
+        alertDialog.setMessage("Se requiere un nivel más alto de precision para determinar su ubicacíon, ¿quiere abrir el menú para encender el GPS?");
         alertDialog.setPositiveButton("Si", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

@@ -50,6 +50,12 @@ public interface BDInterface {
     );
 
     @FormUrlEncoded
+    @POST("eliminarTrampa")
+    Call<Respuesta> eliminarTrampa(
+            @Field("id") int id
+    );
+
+    @FormUrlEncoded
     @POST("extraerTrampa")
     Call<Respuesta> extraerTrampa(
             @Field("id_trampa") int idTrampa,
