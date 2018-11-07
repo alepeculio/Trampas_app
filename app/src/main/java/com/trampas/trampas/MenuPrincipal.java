@@ -190,6 +190,12 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
                 getSupportActionBar().setTitle("Trampas existentes");
                 ((MostrarTrampasExistentes) fragment).setUsuario(usuario);
                 break;
+            case R.id.nav_perfil:
+                fragment = new Perfil();
+                fragmentTransaction = true;
+                getSupportActionBar().setTitle("Mi perfil");
+                ((Perfil) fragment).setUsuario(usuario);
+                break;
             case R.id.nav_cerrar_sesion:
                 cerrarSesion();
                 break;

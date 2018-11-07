@@ -65,6 +65,15 @@ public interface BDInterface {
             @Field("hmax") float hMax,
             @Field("hprom") float hProm,
             @Field("tprom") float tProm
+    );
 
+    @FormUrlEncoded
+    @POST("agregarUsuario")
+    Call<Respuesta> agregarUsuario(
+            @Field("nombre") String nombre,
+            @Field("apellido") String apellido,
+            @Field("correo") String correo,
+            @Field("contrasenia") String contrasenia,
+            @Field("admin") Boolean admin
     );
 }

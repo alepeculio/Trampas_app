@@ -128,7 +128,6 @@ public class AgregarTrampa extends AppCompatActivity {
                                                          final String address = info.substring(info.length() - 17);
                                                          final String name = info.substring(0, info.length() - 17);
 
-                                                         mac = address;
                                                          // Spawn a new thread to avoid blocking the GUI one
                                                          new Thread() {
                                                              public void run() {
@@ -156,6 +155,7 @@ public class AgregarTrampa extends AppCompatActivity {
                                                                  if (fail == false) {
                                                                      mConnectedThread = new ConnectedThread(mBTSocket, mHandler, MESSAGE_READ);
                                                                      mConnectedThread.start();
+                                                                     mac = address;
                                                                      mHandler.obtainMessage(CONNECTING_STATUS, 1, -1, name).sendToTarget();
                                                                  }
                                                              }
@@ -185,9 +185,7 @@ public class AgregarTrampa extends AppCompatActivity {
                 }
 
 
-                if (msg.what == CONNECTING_STATUS)
-
-                {
+                if (msg.what == CONNECTING_STATUS) {
                     if (msg.arg1 == 1) {
                         String estado = "Conectado al dispositivo: " + (String) (msg.obj);
                         tvEstado.setText(estado.trim());

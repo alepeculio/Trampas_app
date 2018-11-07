@@ -5,13 +5,10 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-
 
     <application
         android:allowBackup="true"
@@ -22,14 +19,13 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Login"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MenuPrincipal"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_menu_principal"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -60,6 +56,10 @@
             android:name=".DatosTrampa"
             android:parentActivityName=".MenuPrincipal"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".Registro"
+            android:parentActivityName=".Login"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

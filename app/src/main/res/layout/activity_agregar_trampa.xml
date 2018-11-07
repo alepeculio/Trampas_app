@@ -173,6 +173,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
+            android:gravity="bottom"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -208,22 +209,18 @@
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/etNombreError"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:background="@drawable/fondo_claro"
+                    android:layout_height="90dp"
                     android:hint="Nombre"
-                    android:padding="5dp"
-                    app:counterEnabled="true"
-                    app:counterMaxLength="250"
+                    android:textColorHint="@color/colorBlanco"
                     app:errorEnabled="true"
-                    app:hintEnabled="true">
+                    app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
 
                     <EditText
                         android:id="@+id/etNombre"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:inputType="text"
-                        android:textSize="10pt" />
+                        android:textColor="@color/colorBlanco" />
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
 
@@ -232,7 +229,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="5dp"
                 android:gravity="center"
                 android:padding="2dp">
 

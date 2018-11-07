@@ -42,6 +42,9 @@ public class Login extends AppCompatActivity {
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
+    @BindView(R.id.btnRegistrarse)
+    Button btnRegistrarse;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,26 +58,62 @@ public class Login extends AppCompatActivity {
                 iniciarSesion();
             }
         });
+        btnRegistrarse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Login.this, Registro.class);
+                startActivity(intent);
+            }
+        });
+
+        etCorreo.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
+                    etCorreoError.setError("");
+            }
+        });
+
+        etContrasenia.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
+                    etContraseniaError.setError("");
+            }
+        });
     }
 
     private void iniciarSesion() {
         String correo = etCorreo.getText().toString().trim();
         String contrasenia = etContrasenia.getText().toString().trim();
 
-        etCorreoError.setError(null);
-        etContraseniaError.setError(null);
+        Boolean error = false;
 
         if (correo.equals("")) {
-            etCorreoError.setError("Correo incorrecto");
-            return;
-        } else if (contrasenia.equals("")) {
-            etContraseniaError.setError("Contraseña incorrecta");
-            return;
-        } else {
-            btnIniciarSesion.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
-            verificarUsuario(correo, contrasenia);
+            etCorreoError.setError("Campo requerido");
+            error = true;
+        } else if (!isEmailValid(correo)) {
+            etCorreoError.setError("Correo inválido");
+            error = true;
         }
+
+        if (contrasenia.equals("")) {
+            etContraseniaError.setError("Campo requerido");
+            error = true;
+        }
+
+        if (error)
+            return;
+
+        btnIniciarSesion.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        verificarUsuario(correo, contrasenia);
+
+
+    }
+
+    boolean isEmailValid(CharSequence email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private void verificarUsuario(final String correo, final String contrasenia) {
@@ -88,7 +127,7 @@ public class Login extends AppCompatActivity {
                     if (response.body().getCodigo().equals("1") && response.body().getUsuario() != null) {
                         guardarUsuario(response.body().getUsuario());
                     } else {
-                        Toast.makeText(Login.this, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                        etContraseniaError.setError(response.body().getMensaje());
                         btnIniciarSesion.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
                     }

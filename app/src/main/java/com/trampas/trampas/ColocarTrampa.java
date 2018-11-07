@@ -21,6 +21,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -116,7 +117,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-                if (ubicacionActual == null) {
+                if (ubicacionActual == null && provider.equals("gps")) {
                     tvProgressBar.setText("Obteniendo ubicación por GPS...");
                     llProgressBar.setVisibility(View.VISIBLE);
                 }
@@ -124,6 +125,10 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
 
             @Override
             public void onProviderEnabled(String provider) {
+                if (ubicacionActual == null && provider.equals("gps")) {
+                    tvProgressBar.setText("Obteniendo ubicación por GPS...");
+                    llProgressBar.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -139,7 +144,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-                if (ubicacionActual == null) {
+                if (ubicacionActual == null && provider.equals("network")) {
                     tvProgressBar.setText("Obteniendo ubicación por la red...");
                     llProgressBar.setVisibility(View.VISIBLE);
                 }
@@ -147,6 +152,10 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
 
             @Override
             public void onProviderEnabled(String provider) {
+                if (ubicacionActual == null && provider.equals("network")) {
+                    tvProgressBar.setText("Obteniendo ubicación por la red...");
+                    llProgressBar.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -187,10 +196,16 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
             }
 
             if (coarseProvider != null) {
-                locationManager.requestLocationUpdates(coarseProvider, 2000, 20f, locationListenerCoarse);
-                locationListenerCoarse.onStatusChanged(coarseProvider, 1, null);
-            }
+                if (coarseProvider.equals("passive")) {
+                    llProgressBar.setVisibility(View.GONE);
+                    mensajeEncenderUbicacion();
+                    locationManager.requestLocationUpdates("network", 2000, 20f, locationListenerCoarse);
+                } else {
+                    locationManager.requestLocationUpdates(coarseProvider, 2000, 20f, locationListenerCoarse);
+                    locationListenerCoarse.onStatusChanged(coarseProvider, 1, null);
+                }
 
+            }
 
         }
 
@@ -380,18 +395,17 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
                 iniciarLocalizacion();
             } else if (llProgressBar.getVisibility() == View.VISIBLE) {
                 Toast.makeText(getActivity(), "Estableciendo ubicación, aguarde porfavor.", Toast.LENGTH_SHORT).show();
-
             } else {
-                mensajeEncenderGPS();
+                mensajeEncenderUbicacion();
             }
         }
         return ubicacionActual;
     }
 
-    public void mensajeEncenderGPS() {
+    public void mensajeEncenderUbicacion() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-        alertDialog.setTitle("No se pudo acceder a su ubicación!");
-        alertDialog.setMessage("Se requiere un nivel más alto de precision para determinar su ubicacíon, ¿quiere abrir el menú para encender el GPS?");
+        alertDialog.setTitle("Ubicación apagada");
+        alertDialog.setMessage("¿Desea ir al menú para encenderla?");
         alertDialog.setPositiveButton("Si", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
