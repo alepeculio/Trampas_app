@@ -269,5 +269,22 @@
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="15sp" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llLeishmaniasis"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="visible">
+
+            <CheckBox
+                android:id="@+id/cbLeishmaniasis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="Leishmaniasis detectada" />
+
+
+        </LinearLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

@@ -59,6 +59,10 @@
         <activity
             android:name=".Registro"
             android:parentActivityName=".Login"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ColocacionGrafica"
+            android:parentActivityName=".MenuPrincipal"
             android:screenOrientation="portrait"></activity>
     </application>
 

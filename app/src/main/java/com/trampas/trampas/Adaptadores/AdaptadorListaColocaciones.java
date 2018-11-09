@@ -6,7 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.trampas.trampas.Clases.Colocacion;
 import com.trampas.trampas.R;
@@ -74,6 +77,8 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
         TextView tvHumMax;
         @BindView(R.id.humProm)
         TextView tvHumProm;
+        @BindView(R.id.cbLeishmaniasis)
+        CheckBox cbLeishmaniasis;
 
 
         public ColocacionViewHolder(View itemView) {
@@ -112,6 +117,25 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
             String humProm = colocacion.getHumProm();
             if (humProm != null)
                 tvHumProm.setText(humProm + "%");
+
+            checkLesishmaniasis(colocacion.getLeishmaniasis());
+            cbLeishmaniasis.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    checkLesishmaniasis(isChecked);
+                    Toast.makeText(mContext, "Actualizar datos", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
+
+        public void checkLesishmaniasis(boolean leishmaniasis) {
+            cbLeishmaniasis.setChecked(leishmaniasis);
+            if (leishmaniasis)
+                cbLeishmaniasis.setTextColor(mContext.getResources().getColor(R.color.colorRojo));
+            else
+                cbLeishmaniasis.setTextColor(mContext.getResources().getColor(R.color.colorGris));
+
         }
 
         //Transformar fechas.

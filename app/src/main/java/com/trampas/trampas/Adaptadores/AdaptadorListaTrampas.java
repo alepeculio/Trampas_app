@@ -141,8 +141,11 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
                 }
             });
 
-            if (usuario.getAdmin() != 1)
+            if (usuario.getAdmin() != 1) {
                 btnEliminar.setVisibility(View.GONE);
+                btnDatosTrampa.setVisibility(View.GONE);
+            }
+
         }
 
         public void expandir(View v) {

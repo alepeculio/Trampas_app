@@ -1,17 +1,24 @@
 package com.trampas.trampas;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -20,35 +27,54 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.trampas.trampas.BD.BDCliente;
 import com.trampas.trampas.BD.BDInterface;
+import com.trampas.trampas.BD.Respuesta;
 import com.trampas.trampas.BD.RespuestaColocaciones;
 import com.trampas.trampas.Clases.Colocacion;
+import com.trampas.trampas.Clases.Usuario;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class MostrarTrampasColocadas extends Fragment{
+public class MostrarTrampasColocadas extends Fragment {
     private SupportMapFragment mapFragment;
     private GoogleMap mMap;
     private Marker marcador;
     private List<Marker> marcadores;
     private List<Colocacion> colocaciones;
+    private Usuario usuario;
     private String idColocacionCreada;
     private FusedLocationProviderClient mFusedLocationClient;
     public static final int SOLICITUD_OBTENER_POSICION_ACTUAL = 111;
 
+    @BindView(R.id.llGuardar)
+    LinearLayout llGuardar;
+
+    @BindView(R.id.btnGuardar)
+    Button btnGuardar;
+
     public MostrarTrampasColocadas() {
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public void setIdColocacionCreada(String idColocacionCreada) {
@@ -66,9 +92,6 @@ public class MostrarTrampasColocadas extends Fragment{
         View v = inflater.inflate(R.layout.fragment_mostrar_trampas_colocadas, container, false);
         ButterKnife.bind(this, v);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-
-        //Cargar mapa en segundo plano con asynctask
-        new LongOperationMap().execute();
 
         return v;
     }
@@ -118,7 +141,15 @@ public class MostrarTrampasColocadas extends Fragment{
 
             for (Colocacion c : colocaciones) {
                 Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(c.getLat(), c.getLon())).title(c.getTrampa().getNombre()));
-                m.setSnippet("Colocada: " + c.getFechaInicio());
+                if (c.getUsuario() == usuario.getId()) {
+                    m.setDraggable(true);
+                    m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                    m.setSnippet("Arrastre para editar ubicación");
+                } else {
+                    m.setSnippet("Ver gráfica");
+                    m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                }
+
                 marcadores.add(m);
 
                 if (idColocacionCreada != null) {
@@ -134,6 +165,89 @@ public class MostrarTrampasColocadas extends Fragment{
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(14.0f));
                 marcador = null;
             }
+
+            mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                @Override
+                public void onMarkerDragStart(Marker marker) {
+                    llGuardar.setVisibility(View.VISIBLE);
+
+                    if (marcador != null && !(marker.getTitle().equals(marcador.getTitle()))) {
+                        mostrarMensaje();
+
+                    }
+
+                }
+
+                @Override
+                public void onMarkerDrag(Marker marker) {
+
+                }
+
+                @Override
+                public void onMarkerDragEnd(Marker marker) {
+                    if (marcador == null)
+                        marcador = marker;
+                }
+            });
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    for (Colocacion c : colocaciones)
+                        if (c.getTrampa().getNombre().equals(marker.getTitle())) {
+                            Intent intent = new Intent(getActivity(), ColocacionGrafica.class);
+                            intent.putExtra("colocacion", c);
+                            getActivity().startActivity(intent);
+                        }
+                }
+            });
+
+            btnGuardar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (marcador != null) {
+                        int id = 0;
+                        for (Colocacion c : colocaciones) {
+                            if (c.getTrampa().getNombre().equals(marcador.getTitle())) {
+                                id = c.getId();
+                            }
+                        }
+
+                        if (id != 0) {
+                            double lat = marcador.getPosition().latitude;
+                            double lon = marcador.getPosition().longitude;
+
+                            BDInterface bd = BDCliente.getClient().create(BDInterface.class);
+                            Call<Respuesta> call = bd.actualizarUbicacionColocacion(id, lat, lon);
+                            call.enqueue(new Callback<Respuesta>() {
+                                @Override
+                                public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {
+                                    if (response.body() != null) {
+                                        if (response.body().getCodigo().equals("1")) {
+                                            llGuardar.setVisibility(View.GONE);
+                                            marcador = null;
+                                        } else {
+                                            if (getActivity() != null)
+                                                Toast.makeText(getActivity(), response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    } else {
+                                        if (getActivity() != null)
+                                            Toast.makeText(getActivity(), "Error interno del servidor, Reintente", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Respuesta> call, Throwable t) {
+                                    if (getActivity() != null)
+                                        Toast.makeText(getActivity(), "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+                        }
+
+                    }
+
+                }
+            });
         }
     }
 
@@ -164,10 +278,10 @@ public class MostrarTrampasColocadas extends Fragment{
                         } catch (SecurityException se) {
                             se.printStackTrace();
                         }
-                        centrarMapa(0.0,0.0);
+                        centrarMapa(0.0, 0.0);
                     } else {
                         centrarMapa(0.0, 0.0);
-                       // Toast.makeText(getContext(), "No se pudo obtener su ubicación, compruebe la configuración de localización del dispositivo.", Toast.LENGTH_LONG).show();
+                        // Toast.makeText(getContext(), "No se pudo obtener su ubicación, compruebe la configuración de localización del dispositivo.", Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -185,6 +299,13 @@ public class MostrarTrampasColocadas extends Fragment{
                 }
             }
         }
+    }
+
+    @Override
+    public void onAttachFragment(Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+        //Cargar mapa en segundo plano con asynctask
+        new LongOperationMap().execute();
     }
 
     private class LongOperationMap extends AsyncTask<Void, Void, Void> {
@@ -213,6 +334,47 @@ public class MostrarTrampasColocadas extends Fragment{
                 }
             });
         }
+    }
+
+    public void mostrarMensaje() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Cambios no guardados");
+        builder.setMessage("Si continua perderá los cambios del último marcador");
+
+        builder.setPositiveButton("Continuar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                marcador = null;
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    //Transformar fechas.
+    public String convertFormat(String inputDate) {
+        if (inputDate == null)
+            return "";
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        Date date = null;
+        try {
+            date = simpleDateFormat.parse(inputDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (date == null)
+            return "";
+
+        SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+        return convetDateFormat.format(date);
     }
 }
 

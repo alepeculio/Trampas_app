@@ -1,0 +1,136 @@
+package com.trampas.trampas;
+
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.Toast;
+
+import com.jjoe64.graphview.DefaultLabelFormatter;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.LegendRenderer;
+import com.jjoe64.graphview.ValueDependentColor;
+import com.jjoe64.graphview.helper.StaticLabelsFormatter;
+import com.jjoe64.graphview.series.BarGraphSeries;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+import com.trampas.trampas.Clases.Colocacion;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class ColocacionGrafica extends AppCompatActivity {
+    Colocacion colocacion;
+
+    @BindView(R.id.graphHum)
+    GraphView graphHum;
+
+    @BindView(R.id.graphTemp)
+    GraphView graphTemp;
+
+    public void setColocacion(Colocacion colocacion) {
+        this.colocacion = colocacion;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_colocacion_grafica);
+
+        colocacion = (Colocacion) getIntent().getSerializableExtra("colocacion");
+        ButterKnife.bind(this);
+        getSupportActionBar().setTitle("Gráfica");
+        Toast.makeText(this, colocacion.getTrampa().getNombre(), Toast.LENGTH_SHORT).show();
+
+
+        //Graficas
+        prepararGraficaTemp();
+        prepararGraficaHum();
+
+
+    }
+
+    public void prepararGraficaTemp() {
+        if (graphTemp.getSeries().size() == 0) {
+            double tempMin = 20.4;  //Double.valueOf(colocacion.getTempMin());
+            double tempMax = 25.8;  //Double.valueOf(colocacion.getTempMax());
+            double tempProm = 24.3; //Double.valueOf(colocacion.getTempProm());
+
+            BarGraphSeries<DataPoint> seriesTemp = new BarGraphSeries<>(new DataPoint[]{
+                    new DataPoint(1, tempMin),
+                    new DataPoint(2, tempMax),
+                    new DataPoint(3, tempProm),
+            });
+
+            //Colocar espacio entre barras
+            seriesTemp.setSpacing(50);
+            seriesTemp.setAnimated(true);
+            graphTemp.addSeries(seriesTemp);
+
+            //Modificar tamaño de grafica
+            graphTemp.getViewport().setXAxisBoundsManual(true);
+            graphTemp.getViewport().setYAxisBoundsManual(true);
+            graphTemp.getViewport().setMinX(0d);
+            graphTemp.getViewport().setMaxX(4d);
+            graphTemp.getViewport().setMinY(tempMin - 2);
+
+            //Colocar leyenda
+            seriesTemp.setTitle("Temperatura");
+            graphTemp.getLegendRenderer().setVisible(true);
+            graphTemp.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
+
+            //Colocar valores encima de la barra
+            seriesTemp.setDrawValuesOnTop(true);
+            seriesTemp.setValuesOnTopColor(Color.RED);
+
+            seriesTemp.setValueDependentColor(new ValueDependentColor<DataPoint>() {
+                @Override
+                public int get(DataPoint data) {
+                    return Color.RED;
+                }
+            });
+
+            //Cambiar las etiquetas
+            StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graphTemp);
+            staticLabelsFormatter.setHorizontalLabels(new String[]{"Mín", "Máx", "Promedio"});
+            graphTemp.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+        }
+    }
+
+    public void prepararGraficaHum() {
+        if (graphHum.getSeries().size() == 0) {
+            double humMin = 60;    //Double.valueOf(colocacion.getHumMin());
+            double humMax = 65;    //Double.valueOf(colocacion.getHumMax());
+            double humProm = 63.4; //Double.valueOf(colocacion.getHumProm());
+
+            BarGraphSeries<DataPoint> seriesHum = new BarGraphSeries<>(new DataPoint[]{
+                    new DataPoint(1, humMin),
+                    new DataPoint(2, humMax),
+                    new DataPoint(3, humProm),
+            });
+
+            seriesHum.setSpacing(50);
+            seriesHum.setAnimated(true);
+            graphHum.addSeries(seriesHum);
+
+            graphHum.getViewport().setXAxisBoundsManual(true);
+            graphHum.getViewport().setYAxisBoundsManual(true);
+            graphHum.getViewport().setMinX(0d);
+            graphHum.getViewport().setMaxX(4d);
+            graphHum.getViewport().setMinY(humMin - 2);
+
+            seriesHum.setTitle("Humedad");
+            graphHum.getLegendRenderer().setVisible(true);
+            graphHum.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
+
+            seriesHum.setDrawValuesOnTop(true);
+            seriesHum.setValuesOnTopColor(Color.BLUE);
+
+
+            StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graphHum);
+            staticLabelsFormatter.setHorizontalLabels(new String[]{"Mín", "Máx", "Promedio"});
+            graphHum.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+        }
+    }
+}

@@ -177,12 +177,13 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
                 break;
             case R.id.nav_mostrar_colocadas:
                 fragment = new MostrarTrampasColocadas();
+                fragmentTransaction = true;
+                ((MostrarTrampasColocadas) fragment).setUsuario(usuario);
+                getSupportActionBar().setTitle("Trampas colocadas");
                 if (idColocacionCreada != null) {
                     ((MostrarTrampasColocadas) fragment).setIdColocacionCreada(idColocacionCreada);
                     idColocacionCreada = null;
                 }
-                getSupportActionBar().setTitle("Trampas colocadas");
-                fragmentTransaction = true;
                 break;
             case R.id.nav_mostrar_exitentes:
                 fragment = new MostrarTrampasExistentes();

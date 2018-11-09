@@ -127,8 +127,7 @@ public class Registro extends AppCompatActivity {
         String apellido = etApellido.getText().toString().trim();
         String correo = etCorreo.getText().toString().trim();
         String contrasenia = etContrasenia.getText().toString();
-        final Boolean admin = swNivelPrivilegio.isChecked();
-
+        final int admin = (swNivelPrivilegio.isChecked()) ? 2 : 0;
         Boolean error = false;
 
         if (nombre.equals("")) {
@@ -170,7 +169,7 @@ public class Registro extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         btnRegistrarse.setVisibility(View.VISIBLE);
                         Toast.makeText(Registro.this, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
-                        if (admin)
+                        if (admin == 2)
                             mensajeAdmin(login);
                         else
                             startActivity(login);

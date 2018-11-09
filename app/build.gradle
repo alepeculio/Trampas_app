@@ -51,4 +51,7 @@ dependencies {
     //Animaciones para cards del recyclervew
     implementation 'com.daimajia.easing:library:2.0@aar'
     implementation 'com.daimajia.androidanimations:library:2.3@aar'
+
+    //Graficas
+    implementation 'com.jjoe64:graphview:4.2.2'
 }

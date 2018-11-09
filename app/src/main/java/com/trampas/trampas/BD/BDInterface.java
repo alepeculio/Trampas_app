@@ -74,6 +74,14 @@ public interface BDInterface {
             @Field("apellido") String apellido,
             @Field("correo") String correo,
             @Field("contrasenia") String contrasenia,
-            @Field("admin") Boolean admin
+            @Field("admin") int admin
+    );
+
+    @FormUrlEncoded
+    @POST("actualizarUbicacionColocacion")
+    Call<Respuesta> actualizarUbicacionColocacion(
+            @Field("id") int id,
+            @Field("lat") double lat,
+            @Field("lon") double lon
     );
 }
