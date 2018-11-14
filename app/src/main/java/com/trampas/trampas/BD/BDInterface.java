@@ -84,4 +84,21 @@ public interface BDInterface {
             @Field("lat") double lat,
             @Field("lon") double lon
     );
+
+    @FormUrlEncoded
+    @POST("actualizarColocacion")
+    Call<Respuesta> actualizarColocacion(
+            @Field("id") int id,
+            @Field("lat") double lat,
+            @Field("lon") double lon,
+            @Field("finicio") String fInicio,
+            @Field("ffin") String fFin,
+            @Field("tmin") float tMin,
+            @Field("tmax") float tMax,
+            @Field("tprom") float tProm,
+            @Field("hmin") float hMin,
+            @Field("hmax") float hMax,
+            @Field("hprom") float hProm,
+            @Field("leishmaniasis") int leishmaniasis
+    );
 }

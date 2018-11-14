@@ -10,11 +10,11 @@
                 <item
                     android:id="@+id/nav_mostrar_exitentes"
                     android:icon="@drawable/ic_lista"
-                    android:title="Mostrar existentes" />
+                    android:title="Ver existentes" />
                 <item
                     android:id="@+id/nav_mostrar_colocadas"
                     android:icon="@drawable/ic_mapa"
-                    android:title="Mostrar colocadas" />
+                    android:title="Ver colocadas" />
                 <item
                     android:id="@+id/nav_colocar"
                     android:icon="@drawable/ic_colorar_trampa"

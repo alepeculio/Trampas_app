@@ -25,8 +25,8 @@ public class Perfil extends Fragment {
     @BindView(R.id.tvNivelUsuario)
     TextView tvNivelUsuairo;
 
-    @BindView(R.id.tvTrampasColocadas)
-    TextView tvTrampasColocadas;
+    /*@BindView(R.id.tvTrampasColocadas)
+    TextView tvTrampasColocadas;*/
 
     public Perfil() {
         // Required empty public constructor
@@ -44,7 +44,17 @@ public class Perfil extends Fragment {
 
         tvNombre.setText(usuario.getNombre() + " " + usuario.getApellido());
         tvCorreo.setText(usuario.getCorreo());
-        tvNivelUsuairo.setText((usuario.getAdmin() == 1) ? "Administrador" : "Normal");
+        String priviegio;
+
+        if (usuario.getAdmin() == 1) {
+            priviegio = "Administrador";
+        } else if (usuario.getAdmin() == 3) {
+            priviegio = "Visitante";
+        } else {
+            priviegio = "Normal";
+        }
+
+        tvNivelUsuairo.setText(priviegio);
         return v;
     }
 

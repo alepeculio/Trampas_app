@@ -88,6 +88,12 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
     private void cargarOpcionSeleccionada() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
+        if (usuario.getAdmin() == 3) {
+            navigationView.getMenu().findItem(R.id.nav_mostrar_exitentes).setVisible(false);
+            navigationView.getMenu().findItem(R.id.nav_colocar).setVisible(false);
+            navigationView.getMenu().findItem(R.id.nav_extraer).setVisible(false);
+        }
+
         try {
             int opcion = obtenerOpcionSeleccionada();
             if (opcion != 0) {
@@ -95,8 +101,13 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
                 navigationView.setCheckedItem(opcion);
             }
         } catch (NumberFormatException nfe) {
-            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_mostrar_exitentes));
-            navigationView.setCheckedItem(R.id.nav_mostrar_exitentes);
+            if (usuario.getAdmin() != 3) {
+                onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_mostrar_exitentes));
+                navigationView.setCheckedItem(R.id.nav_mostrar_exitentes);
+            } else {
+                onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_mostrar_colocadas));
+                navigationView.setCheckedItem(R.id.nav_mostrar_colocadas);
+            }
         }
     }
 
