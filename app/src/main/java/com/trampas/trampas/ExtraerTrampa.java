@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -344,7 +345,8 @@ public class ExtraerTrampa extends Fragment {
                 public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {
                     if (response.body() != null) {
                         if (response.body().getCodigo().equals("1")) {
-                            Toast.makeText(getActivity(), response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                            Snackbar.make(getView(), response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
+
                             trampa = null;
                             tvDatosRecibidos.setText("Datos recibidos");
                             tvTempMin.setText("");

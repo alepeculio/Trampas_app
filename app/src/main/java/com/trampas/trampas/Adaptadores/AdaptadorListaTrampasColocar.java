@@ -1,10 +1,13 @@
 package com.trampas.trampas.Adaptadores;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -124,8 +127,18 @@ public class AdaptadorListaTrampasColocar extends RecyclerView.Adapter<Adaptador
 
                             trampas.remove(trampa);
                             notifyItemRemoved(posicion);
-
                             final String codigo = response.body().getCodigo();
+                            Snackbar snackbar = Snackbar.make(itemView, response.body().getMensaje(), Snackbar.LENGTH_LONG);
+                            snackbar.setAction("Ver mapa", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mpi.irAlMapa(codigo);
+                                }
+                            });
+                            snackbar.show();
+
+
+                           /* final String codigo = response.body().getCodigo();
                             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                             builder.setTitle("Trampa colocada");
                             builder.setMessage("¿Quiere ver su ubicación en el mapa?");
@@ -145,7 +158,7 @@ public class AdaptadorListaTrampasColocar extends RecyclerView.Adapter<Adaptador
                             });
 
                             AlertDialog alertDialog = builder.create();
-                            alertDialog.show();
+                            alertDialog.show();*/
                         } else {
                             Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
                             //cargando(false);

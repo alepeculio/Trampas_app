@@ -2,6 +2,7 @@ package com.trampas.trampas;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +10,7 @@ import android.location.Location;
 import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,7 +20,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -38,13 +43,18 @@ import com.trampas.trampas.BD.BDInterface;
 import com.trampas.trampas.BD.Respuesta;
 import com.trampas.trampas.BD.RespuestaColocaciones;
 import com.trampas.trampas.Clases.Colocacion;
+import com.trampas.trampas.Clases.Trampa;
 import com.trampas.trampas.Clases.Usuario;
+
+import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,6 +80,17 @@ public class MostrarTrampasColocadas extends Fragment {
     @BindView(R.id.btnGuardar)
     Button btnGuardar;
 
+    @BindView(R.id.tvDesde)
+    TextView tvDesde;
+
+    @BindView(R.id.tvHasta)
+    TextView tvHasta;
+
+    @BindView(R.id.btnBuscar)
+    Button btnBuscar;
+
+    Calendar calendario = Calendar.getInstance();
+
     public MostrarTrampasColocadas() {
     }
 
@@ -93,7 +114,138 @@ public class MostrarTrampasColocadas extends Fragment {
         ButterKnife.bind(this, v);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
+        final DatePickerDialog.OnDateSetListener fechaDesde = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                calendario.set(Calendar.YEAR, year);
+                calendario.set(Calendar.MONTH, monthOfYear);
+                calendario.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                String myFormat = "dd/MM/yyyy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+                tvDesde.setText(sdf.format(calendario.getTime()));
+            }
+
+
+        };
+
+        tvDesde.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog dialog1 = new DatePickerDialog(getActivity(),
+                        fechaDesde,
+                        calendario.get(Calendar.YEAR),
+                        calendario.get(Calendar.MONTH),
+                        calendario.get(Calendar.DAY_OF_MONTH));
+
+                dialog1.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == DialogInterface.BUTTON_NEGATIVE) {
+                            tvDesde.setText("");
+                        }
+                    }
+                });
+
+                dialog1.show();
+            }
+        });
+
+        final DatePickerDialog.OnDateSetListener fechaHasta = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                calendario.set(Calendar.YEAR, year);
+                calendario.set(Calendar.MONTH, monthOfYear);
+                calendario.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                String myFormat = "dd/MM/yyyy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+                tvHasta.setText(sdf.format(calendario.getTime()));
+            }
+
+        };
+
+        tvHasta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog dialog2 = new DatePickerDialog(getActivity(),
+                        fechaHasta,
+                        calendario.get(Calendar.YEAR),
+                        calendario.get(Calendar.MONTH),
+                        calendario.get(Calendar.DAY_OF_MONTH));
+
+                dialog2.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == DialogInterface.BUTTON_NEGATIVE) {
+                            tvHasta.setText("");
+                        }
+                    }
+                });
+
+                dialog2.show();
+            }
+        });
+
+
+        btnBuscar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                filtrarColocaciones();
+            }
+        });
+
         return v;
+    }
+
+    private void filtrarColocaciones() {
+        if (colocaciones == null) {
+            Toast.makeText(getActivity(), "No hay trampas colocadas", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String fechaDesde = tvDesde.getText().toString();
+        String fechaHasta = tvHasta.getText().toString();
+        Date inicio = null;
+        Date fin = null;
+        List<Colocacion> colocs = new ArrayList<>();
+
+        String myFormat = "dd/MM/yyyy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+        try {
+            inicio = sdf.parse(fechaDesde);
+            fin = sdf.parse(fechaHasta);
+        } catch (ParseException pe) {
+            if (inicio == null) {
+                Toast.makeText(getActivity(), R.string.seleccionar_fecha_inicio, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (fin == null)
+                fin = new Date();
+
+        }
+
+        if (inicio.after(fin)) {
+            Toast.makeText(getActivity(), "La fecha de comienzo debe ser anterior a la de finalización", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        for (Colocacion c : colocaciones) {
+            Date fColocacion = null;
+            try {
+                fColocacion = sdf.parse(convertFormat(c.getFechaInicio()));
+            } catch (ParseException pe) {
+                pe.printStackTrace();
+            }
+            Log.d("fColocacion: ", fColocacion.toString());
+            Log.d("Inicio: ", inicio.toString());
+            Log.d("Fin: ", fin.toString());
+
+            if (fColocacion.after(inicio) || fColocacion.equals(inicio) && fColocacion.before(fin) || fColocacion.equals(fin)) {
+                colocs.add(c);
+            }
+        }
+
+        prepararMapa(colocs);
+
     }
 
     private void cargarColocaciones() {
@@ -105,7 +257,7 @@ public class MostrarTrampasColocadas extends Fragment {
                 if (response.body() != null) {
                     if (response.body().getCodigo().equals("1")) {
                         colocaciones = response.body().getColocaciones();
-                        prepararMapa();
+                        prepararMapa(null);
                     } else {
                         colocaciones = null;
                         if (getActivity() != null)
@@ -129,7 +281,7 @@ public class MostrarTrampasColocadas extends Fragment {
 
     }
 
-    private void prepararMapa() {
+    private void prepararMapa(List<Colocacion> colocs) {
         if (colocaciones != null) {
             if (marcadores == null)
                 marcadores = new ArrayList<>();
@@ -139,26 +291,47 @@ public class MostrarTrampasColocadas extends Fragment {
 
             marcadores.clear();
 
-            for (Colocacion c : colocaciones) {
-                Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(c.getLat(), c.getLon())).title(c.getTrampa().getNombre()));
-                if (c.getUsuario() == usuario.getId()) {
-                    m.setDraggable(true);
-                    m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                    m.setSnippet("Arrastre para editar ubicación");
-                } else {
-                    m.setSnippet("Ver gráfica");
-                    m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            if (colocs != null) {
+                for (Colocacion c : colocs) {
+                    Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(c.getLat(), c.getLon())).title(c.getTrampa().getNombre()));
+                    if (c.getUsuario() == usuario.getId()) {
+                        m.setDraggable(true);
+                        m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                        m.setSnippet("Arrastre para editar ubicación");
+                    } else {
+                        m.setSnippet("Ver gráfica");
+                        m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    }
+
+                    marcadores.add(m);
+
+                    if (idColocacionCreada != null) {
+                        if (idColocacionCreada.equals(String.valueOf(c.getId()))) {
+                            marcador = m;
+                        }
+                    }
                 }
+            } else {
+                for (Colocacion c : colocaciones) {
+                    Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(c.getLat(), c.getLon())).title(c.getTrampa().getNombre()));
+                    if (c.getUsuario() == usuario.getId()) {
+                        m.setDraggable(true);
+                        m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                        m.setSnippet("Arrastre para editar ubicación");
+                    } else {
+                        m.setSnippet("Ver gráfica");
+                        m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    }
 
-                marcadores.add(m);
+                    marcadores.add(m);
 
-                if (idColocacionCreada != null) {
-                    if (idColocacionCreada.equals(String.valueOf(c.getId()))) {
-                        marcador = m;
+                    if (idColocacionCreada != null) {
+                        if (idColocacionCreada.equals(String.valueOf(c.getId()))) {
+                            marcador = m;
+                        }
                     }
                 }
             }
-
             if (marcador != null) {
                 marcador.showInfoWindow();
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(marcador.getPosition()));
@@ -289,7 +462,8 @@ public class MostrarTrampasColocadas extends Fragment {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[],
+                                           int[] grantResults) {
         switch (requestCode) {
             case SOLICITUD_OBTENER_POSICION_ACTUAL: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -373,7 +547,7 @@ public class MostrarTrampasColocadas extends Fragment {
         if (date == null)
             return "";
 
-        SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+        SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return convetDateFormat.format(date);
     }
 }
