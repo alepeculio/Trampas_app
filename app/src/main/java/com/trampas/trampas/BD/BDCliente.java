@@ -4,7 +4,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BDCliente {
-    public static final String BASE_URL = "http://192.168.1.8/trampas/public/";
+    public static final String BASE_URL = "http://192.168.1.2/trampas/public/";
     private static Retrofit retrofit = null;
 
     public static Retrofit getClient() {

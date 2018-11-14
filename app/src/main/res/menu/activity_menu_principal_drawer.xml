@@ -27,13 +27,17 @@
         </menu>
     </item>
 
-    <item android:title="Usuario">
+    <item android:title="Usuarios">
         <menu>
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/nav_perfil"
                     android:icon="@drawable/ic_perfil"
                     android:title="Mi perfil" />
+                <item
+                    android:id="@+id/nav_administrar_usuarios"
+                    android:icon="@drawable/ic_administrar"
+                    android:title="Administrar" />
             </group>
         </menu>
     </item>
@@ -47,5 +51,5 @@
             android:icon="@drawable/ic_cerrar_sesion"
             android:title="Cerrar sesión" />
     </group>
-
 </menu>
+

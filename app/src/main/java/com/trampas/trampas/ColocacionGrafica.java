@@ -57,9 +57,9 @@ public class ColocacionGrafica extends AppCompatActivity {
 
     public void prepararGraficaTemp() {
         if (graphTemp.getSeries().size() == 0) {
-            double tempMin = 25.4;  //Double.valueOf(colocacion.getTempMin());
-            double tempMax = 30.8;  //Double.valueOf(colocacion.getTempMax());
-            double tempProm = 28.3; //Double.valueOf(colocacion.getTempProm());
+            double tempMin = Double.valueOf(colocacion.getTempMin());
+            double tempMax = Double.valueOf(colocacion.getTempMax());
+            double tempProm = Double.valueOf(colocacion.getTempProm());
 
             BarGraphSeries<DataPoint> seriesTemp = new BarGraphSeries<>(new DataPoint[]{
                     new DataPoint(1, tempMin),
@@ -78,6 +78,7 @@ public class ColocacionGrafica extends AppCompatActivity {
             graphTemp.getViewport().setMinX(0d);
             graphTemp.getViewport().setMaxX(4d);
             graphTemp.getViewport().setMinY(tempMin - 1);
+            graphTemp.getViewport().setMaxY(tempMax + 1);
 
             //Colocar leyenda
             //seriesTemp.setTitle("Temperatura");
@@ -113,9 +114,9 @@ public class ColocacionGrafica extends AppCompatActivity {
 
     public void prepararGraficaHum() {
         if (graphHum.getSeries().size() == 0) {
-            double humMin = 60;    //Double.valueOf(colocacion.getHumMin());
-            double humMax = 65;    //Double.valueOf(colocacion.getHumMax());
-            double humProm = 63.4; //Double.valueOf(colocacion.getHumProm());
+            double humMin = Double.valueOf(colocacion.getHumMin());
+            double humMax = Double.valueOf(colocacion.getHumMax());
+            double humProm = Double.valueOf(colocacion.getHumProm());
 
             BarGraphSeries<DataPoint> seriesHum = new BarGraphSeries<>(new DataPoint[]{
                     new DataPoint(1, humMin),
@@ -132,6 +133,7 @@ public class ColocacionGrafica extends AppCompatActivity {
             graphHum.getViewport().setMinX(0d);
             graphHum.getViewport().setMaxX(4d);
             graphHum.getViewport().setMinY(humMin - 1);
+            graphHum.getViewport().setMaxY(humMax + 1);
 
             //seriesHum.setTitle("Humedad");
             //graphHum.getLegendRenderer().setVisible(true);

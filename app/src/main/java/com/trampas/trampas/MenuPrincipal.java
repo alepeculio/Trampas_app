@@ -94,6 +94,10 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
             navigationView.getMenu().findItem(R.id.nav_extraer).setVisible(false);
         }
 
+        if(usuario.getAdmin() != 1){
+            navigationView.getMenu().findItem(R.id.nav_administrar_usuarios).setVisible(false);
+        }
+
         try {
             int opcion = obtenerOpcionSeleccionada();
             if (opcion != 0) {
@@ -207,6 +211,12 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
                 fragmentTransaction = true;
                 getSupportActionBar().setTitle("Mi perfil");
                 ((Perfil) fragment).setUsuario(usuario);
+                break;
+            case R.id.nav_administrar_usuarios:
+                fragment = new AdministrarUsuarios();
+                fragmentTransaction = true;
+                getSupportActionBar().setTitle("Administración usuarios");
+                ((AdministrarUsuarios) fragment).setUsuario(usuario);
                 break;
             case R.id.nav_cerrar_sesion:
                 cerrarSesion();

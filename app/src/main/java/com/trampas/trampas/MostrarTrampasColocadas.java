@@ -239,7 +239,8 @@ public class MostrarTrampasColocadas extends Fragment {
             Log.d("Inicio: ", inicio.toString());
             Log.d("Fin: ", fin.toString());
 
-            if (fColocacion.after(inicio) || fColocacion.equals(inicio) && fColocacion.before(fin) || fColocacion.equals(fin)) {
+            if ((fColocacion.after(inicio) || fColocacion.equals(inicio)) && (fColocacion.before(fin) || fColocacion.equals(fin))) {
+                Log.d("filtro: ", "Entro ");
                 colocs.add(c);
             }
         }
@@ -294,15 +295,20 @@ public class MostrarTrampasColocadas extends Fragment {
             if (colocs != null) {
                 for (Colocacion c : colocs) {
                     Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(c.getLat(), c.getLon())).title(c.getTrampa().getNombre()));
-                    if (c.getUsuario() == usuario.getId()) {
-                        m.setDraggable(true);
-                        m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                        m.setSnippet("Arrastre para editar ubicación");
+                    if (c.getFechaFin() == null) {
+                        if (c.getUsuario() == usuario.getId()) {
+                            m.setDraggable(true);
+                            m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                            m.setSnippet("Arrastre para editar ubicación");
+                        } else {
+                            m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                            m.setSnippet("Actualmente colocada");
+                        }
                     } else {
                         m.setSnippet("Ver gráfica");
                         m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
                     }
-
+                    m.setTag(c.getId());
                     marcadores.add(m);
 
                     if (idColocacionCreada != null) {
@@ -314,15 +320,20 @@ public class MostrarTrampasColocadas extends Fragment {
             } else {
                 for (Colocacion c : colocaciones) {
                     Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(c.getLat(), c.getLon())).title(c.getTrampa().getNombre()));
-                    if (c.getUsuario() == usuario.getId()) {
-                        m.setDraggable(true);
-                        m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                        m.setSnippet("Arrastre para editar ubicación");
+                    if (c.getFechaFin() == null) {
+                        if (c.getUsuario() == usuario.getId()) {
+                            m.setDraggable(true);
+                            m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                            m.setSnippet("Arrastre para editar ubicación");
+                        } else {
+                            m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                            m.setSnippet("Actualmente colocada");
+                        }
                     } else {
                         m.setSnippet("Ver gráfica");
                         m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
                     }
-
+                    m.setTag(c.getId());
                     marcadores.add(m);
 
                     if (idColocacionCreada != null) {
@@ -366,7 +377,7 @@ public class MostrarTrampasColocadas extends Fragment {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
                     for (Colocacion c : colocaciones)
-                        if (c.getTrampa().getNombre().equals(marker.getTitle())) {
+                        if (c.getId() == (int) marker.getTag() && c.getFechaFin() != null) {
                             Intent intent = new Intent(getActivity(), ColocacionGrafica.class);
                             intent.putExtra("colocacion", c);
                             getActivity().startActivity(intent);

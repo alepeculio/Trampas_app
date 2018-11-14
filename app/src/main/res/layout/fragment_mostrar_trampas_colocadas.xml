@@ -87,7 +87,7 @@
         android:layout_height="match_parent"
         map:layout_constraintLeft_toLeftOf="parent"
         map:layout_constraintTop_toTopOf="parent"
-        tools:context=".MapsActivity"
+        tools:context=".MostrarTrampasColocadas"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp" />
 
