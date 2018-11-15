@@ -15,6 +15,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,12 +60,20 @@ public class AdministrarUsuarios extends Fragment {
     @BindView(R.id.tvNoHayUsuarios)
     TextView tvNoHayUsuarios;
 
+    @BindView(R.id.cbSolicitudAdmin)
+    CheckBox cbSolicitudAdmin;
+
     public AdministrarUsuarios() {
         // Required empty public constructor
     }
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+        filtrarUsuarios();
     }
 
     @Override
@@ -89,13 +99,20 @@ public class AdministrarUsuarios extends Fragment {
             }
         });
 
+        cbSolicitudAdmin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                filtrarUsuarios();
+            }
+        });
+
         cargarUsuarios();
         return v;
     }
 
     public void setAdaptadorListaUsuarios() {
         if (adaptadorListaUsuarios == null) {
-            adaptadorListaUsuarios = new AdaptadorListaUsuarios(new ArrayList<Usuario>(), getActivity());
+            adaptadorListaUsuarios = new AdaptadorListaUsuarios(new ArrayList<Usuario>(), getActivity(), this);
             mRecyclerView.setAdapter(adaptadorListaUsuarios);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             mRecyclerView.setHasFixedSize(true);
@@ -175,34 +192,49 @@ public class AdministrarUsuarios extends Fragment {
         List<Usuario> usuariosFinal = new ArrayList<>();
 
         if (usuarios != null) {
-
-            //Remover usuario logueado de la lista
+            //Remover usuario logueado de la lista y agregar los que solicitaron admin si el cb esta chequedo.
             for (int i = 0; i < usuarios.size(); i++) {
                 if (usuarios.get(i).getId() == usuario.getId()) {
                     usuarios.remove(i);
                 }
+                if (usuarios.get(i).getAdmin() == 2 && cbSolicitudAdmin.isChecked())
+                    usuariosFinal.add(usuarios.get(i));
             }
 
             if (ultimaBusqueda != null) {
+                usuariosFinal.clear();
                 for (Usuario u : usuarios) {
                     if (u.getNombre().toLowerCase().contains(ultimaBusqueda) || String.valueOf(u.getId()).toLowerCase().contains(ultimaBusqueda) || u.getCorreo().toLowerCase().contains(ultimaBusqueda)) {
-                        usuariosFinal.add(u);
+                        if (cbSolicitudAdmin.isChecked()) {
+                            if (u.getAdmin() == 2)
+                                usuariosFinal.add(u);
+                        } else
+                            usuariosFinal.add(u);
                     }
                 }
                 if (usuariosFinal.size() == 0) {
                     if (!ultimaBusqueda.equals("")) {
                         tvNoHayUsuarios.setText("No hay resultados para \"" + ultimaBusqueda + "\"");
+                    } else if (cbSolicitudAdmin.isChecked()) {
+                        tvNoHayUsuarios.setText("No hay usuarios solicitantes");
                     } else {
-                        Toast.makeText(getActivity(), String.valueOf(usuarios.size()), Toast.LENGTH_SHORT).show();
                         usuariosFinal = usuarios;
                         tvNoHayUsuarios.setText("No hay usuarios");
                     }
                 }
 
             } else {
-                usuariosFinal = usuarios;
-                if (usuariosFinal.size() == 0)
-                    tvNoHayUsuarios.setText("No hay usuarios");
+                if (usuariosFinal.size() == 0 && !cbSolicitudAdmin.isChecked())
+                    usuariosFinal = usuarios;
+
+                if (usuariosFinal.size() == 0) {
+                    if (cbSolicitudAdmin.isChecked())
+                        tvNoHayUsuarios.setText("No hay usuarios solicitantes");
+                    else
+                        tvNoHayUsuarios.setText("No hay usuarios");
+
+                }
+
             }
         }
 

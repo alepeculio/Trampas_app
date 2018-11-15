@@ -73,13 +73,23 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/fondo_rojo">
+                android:background="@drawable/fondo_rojo"
+                android:gravity="center">
+
+                <ProgressBar
+                    android:id="@+id/progressBarEliminar"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/fondo_rojo"
+                    android:indeterminateTint="@color/colorBlanco"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/btnEliminar"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
-                    android:background="@drawable/ic_borrar" />
+                    android:background="@drawable/ic_borrar"
+                    android:visibility="visible" />
             </LinearLayout>
 
         </LinearLayout>

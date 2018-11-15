@@ -81,6 +81,19 @@ public interface BDInterface {
     );
 
     @FormUrlEncoded
+    @POST("actualizarPrivilegios")
+    Call<Respuesta> actualizarPrivilegios(
+            @Field("id") int id,
+            @Field("admin") int admin
+    );
+
+    @FormUrlEncoded
+    @POST("eliminarUsuario")
+    Call<Respuesta> eliminarUsuario(
+            @Field("id") int id
+    );
+
+    @FormUrlEncoded
     @POST("actualizarUbicacionColocacion")
     Call<Respuesta> actualizarUbicacionColocacion(
             @Field("id") int id,

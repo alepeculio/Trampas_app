@@ -94,17 +94,22 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
             navigationView.getMenu().findItem(R.id.nav_extraer).setVisible(false);
         }
 
-        if(usuario.getAdmin() != 1){
+        if (usuario.getAdmin() != 1) {
             navigationView.getMenu().findItem(R.id.nav_administrar_usuarios).setVisible(false);
         }
 
         try {
             int opcion = obtenerOpcionSeleccionada();
             if (opcion != 0) {
-                onNavigationItemSelected(navigationView.getMenu().findItem(opcion));
-                navigationView.setCheckedItem(opcion);
+                MenuItem mi = navigationView.getMenu().findItem(opcion);
+                if (mi != null) {
+                    onNavigationItemSelected(mi);
+                    navigationView.setCheckedItem(opcion);
+                } else
+                    throw new Exception();
+
             }
-        } catch (NumberFormatException nfe) {
+        } catch (Exception e) {
             if (usuario.getAdmin() != 3) {
                 onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_mostrar_exitentes));
                 navigationView.setCheckedItem(R.id.nav_mostrar_exitentes);
