@@ -196,8 +196,7 @@ public class AdministrarUsuarios extends Fragment {
             for (int i = 0; i < usuarios.size(); i++) {
                 if (usuarios.get(i).getId() == usuario.getId()) {
                     usuarios.remove(i);
-                }
-                if (usuarios.get(i).getAdmin() == 2 && cbSolicitudAdmin.isChecked())
+                } else if (usuarios.get(i).getAdmin() == 2 && cbSolicitudAdmin.isChecked())
                     usuariosFinal.add(usuarios.get(i));
             }
 
