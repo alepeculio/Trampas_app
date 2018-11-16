@@ -13,6 +13,8 @@ import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.trampas.trampas.Clases.Colocacion;
 
+import java.util.Objects;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -39,7 +41,7 @@ public class ColocacionGrafica extends AppCompatActivity {
 
         colocacion = (Colocacion) getIntent().getSerializableExtra("colocacion");
         ButterKnife.bind(this);
-        getSupportActionBar().setTitle("Gráfica");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Gráfica");
         tvNombre.setText(colocacion.getTrampa().getNombre());
 
 

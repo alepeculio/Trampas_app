@@ -4,7 +4,7 @@
     tools:showIn="navigation_view">
 
 
-    <item android:title="Trampas">
+    <item android:title="@string/trampas">
         <menu>
             <group android:checkableBehavior="single">
                 <item
@@ -27,17 +27,17 @@
         </menu>
     </item>
 
-    <item android:title="Usuarios">
+    <item android:title="@string/usuarios">
         <menu>
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/nav_perfil"
                     android:icon="@drawable/ic_perfil"
-                    android:title="Mi perfil" />
+                    android:title="@string/mi_perfil" />
                 <item
                     android:id="@+id/nav_administrar_usuarios"
                     android:icon="@drawable/ic_administrar"
-                    android:title="Administrar" />
+                    android:title="@string/administrar" />
             </group>
         </menu>
     </item>
@@ -47,7 +47,7 @@
         <item
             android:id="@+id/nav_cerrar_sesion"
             android:icon="@drawable/ic_cerrar_sesion"
-            android:title="Cerrar sesión" />
+            android:title="@string/cerrar_sesion" />
     </group>
 </menu>
 

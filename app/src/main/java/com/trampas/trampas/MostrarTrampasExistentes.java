@@ -1,6 +1,7 @@
 package com.trampas.trampas;
 
 
+import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,7 +43,6 @@ public class MostrarTrampasExistentes extends Fragment {
     private List<Trampa> trampas;
     private AdaptadorListaTrampas adaptadorListaTrampas;
     private SearchView searchView = null;
-    private SearchView.OnQueryTextListener queryTextListener;
     private String ultimaBusqueda = null;
 
     @BindView(R.id.listaTrampas)
@@ -120,7 +120,7 @@ public class MostrarTrampasExistentes extends Fragment {
         if (searchView != null) {
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
 
-            queryTextListener = new SearchView.OnQueryTextListener() {
+            SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextChange(String newText) {
                     ultimaBusqueda = newText.toLowerCase().trim();
@@ -150,6 +150,7 @@ public class MostrarTrampasExistentes extends Fragment {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void filtrarTrampas() {
         List<Trampa> trampasFinal = new ArrayList<>();
 
@@ -166,14 +167,14 @@ public class MostrarTrampasExistentes extends Fragment {
                     } else {
                         Toast.makeText(getActivity(), String.valueOf(trampas.size()), Toast.LENGTH_SHORT).show();
                         trampasFinal = trampas;
-                        tvNoHayTrampas.setText("No hay trampas");
+                        tvNoHayTrampas.setText(R.string.no_hay_trampas);
                     }
                 }
 
             } else {
                 trampasFinal = trampas;
                 if (trampasFinal.size() == 0)
-                    tvNoHayTrampas.setText("No hay trampas");
+                    tvNoHayTrampas.setText(R.string.no_hay_trampas);
             }
         }
 
@@ -228,7 +229,7 @@ public class MostrarTrampasExistentes extends Fragment {
                     trampas = null;
                     filtrarTrampas();
                     if (getActivity() != null) {
-                        Toast.makeText(getActivity(), "Error interno del servidor, Reintente", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -238,7 +239,7 @@ public class MostrarTrampasExistentes extends Fragment {
                 trampas = null;
                 filtrarTrampas();
                 if (getActivity() != null) {
-                    Toast.makeText(getActivity(), "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -1,6 +1,7 @@
 package com.trampas.trampas;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
@@ -9,17 +10,18 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -81,6 +84,9 @@ public class MostrarTrampasColocadas extends Fragment {
     @BindView(R.id.btnBuscar)
     Button btnBuscar;
 
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
+
     Calendar calendario = Calendar.getInstance();
 
     public MostrarTrampasColocadas() {
@@ -100,8 +106,7 @@ public class MostrarTrampasColocadas extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_mostrar_trampas_colocadas, container, false);
         ButterKnife.bind(this, v);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -114,7 +119,7 @@ public class MostrarTrampasColocadas extends Fragment {
                 calendario.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
                 String myFormat = "dd/MM/yyyy";
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
                 tvDesde.setText(sdf.format(calendario.getTime()));
             }
 
@@ -150,7 +155,7 @@ public class MostrarTrampasColocadas extends Fragment {
                 calendario.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
                 String myFormat = "dd/MM/yyyy";
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
                 tvHasta.setText(sdf.format(calendario.getTime()));
             }
 
@@ -201,7 +206,7 @@ public class MostrarTrampasColocadas extends Fragment {
         List<Colocacion> colocs = new ArrayList<>();
 
         String myFormat = "dd/MM/yyyy";
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
         try {
             inicio = sdf.parse(fechaDesde);
             fin = sdf.parse(fechaHasta);
@@ -227,14 +232,10 @@ public class MostrarTrampasColocadas extends Fragment {
             } catch (ParseException pe) {
                 pe.printStackTrace();
             }
-            Log.d("fColocacion: ", fColocacion.toString());
-            Log.d("Inicio: ", inicio.toString());
-            Log.d("Fin: ", fin.toString());
 
-            if ((fColocacion.after(inicio) || fColocacion.equals(inicio)) && (fColocacion.before(fin) || fColocacion.equals(fin))) {
-                Log.d("filtro: ", "Entro ");
+            if ((fColocacion.after(inicio) || fColocacion.equals(inicio)) && (fColocacion.before(fin) || fColocacion.equals(fin)))
                 colocs.add(c);
-            }
+
         }
 
         prepararMapa(colocs);
@@ -259,7 +260,7 @@ public class MostrarTrampasColocadas extends Fragment {
                 } else {
                     colocaciones = null;
                     if (getActivity() != null)
-                        Toast.makeText(getActivity(), "Error interno del servidor, Reintente", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -267,7 +268,7 @@ public class MostrarTrampasColocadas extends Fragment {
             public void onFailure(Call<RespuestaColocaciones> call, Throwable t) {
                 colocaciones = null;
                 if (getActivity() != null)
-                    Toast.makeText(getActivity(), "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -291,7 +292,7 @@ public class MostrarTrampasColocadas extends Fragment {
                         if (c.getUsuario() == usuario.getId()) {
                             m.setDraggable(true);
                             m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                            m.setSnippet("Arrastre para editar ubicación");
+                            m.setSnippet(getString(R.string.mensaje_editar_ubicacion));
                         } else {
                             m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
                             m.setSnippet("Actualmente colocada");
@@ -372,7 +373,7 @@ public class MostrarTrampasColocadas extends Fragment {
                         if (c.getId() == (int) marker.getTag() && c.getFechaFin() != null) {
                             Intent intent = new Intent(getActivity(), ColocacionGrafica.class);
                             intent.putExtra("colocacion", c);
-                            getActivity().startActivity(intent);
+                            Objects.requireNonNull(getActivity()).startActivity(intent);
                         }
                 }
             });
@@ -380,6 +381,8 @@ public class MostrarTrampasColocadas extends Fragment {
             btnGuardar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    btnGuardar.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.VISIBLE);
                     if (marcador != null) {
                         int id = 0;
                         for (Colocacion c : colocaciones) {
@@ -397,24 +400,27 @@ public class MostrarTrampasColocadas extends Fragment {
                             call.enqueue(new Callback<Respuesta>() {
                                 @Override
                                 public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {
+                                    btnGuardar.setVisibility(View.VISIBLE);
+                                    progressBar.setVisibility(View.GONE);
                                     if (response.body() != null) {
                                         if (response.body().getCodigo().equals("1")) {
                                             llGuardar.setVisibility(View.GONE);
                                             marcador = null;
+                                            Snackbar.make(getView(), response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
                                         } else {
                                             if (getActivity() != null)
                                                 Toast.makeText(getActivity(), response.body().getMensaje(), Toast.LENGTH_SHORT).show();
                                         }
                                     } else {
                                         if (getActivity() != null)
-                                            Toast.makeText(getActivity(), "Error interno del servidor, Reintente", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<Respuesta> call, Throwable t) {
                                     if (getActivity() != null)
-                                        Toast.makeText(getActivity(), "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
 
                                 }
                             });
@@ -539,7 +545,7 @@ public class MostrarTrampasColocadas extends Fragment {
         if (inputDate == null)
             return "";
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         Date date = null;
         try {
             date = simpleDateFormat.parse(inputDate);
@@ -550,7 +556,7 @@ public class MostrarTrampasColocadas extends Fragment {
         if (date == null)
             return "";
 
-        SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return convetDateFormat.format(date);
     }
 }

@@ -87,15 +87,15 @@ public class Login extends AppCompatActivity {
         Boolean error = false;
 
         if (correo.equals("")) {
-            etCorreoError.setError("Campo requerido");
+            etCorreoError.setError(getString(R.string.campo_requerido));
             error = true;
         } else if (!isEmailValid(correo)) {
-            etCorreoError.setError("Correo inválido");
+            etCorreoError.setError(getString(R.string.correo_invalido));
             error = true;
         }
 
         if (contrasenia.equals("")) {
-            etContraseniaError.setError("Campo requerido");
+            etContraseniaError.setError(getString(R.string.campo_requerido));
             error = true;
         }
 
@@ -120,27 +120,24 @@ public class Login extends AppCompatActivity {
         call.enqueue(new Callback<RespuestaLogin>() {
             @Override
             public void onResponse(Call<RespuestaLogin> call, Response<RespuestaLogin> response) {
+                btnIniciarSesion.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
                 if (response.body() != null) {
                     if (response.body().getCodigo().equals("1") && response.body().getUsuario() != null) {
                         guardarUsuario(response.body().getUsuario());
                     } else {
                         etContraseniaError.setError(response.body().getMensaje());
-                        btnIniciarSesion.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
                     }
                 } else {
-                    Toast.makeText(Login.this, "Error interno del servidor, Reintente.", Toast.LENGTH_SHORT).show();
-                    btnIniciarSesion.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(Login.this, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<RespuestaLogin> call, Throwable t) {
-                Toast.makeText(Login.this, "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 btnIniciarSesion.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
-
+                Toast.makeText(Login.this, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -151,7 +148,7 @@ public class Login extends AppCompatActivity {
         Gson gson = new Gson();
         String json = gson.toJson(usuario);
         et.putString("usuario", json);
-        et.commit();
+        et.apply();
 
         cargarInicio();
     }

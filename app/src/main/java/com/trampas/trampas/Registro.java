@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -129,25 +130,25 @@ public class Registro extends AppCompatActivity {
         Boolean error = false;
 
         if (nombre.equals("")) {
-            etNombreError.setError("Campo requerido");
+            etNombreError.setError(getString(R.string.campo_requerido));
             error = true;
         }
 
         if (apellido.equals("")) {
-            etApellidoError.setError("Campo requerido");
+            etApellidoError.setError(getString(R.string.campo_requerido));
             error = true;
         }
 
         if (correo.equals("")) {
-            etCorreoError.setError("Campo requerido");
+            etCorreoError.setError(getString(R.string.campo_requerido));
             error = true;
         } else if (!isEmailValid(correo)) {
-            etCorreoError.setError("Correo inválido");
+            etCorreoError.setError(getString(R.string.correo_invalido));
             error = true;
         }
 
         if (contrasenia.equals("")) {
-            etContraseniaError.setError("Campo requerido");
+            etContraseniaError.setError(getString(R.string.campo_requerido));
             error = true;
         }
 
@@ -162,24 +163,20 @@ public class Registro extends AppCompatActivity {
         call.enqueue(new Callback<Respuesta>() {
             @Override
             public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {
+                btnRegistrarse.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
                 if (response.body() != null) {
                     if (response.body().getCodigo().equals("1")) {
-                        progressBar.setVisibility(View.GONE);
-                        btnRegistrarse.setVisibility(View.VISIBLE);
-                        Toast.makeText(Registro.this, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                        Snackbar.make(getWindow().getDecorView().getRootView(), response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
                         if (admin == 2)
                             mensajeAdmin(login);
                         else
                             startActivity(login);
                     } else {
-                        btnRegistrarse.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
                         etCorreoError.setError(response.body().getMensaje());
                     }
                 } else {
-                    btnRegistrarse.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(Registro.this, "Error interno del servidor, Reintente", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Registro.this, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -187,7 +184,7 @@ public class Registro extends AppCompatActivity {
             public void onFailure(Call<Respuesta> call, Throwable t) {
                 btnRegistrarse.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(Registro.this, "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Registro.this, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -200,9 +197,9 @@ public class Registro extends AppCompatActivity {
 
     public void mensajeAdmin(final Intent login) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("Privilegio administrador");
-        alertDialog.setMessage("Se requiere una validación para esta opción, mientras permanecerá con privilegios de usuario normal.");
-        alertDialog.setPositiveButton("Entendido", new DialogInterface.OnClickListener() {
+        alertDialog.setTitle(R.string.registro_admin_titulo);
+        alertDialog.setMessage(R.string.registro_admin_mensaje);
+        alertDialog.setPositiveButton(R.string.registro_admin_boton, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startActivity(login);

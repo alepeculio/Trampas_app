@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
@@ -44,7 +46,6 @@ import retrofit2.Response;
 
 public class AgregarTrampa extends AppCompatActivity {
     private BluetoothAdapter mBTAdapter;
-    private Set<BluetoothDevice> mPairedDevices;
     private ArrayAdapter<String> mBTArrayAdapter;
 
     @BindView(R.id.btnConectarBT)
@@ -105,11 +106,13 @@ public class AgregarTrampa extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agregar_trampa);
-        getSupportActionBar().setTitle("Agregar trampa");
+        ActionBar barra = getSupportActionBar();
+        if (barra != null)
+            barra.setTitle("Agregar trampa");
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         ButterKnife.bind(this);
 
-        mBTArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // get a handle on the bluetooth radio
 
         listaDispositivos.setAdapter(mBTArrayAdapter); // assign model to view
@@ -118,11 +121,11 @@ public class AgregarTrampa extends AppCompatActivity {
                                                      public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
 
                                                          if (!mBTAdapter.isEnabled()) {
-                                                             Toast.makeText(AgregarTrampa.this, "Bluetooth apagado", Toast.LENGTH_SHORT).show();
+                                                             Toast.makeText(AgregarTrampa.this, R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
                                                              return;
                                                          }
 
-                                                         tvEstado.setText("Conectando...");
+                                                         tvEstado.setText(R.string.conectando);
                                                          // Get the device MAC address, which is the last 17 chars in the View
                                                          String info = ((TextView) v).getText().toString();
                                                          final String address = info.substring(info.length() - 17);
@@ -152,7 +155,7 @@ public class AgregarTrampa extends AppCompatActivity {
                                                                          Toast.makeText(AgregarTrampa.this, "Socket creation failed", Toast.LENGTH_SHORT).show();
                                                                      }
                                                                  }
-                                                                 if (fail == false) {
+                                                                 if (!fail) {
                                                                      mConnectedThread = new ConnectedThread(mBTSocket, mHandler, MESSAGE_READ);
                                                                      mConnectedThread.start();
                                                                      mac = address;
@@ -176,24 +179,25 @@ public class AgregarTrampa extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    nombre = readMessage.substring(0, 7);
+                    if (readMessage != null) {
+                        nombre = readMessage.substring(0, 7);
+                    }
                     etNombre.setText(nombre);
                     mConnectedThread.cancel();
                     llProgressBarDatos.setVisibility(View.GONE);
                     etNombreError.setVisibility(View.VISIBLE);
-                    tvEstado.setText("Desconectado, datos recibidos");
+                    tvEstado.setText(R.string.datos_recibidos);
                 }
-
 
                 if (msg.what == CONNECTING_STATUS) {
                     if (msg.arg1 == 1) {
-                        String estado = "Conectado al dispositivo: " + (String) (msg.obj);
+                        String estado = getString(R.string.conectado) + (msg.obj);
                         tvEstado.setText(estado.trim());
                         llProgressBarDatos.setVisibility(View.VISIBLE);
                         etNombreError.setVisibility(View.GONE);
                         mConnectedThread.write("a"); //Obtener nombre
                     } else {
-                        tvEstado.setText("La conexión falló, reintente.");
+                        tvEstado.setText(R.string.conexion_fallo);
                     }
 
                 }
@@ -202,8 +206,8 @@ public class AgregarTrampa extends AppCompatActivity {
 
         if (mBTArrayAdapter == null) {
             // Device does not support Bluetooth
-            tvEstado.setText("Bluetooth no encontrado");
-            Toast.makeText(this, "Dispositivo Bluetooth no encontrado!", Toast.LENGTH_SHORT).show();
+            tvEstado.setText(R.string.bluetooth_no_encontrado);
+            Toast.makeText(this, R.string.bluetooth_no_encontrado, Toast.LENGTH_SHORT).show();
         } else {
 
             btnConectarBT.setOnClickListener(new View.OnClickListener() {
@@ -269,18 +273,18 @@ public class AgregarTrampa extends AppCompatActivity {
                         etNombreError.setError(response.body().getMensaje());
                     } else {
                         etNombre.setText("");
-                        Toast.makeText(AgregarTrampa.this, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                        Snackbar.make(getWindow().getDecorView().getRootView(), response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
                         startActivity(menu);
                         //hideKeyboard();
                     }
                 } else {
-                    Toast.makeText(AgregarTrampa.this, "Error interno del servidor, Reintente", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AgregarTrampa.this, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Respuesta> call, Throwable t) {
-                Toast.makeText(AgregarTrampa.this, "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AgregarTrampa.this, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -295,9 +299,8 @@ public class AgregarTrampa extends AppCompatActivity {
         if (!mBTAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            tvEstado.setText("Bluetooth encendido");
-            Toast.makeText(this, "Encendiendo Bluetooth...", Toast.LENGTH_SHORT).show();
         } else {
+            tvEstado.setText(R.string.bluetooth_encendido);
             btnConectarBT.setBackgroundResource(R.drawable.ic_bluetooth_conectado);
             dispositivosVinculados();
 
@@ -312,19 +315,19 @@ public class AgregarTrampa extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 // The user picked a contact.
                 // The Intent's data Uri identifies which contact was selected.
-                tvEstado.setText("Bluetooth encendido");
+                tvEstado.setText(R.string.bluetooth_encendido);
                 btnConectarBT.setBackgroundResource(R.drawable.ic_bluetooth_conectado);
                 dispositivosVinculados();
             } else
-                tvEstado.setText("Bluetooth apagado");
+                tvEstado.setText(R.string.bluetooth_apagado);
             llProgressBarLista.setVisibility(View.GONE);
         }
     }
 
 
     private void apagarBT() {
-        mBTAdapter.disable(); // turn off
-        tvEstado.setText("Bluetooth apagado");
+        mBTAdapter.disable();
+        tvEstado.setText(R.string.bluetooth_apagado);
         btnConectarBT.setBackgroundResource(R.drawable.ic_bluetooth);
         Toast.makeText(this, "Bluetooth apagado", Toast.LENGTH_SHORT).show();
     }
@@ -342,16 +345,16 @@ public class AgregarTrampa extends AppCompatActivity {
         // Check if the device is already discovering
         if (mBTAdapter.isDiscovering()) {
             mBTAdapter.cancelDiscovery();
-            Toast.makeText(this, "Escaneo detenido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.escaneo_detenido, Toast.LENGTH_SHORT).show();
         } else {
             if (mBTAdapter.isEnabled()) {
                 mBTArrayAdapter.clear(); // clear items
                 mBTAdapter.startDiscovery();
-                Toast.makeText(this, "Escaneo iniciado", Toast.LENGTH_SHORT).show();
-                tvTituloLista.setText("Trampas encontradas");
+                Toast.makeText(this, R.string.escaneando, Toast.LENGTH_SHORT).show();
+                tvTituloLista.setText(R.string.trampas_encontradas);
                 registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
             } else {
-                Toast.makeText(this, "Bluetooth apagado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -382,7 +385,7 @@ public class AgregarTrampa extends AppCompatActivity {
     };
 
     private void dispositivosVinculados() {
-        mPairedDevices = mBTAdapter.getBondedDevices();
+        Set<BluetoothDevice> mPairedDevices = mBTAdapter.getBondedDevices();
         if (mBTAdapter.isEnabled()) {
             // put it's one to the adapter
             mBTArrayAdapter.clear();
@@ -400,10 +403,10 @@ public class AgregarTrampa extends AppCompatActivity {
                     mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
 
             }
-            tvTituloLista.setText("Dispositivos vinculados");
+            tvTituloLista.setText(R.string.dispositivos_vinculados);
             llProgressBarLista.setVisibility(View.GONE);
         } else
-            Toast.makeText(this, "Bluetooth apagado", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
     }
 
     private void cargarTrampas() {
@@ -423,7 +426,7 @@ public class AgregarTrampa extends AppCompatActivity {
                     }
                 } else {
                     trampas = null;
-                    Toast.makeText(AgregarTrampa.this, "Error interno del servidor, Reintente", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AgregarTrampa.this, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                     llProgressBarLista.setVisibility(View.GONE);
                 }
             }
@@ -431,7 +434,7 @@ public class AgregarTrampa extends AppCompatActivity {
             @Override
             public void onFailure(Call<RespuestaTrampas> call, Throwable t) {
                 trampas = null;
-                Toast.makeText(AgregarTrampa.this, "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AgregarTrampa.this, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                 llProgressBarLista.setVisibility(View.GONE);
             }
 

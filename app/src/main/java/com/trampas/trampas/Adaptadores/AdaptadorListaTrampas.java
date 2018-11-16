@@ -1,11 +1,13 @@
 package com.trampas.trampas.Adaptadores;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -263,23 +265,21 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
             call.enqueue(new Callback<Respuesta>() {
                 @Override
                 public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {
+                    progressBarEliminar.setVisibility(View.GONE);
+                    btnEliminar.setVisibility(View.VISIBLE);
                     if (response.body() != null) {
                         if (response.body().getCodigo().equals("1")) {
                             trampas.remove(trampa);
                             notifyItemRemoved(position);
-                            Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                            Snackbar.make(itemView, response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
                         } else {
-                            progressBarEliminar.setVisibility(View.GONE);
-                            btnEliminar.setVisibility(View.VISIBLE);
                             if (mContext != null) {
                                 Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     } else {
-                        progressBarEliminar.setVisibility(View.GONE);
-                        btnEliminar.setVisibility(View.VISIBLE);
                         if (mContext != null) {
-                            Toast.makeText(mContext, "Error interno del servidor, Reintente", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -289,7 +289,7 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
                     progressBarEliminar.setVisibility(View.GONE);
                     btnEliminar.setVisibility(View.VISIBLE);
                     if (mContext != null) {
-                        Toast.makeText(mContext, "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -300,7 +300,7 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
             if (inputDate == null)
                 return "";
 
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             Date date = null;
             try {
                 date = simpleDateFormat.parse(inputDate);
@@ -311,7 +311,7 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
             if (date == null)
                 return "";
 
-            SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
             return convetDateFormat.format(date);
         }
 

@@ -8,74 +8,81 @@
     tools:context=".MostrarTrampasColocadas">
 
     <LinearLayout
+        android:background="@drawable/fondo_mapa"
+        android:id="@+id/llBuscar"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@drawable/fondo_claro_redondeado_arriba"
-        android:elevation="1dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingLeft="10dp"
-        android:paddingTop="5dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="5dp"
-        android:baselineAligned="false">
-
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/desde" />
-
-            <TextView
-                android:id="@+id/tvDesde"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/vacio"
-                android:textColor="#000"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/hasta" />
-
-            <TextView
-                android:id="@+id/tvHasta"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/vacio"
-                android:textColor="#000"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/fondo_oscuro"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/fondo_claro_redondeado_arriba"
+            android:baselineAligned="false"
+            android:elevation="1dp"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingTop="5dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="5dp"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <Button
-                android:id="@+id/btnBuscar"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:background="@drawable/ic_buscar" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/desde" />
+
+                <TextView
+                    android:id="@+id/tvDesde"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/vacio"
+                    android:textColor="#000"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hasta" />
+
+                <TextView
+                    android:id="@+id/tvHasta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/vacio"
+                    android:textColor="#000"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/fondo_oscuro"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnBuscar"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/ic_buscar" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -83,12 +90,14 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintLeft_toLeftOf="parent"
-        map:layout_constraintTop_toTopOf="parent"
+        map:layout_constraintTop_toBottomOf="@id/llBuscar"
         tools:context=".MostrarTrampasColocadas"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp" />
+
 
     <LinearLayout
         android:id="@+id/llGuardar"
@@ -99,13 +108,28 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <Button
-            android:id="@+id/btnGuardar"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:background="@drawable/fondo_claro"
-            android:padding="5dp"
-            android:text="@string/guardar_cambios" />
+            android:gravity="center"
+            tools:ignore="UselessParent">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminateTint="@color/cardview_dark_background"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnGuardar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:text="@string/guardar_cambios"
+                android:visibility="visible" />
+        </LinearLayout>
 
     </LinearLayout>
 

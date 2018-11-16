@@ -92,23 +92,14 @@ public class DatosTrampa extends AppCompatActivity {
                     } else {
                         Toast.makeText(this, String.valueOf(colocaciones.size()), Toast.LENGTH_SHORT).show();
                         colocacionesFinal = colocaciones;
-                        // tvNoHayTrampas.setText("No hay trampas para colocar");
                     }
                 }
 
             } else {
                 colocacionesFinal = colocaciones;
-                if (colocacionesFinal.size() == 0) {
-                    //tvNoHayTrampas.setText("No hay trampas para colocar");
-                }
             }
         }
 
-        /*if (colocacionesFinal.size() == 0) {
-            // noHayTrampas.setVisibility(View.VISIBLE);
-        } else {
-            // noHayTrampas.setVisibility(View.GONE);
-        }*/
         adaptadorListaColocaciones.actualizarColocaciones(colocacionesFinal);
         swipeRefresh.setRefreshing(false);
     }
@@ -132,7 +123,7 @@ public class DatosTrampa extends AppCompatActivity {
                 } else {
                     colocaciones = null;
                     filtrarColocaciones();
-                    Toast.makeText(DatosTrampa.this, "Error interno del servidor, Reintente", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DatosTrampa.this, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -140,7 +131,7 @@ public class DatosTrampa extends AppCompatActivity {
             public void onFailure(Call<RespuestaColocaciones> call, Throwable t) {
                 colocaciones = null;
                 filtrarColocaciones();
-                Toast.makeText(DatosTrampa.this, "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(DatosTrampa.this, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
 
             }
         });

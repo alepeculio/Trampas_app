@@ -1,5 +1,6 @@
 package com.trampas.trampas.Adaptadores;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.trampas.trampas.AdministrarUsuarios;
 import com.trampas.trampas.BD.BDCliente;
@@ -86,6 +88,7 @@ public class AdaptadorListaUsuarios extends RecyclerView.Adapter<AdaptadorListaU
             mContext = itemView.getContext();
         }
 
+        @SuppressLint("SetTextI18n")
         public void bindUsuario(final Usuario usuario) {
             tvNombre.setText(usuario.getNombre() + " " + usuario.getApellido());
             tvCorreo.setText(usuario.getCorreo());
@@ -129,7 +132,7 @@ public class AdaptadorListaUsuarios extends RecyclerView.Adapter<AdaptadorListaU
             } else {
                 admin = 0;
             }
-            tvPrivilegio.setText("Cambiando...");
+            tvPrivilegio.setText(R.string.cambiando_privilegio);
             BDInterface bd = BDCliente.getClient().create(BDInterface.class);
             Call<Respuesta> call = bd.actualizarPrivilegios(usuario.getId(), admin);
             call.enqueue(new Callback<Respuesta>() {
@@ -147,19 +150,19 @@ public class AdaptadorListaUsuarios extends RecyclerView.Adapter<AdaptadorListaU
                             administrarUsuarios.setUsuarios(usuarios);
                         } else {
                             cambiarPrivilegio(!isChecked);
-                            Snackbar.make(itemView, response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
+                            Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
 
                         }
                     } else {
                         cambiarPrivilegio(!isChecked);
-                        Snackbar.make(itemView, "Error interno del servidor, Reintente", Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Respuesta> call, Throwable t) {
                     cambiarPrivilegio(!isChecked);
-                    Snackbar.make(itemView, "Error de conexión con el servidor: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
+                    Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -202,7 +205,7 @@ public class AdaptadorListaUsuarios extends RecyclerView.Adapter<AdaptadorListaU
                             administrarUsuarios.setUsuarios(usuarios);
                         }
                     } else {
-                        Snackbar.make(itemView, "Error interno del servidor, Reintente", Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -210,7 +213,7 @@ public class AdaptadorListaUsuarios extends RecyclerView.Adapter<AdaptadorListaU
                 public void onFailure(Call<Respuesta> call, Throwable t) {
                     progressBarEliminar.setVisibility(View.GONE);
                     btnEliminar.setVisibility(View.VISIBLE);
-                    Snackbar.make(itemView, "Error de conexión con el servidor: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
+                    Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                 }
             });
         }

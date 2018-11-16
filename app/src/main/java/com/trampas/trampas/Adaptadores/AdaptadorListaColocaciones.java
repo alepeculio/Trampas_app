@@ -3,6 +3,7 @@ package com.trampas.trampas.Adaptadores;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -256,7 +257,7 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
                 hMax = Float.valueOf(etHumMax.getText().toString().trim());
                 hProm = Float.valueOf(etHumProm.getText().toString().trim());
             } catch (Exception e) {
-                Toast.makeText(mContext, "Datos incorrectos, verifique.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.datos_incorrectos, Toast.LENGTH_SHORT).show();
                 setCargando(false);
                 return;
             }
@@ -270,20 +271,20 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
                     setCargando(false);
                     if (response.body() != null) {
                         if (response.body().getCodigo().equals("1")) {
-                            Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                            Snackbar.make(itemView, response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
                             setEditable(false);
                         } else {
                             Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(mContext, "Error interno del servidor, reintente.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Respuesta> call, Throwable t) {
                     setCargando(false);
-                    Toast.makeText(mContext, "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -307,60 +308,6 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
             @SuppressLint("SimpleDateFormat") SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
             return convetDateFormat.format(date);
         }
-
-       /* public void colocar(final Trampa trampa, final int posicion) {
-            if (lat != 0 && lon != 0) {
-                BDInterface bd = BDCliente.getClient().create(BDInterface.class);
-                Call<Respuesta> call = bd.colocarTrampa(lat, lon, trampa.getId(), usuario.getId());
-                call.enqueue(new Callback<Respuesta>() {
-                    @Override
-                    public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {
-                        if (response.body() != null) {
-                            if (!response.body().getCodigo().equals("0")) {
-                                //cargando(false);
-
-                                trampas.remove(trampa);
-                                notifyItemRemoved(posicion);
-
-                                final String codigo = response.body().getCodigo();
-                                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                                builder.setTitle("Trampa colocada");
-                                builder.setMessage("¿Quiere ver su ubicación en el mapa?");
-
-                                builder.setPositiveButton("Continuar", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        mpi.irAlMapa(codigo);
-                                    }
-                                });
-
-                                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                });
-
-                                AlertDialog alertDialog = builder.create();
-                                alertDialog.show();
-                            } else {
-                                Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
-                                //cargando(false);
-                            }
-                        } else {
-                            Toast.makeText(mContext, "Error interno del servidor, reintente.", Toast.LENGTH_SHORT).show();
-                            //cargando(false);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Respuesta> call, Throwable t) {
-                        Toast.makeText(mContext, "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        // cargando(false);
-                    }
-                });
-            }
-        }*/
 
     }
 

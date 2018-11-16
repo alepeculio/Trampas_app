@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,6 +25,8 @@ import com.google.gson.Gson;
 import com.trampas.trampas.Adaptadores.MostrarTrampasColocadasInterface;
 import com.trampas.trampas.Clases.Usuario;
 
+import java.util.Objects;
+
 public class MenuPrincipal extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MostrarTrampasColocadasInterface {
     Usuario usuario = null;
     String idColocacionCreada;
@@ -36,15 +39,15 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         super.onCreate(savedInstanceState);
         if (verificarLogin()) {
             setContentView(R.layout.activity_menu_principal);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar toolbar = findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
 
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
             drawer.addDrawerListener(toggle);
             toggle.syncState();
 
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            NavigationView navigationView = findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
 
 
@@ -76,7 +79,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         SharedPreferences sp = getSharedPreferences("usuario_guardado", MODE_PRIVATE);
         SharedPreferences.Editor ed = sp.edit();
         ed.clear();
-        ed.commit();
+        ed.apply();
 
         borrarOpcionSeleccionada();
 
@@ -86,7 +89,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
     }
 
     private void cargarOpcionSeleccionada() {
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
 
         if (usuario.getAdmin() == 3) {
             navigationView.getMenu().findItem(R.id.nav_mostrar_exitentes).setVisible(false);
@@ -121,27 +124,27 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
     }
 
     private void guardarOpcionSeleccionada(int opcion) {
-        SharedPreferences sp = getSharedPreferences("opcion_seleccionada", MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences(getString(R.string.opcion_menu), MODE_PRIVATE);
         SharedPreferences.Editor et = sp.edit();
         et.putString("opcion", String.valueOf(opcion));
         et.apply();
     }
 
     private int obtenerOpcionSeleccionada() {
-        SharedPreferences sp = getSharedPreferences("opcion_seleccionada", MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences(getString(R.string.opcion_menu), MODE_PRIVATE);
         return Integer.valueOf(sp.getString("opcion", null));
     }
 
     private void borrarOpcionSeleccionada() {
-        SharedPreferences sp = getSharedPreferences("opcion_seleccionada", MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences(getString(R.string.opcion_menu), MODE_PRIVATE);
         SharedPreferences.Editor ed = sp.edit();
         ed.clear();
-        ed.commit();
+        ed.apply();
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -151,13 +154,13 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            if (drawer.isDrawerOpen(Gravity.LEFT)) {
+            if (drawer.isDrawerOpen(Gravity.START)) {
                 this.finishAffinity();
             } else {
-                Toast.makeText(this, "Precione nuevamente para salir", Toast.LENGTH_SHORT).show();
-                drawer.openDrawer(Gravity.LEFT);
+                Toast.makeText(this, R.string.mensaje_salir, Toast.LENGTH_SHORT).show();
+                drawer.openDrawer(Gravity.START);
                 return false;
             }
         }
@@ -177,7 +180,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         guardarOpcionSeleccionada(id);
         Fragment fragment = null;
@@ -188,18 +191,18 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
                 fragment = new ColocarTrampa();
                 ((ColocarTrampa) fragment).setUsuario(usuario);
                 fragmentTransaction = true;
-                getSupportActionBar().setTitle("Colocar trampa");
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Colocar trampa");
                 break;
             case R.id.nav_extraer:
                 fragment = new ExtraerTrampa();
                 fragmentTransaction = true;
-                getSupportActionBar().setTitle("Extraer trampa");
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Extraer trampa");
                 break;
             case R.id.nav_mostrar_colocadas:
                 fragment = new MostrarTrampasColocadas();
                 fragmentTransaction = true;
                 ((MostrarTrampasColocadas) fragment).setUsuario(usuario);
-                getSupportActionBar().setTitle("Trampas colocadas");
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Trampas colocadas");
                 if (idColocacionCreada != null) {
                     ((MostrarTrampasColocadas) fragment).setIdColocacionCreada(idColocacionCreada);
                     idColocacionCreada = null;
@@ -208,19 +211,19 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
             case R.id.nav_mostrar_exitentes:
                 fragment = new MostrarTrampasExistentes();
                 fragmentTransaction = true;
-                getSupportActionBar().setTitle("Trampas existentes");
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Trampas existentes");
                 ((MostrarTrampasExistentes) fragment).setUsuario(usuario);
                 break;
             case R.id.nav_perfil:
                 fragment = new Perfil();
                 fragmentTransaction = true;
-                getSupportActionBar().setTitle("Mi perfil");
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Mi perfil");
                 ((Perfil) fragment).setUsuario(usuario);
                 break;
             case R.id.nav_administrar_usuarios:
                 fragment = new AdministrarUsuarios();
                 fragmentTransaction = true;
-                getSupportActionBar().setTitle("Administración usuarios");
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Administración usuarios");
                 ((AdministrarUsuarios) fragment).setUsuario(usuario);
                 break;
             case R.id.nav_cerrar_sesion:
@@ -238,7 +241,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -246,7 +249,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
     @Override
     public void irAlMapa(String idColocacion) {
         idColocacionCreada = idColocacion;
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_mostrar_colocadas);
         onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_mostrar_colocadas));
     }

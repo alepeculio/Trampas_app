@@ -160,14 +160,14 @@ public class AdaptadorListaTrampasColocar extends RecyclerView.Adapter<Adaptador
                             //cargando(false);
                         }
                     } else {
-                        Toast.makeText(mContext, "Error interno del servidor, reintente.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                         //cargando(false);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Respuesta> call, Throwable t) {
-                    Toast.makeText(mContext, "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                     // cargando(false);
                 }
             });

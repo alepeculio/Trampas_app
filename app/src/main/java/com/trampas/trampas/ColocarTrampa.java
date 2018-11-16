@@ -116,7 +116,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
                 if (ubicacionActual == null && provider.equals("gps")) {
-                    tvProgressBar.setText("Obteniendo ubicación por GPS...");
+                    tvProgressBar.setText(R.string.obteniendo_ubicacion_gps);
                     llProgressBar.setVisibility(View.VISIBLE);
                 }
             }
@@ -124,7 +124,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
             @Override
             public void onProviderEnabled(String provider) {
                 if (ubicacionActual == null && provider.equals("gps")) {
-                    tvProgressBar.setText("Obteniendo ubicación por GPS...");
+                    tvProgressBar.setText(R.string.obteniendo_ubicacion_gps);
                     llProgressBar.setVisibility(View.VISIBLE);
                 }
             }
@@ -143,7 +143,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
                 if (ubicacionActual == null && provider.equals("network")) {
-                    tvProgressBar.setText("Obteniendo ubicación por la red...");
+                    tvProgressBar.setText(R.string.obteniendo_ubicacion_red);
                     llProgressBar.setVisibility(View.VISIBLE);
                 }
             }
@@ -151,7 +151,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
             @Override
             public void onProviderEnabled(String provider) {
                 if (ubicacionActual == null && provider.equals("network")) {
-                    tvProgressBar.setText("Obteniendo ubicación por la red...");
+                    tvProgressBar.setText(R.string.obteniendo_ubicacion_red);
                     llProgressBar.setVisibility(View.VISIBLE);
                 }
             }
@@ -319,7 +319,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
                     trampas = null;
                     filtrarTrampas();
                     if (getActivity() != null) {
-                        Toast.makeText(getActivity(), "Error interno del servidor, Reintente", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -330,7 +330,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
                 trampas = null;
                 filtrarTrampas();
                 if (getActivity() != null) {
-                    Toast.makeText(getActivity(), "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                 }
             }
         });
