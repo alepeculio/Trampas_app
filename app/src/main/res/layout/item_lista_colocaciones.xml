@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/item_lista_colocaciones"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="5dp"
@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:text="Detalles:"
+            android:text="@string/detalles"
             android:textAlignment="center"
             android:textColor="@color/cardview_dark_background"
             android:textSize="20sp" />
@@ -42,7 +42,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0"
                 android:gravity="center"
-                android:text="Fecha de inicio:"
+                android:text="@string/fecha_de_inicio"
                 android:textSize="15sp" />
 
             <EditText
@@ -50,7 +50,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="right"
+                android:gravity="end"
+                android:inputType="text"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="15sp" />
         </LinearLayout>
@@ -67,7 +68,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0"
                 android:gravity="center"
-                android:text="Fecha de Fin:"
+                android:text="@string/fecha_de_fin"
                 android:textSize="15sp" />
 
             <EditText
@@ -75,13 +76,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="right"
+                android:gravity="end"
+                android:inputType="text"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llLat"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginBottom="5dp"
@@ -93,7 +94,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0"
                 android:gravity="center"
-                android:text="Latitud:"
+                android:text="@string/latitud"
                 android:textSize="15sp" />
 
             <EditText
@@ -101,13 +102,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="right"
+                android:gravity="end"
+                android:inputType="text"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llLon"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginBottom="5dp"
@@ -118,7 +119,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0"
                 android:gravity="center"
-                android:text="Longitud:"
+                android:text="@string/longitud"
                 android:textSize="15sp" />
 
             <EditText
@@ -126,13 +127,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="right"
+                android:gravity="end"
+                android:inputType="text"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llTempMin"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginBottom="5dp"
@@ -143,7 +144,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0"
                 android:gravity="center"
-                android:text="Temperatura mínima:"
+                android:text="@string/temperatura_minima"
                 android:textSize="15sp" />
 
             <EditText
@@ -151,18 +152,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="right"
+                android:gravity="end"
+                android:inputType="text"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="15sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="°C" />
+                android:text="@string/c" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llTempMax"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginBottom="5dp"
@@ -173,7 +174,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0"
                 android:gravity="center"
-                android:text="Temperatura máxima:"
+                android:text="@string/temperatura_maxima"
                 android:textSize="15sp" />
 
             <EditText
@@ -181,14 +182,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="right"
+                android:gravity="end"
+                android:inputType="text"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="15sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="°C" />
+                android:text="@string/c" />
         </LinearLayout>
 
         <LinearLayout
@@ -203,7 +205,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0"
                 android:gravity="center"
-                android:text="Promedio de temperatura:"
+                android:text="@string/promedio_de_temperatura"
                 android:textSize="15sp" />
 
             <EditText
@@ -211,18 +213,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="right"
+                android:gravity="end"
+                android:inputType="text"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="15sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="°C" />
+                android:text="@string/c" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llHumMin"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginBottom="5dp"
@@ -233,7 +235,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0"
                 android:gravity="center"
-                android:text="Humedad mínima:"
+                android:text="@string/humedad_minima"
                 android:textSize="15sp" />
 
             <EditText
@@ -241,18 +243,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="right"
+                android:gravity="end"
+                android:inputType="text"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="15sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="%" />
+                android:text="@string/porcentaje" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llHumMax"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginBottom="5dp"
@@ -263,7 +265,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0"
                 android:gravity="center"
-                android:text="Humedad máxima:"
+                android:text="@string/humedad_maxima"
                 android:textSize="15sp" />
 
             <EditText
@@ -271,14 +273,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="right"
+                android:gravity="end"
+                android:inputType="text"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="15sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="%" />
+                android:text="@string/porcentaje" />
         </LinearLayout>
 
         <LinearLayout
@@ -293,7 +296,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0"
                 android:gravity="center"
-                android:text="Promedio de humedad:"
+                android:text="@string/promedio_de_humedad"
                 android:textSize="15sp" />
 
             <EditText
@@ -301,18 +304,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="right"
+                android:gravity="end"
+                android:inputType="text"
                 android:textColor="@color/cardview_dark_background"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:ignore="Autofill" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="%" />
+                android:text="@string/porcentaje" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llLeishmaniasis"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -322,15 +326,16 @@
                 android:id="@+id/cbLeishmaniasis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:text="Leishmaniasis detectada" />
+                android:layout_gravity="end"
+                android:text="@string/leishmaniasis_detectada" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="right">
+            android:layout_marginTop="5dp"
+            android:baselineAligned="false"
+            android:gravity="end">
 
             <LinearLayout
                 android:id="@+id/llProgressBar"
@@ -348,7 +353,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Actualizando datos..."
+                    android:text="@string/actualizando_datos"
                     android:textColor="@color/cardview_dark_background" />
             </LinearLayout>
 
@@ -356,7 +361,7 @@
                 android:id="@+id/llEditar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
                 android:background="@drawable/fondo_oscuro_sombra"
                 android:padding="5dp"
                 android:visibility="visible">
@@ -370,9 +375,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginEnd="5dp"
                     android:gravity="center"
-                    android:text="Editar"
+                    android:text="@string/editar"
                     android:textColor="#FFF"
                     android:textSize="16sp" />
             </LinearLayout>
@@ -387,7 +392,7 @@
                     android:id="@+id/llCancelar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/fondo_oscuro_sombra"
                     android:padding="5dp">
 
@@ -403,7 +408,7 @@
                     android:id="@+id/llGuardar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
                     android:background="@drawable/fondo_oscuro_sombra"
                     android:padding="5dp">
 

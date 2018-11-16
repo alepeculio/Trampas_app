@@ -11,16 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.trampas.trampas.AdministrarUsuarios;
 import com.trampas.trampas.BD.BDCliente;
 import com.trampas.trampas.BD.BDInterface;
 import com.trampas.trampas.BD.Respuesta;
-import com.trampas.trampas.Clases.Trampa;
 import com.trampas.trampas.Clases.Usuario;
 import com.trampas.trampas.R;
 

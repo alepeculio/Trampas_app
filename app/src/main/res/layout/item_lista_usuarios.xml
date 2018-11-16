@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/item_lista_usuarios"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="5dp"
@@ -20,14 +20,15 @@
         android:paddingLeft="5dp"
         android:paddingTop="5dp"
         android:paddingRight="5dp"
-        android:paddingBottom="5dp">
+        android:paddingBottom="5dp"
+        android:baselineAligned="false">
 
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center|left"
+            android:gravity="center|start"
             android:orientation="vertical">
 
             <TextView
@@ -35,15 +36,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
                 android:gravity="center"
-                android:text="Nombre Apellido"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/tvCorreo"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ejemplo@gmail.com" />
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
         <LinearLayout
@@ -56,7 +55,7 @@
                 android:id="@+id/tvPrivilegio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Usuario" />
+                android:text="@string/usuario" />
 
             <android.support.v7.widget.SwitchCompat
                 android:id="@+id/swNivelPrivilegio"
@@ -74,7 +73,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/fondo_rojo"
-                android:gravity="center">
+                android:gravity="center"
+                tools:ignore="UselessParent">
 
                 <ProgressBar
                     android:id="@+id/progressBarEliminar"

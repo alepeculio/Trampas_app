@@ -2,7 +2,6 @@ package com.trampas.trampas.BD;
 
 import com.google.gson.annotations.SerializedName;
 import com.trampas.trampas.Clases.Colocacion;
-import com.trampas.trampas.Clases.Trampa;
 
 import java.util.List;
 

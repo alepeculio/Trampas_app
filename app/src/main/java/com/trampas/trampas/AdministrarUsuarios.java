@@ -21,13 +21,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.trampas.trampas.Adaptadores.AdaptadorListaTrampas;
 import com.trampas.trampas.Adaptadores.AdaptadorListaUsuarios;
 import com.trampas.trampas.BD.BDCliente;
 import com.trampas.trampas.BD.BDInterface;
-import com.trampas.trampas.BD.RespuestaTrampas;
 import com.trampas.trampas.BD.RespuestaUsuarios;
-import com.trampas.trampas.Clases.Trampa;
 import com.trampas.trampas.Clases.Usuario;
 
 import java.util.ArrayList;

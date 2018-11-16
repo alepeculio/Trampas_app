@@ -1,10 +1,6 @@
 package com.trampas.trampas.Adaptadores;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;

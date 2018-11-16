@@ -29,7 +29,7 @@
                 android:id="@+id/etNombreError"
                 android:layout_width="match_parent"
                 android:layout_height="90dp"
-                android:hint="Nombre"
+                android:hint="@string/nombre"
                 android:textColorHint="@color/colorBlanco"
                 app:errorEnabled="true"
                 app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
@@ -39,14 +39,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
-                    android:textColor="@color/colorBlanco" />
+                    android:textColor="@color/colorBlanco"
+                    tools:ignore="Autofill" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/etApellidoError"
                 android:layout_width="match_parent"
                 android:layout_height="90dp"
-                android:hint="Apellido"
+                android:hint="@string/apellido"
                 android:textColorHint="@color/colorBlanco"
                 app:errorEnabled="true"
                 app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
@@ -63,7 +64,7 @@
                 android:id="@+id/etCorreoError"
                 android:layout_width="match_parent"
                 android:layout_height="90dp"
-                android:hint="Correo"
+                android:hint="@string/correo"
                 android:textColorHint="@color/colorBlanco"
                 app:errorEnabled="true"
                 app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
@@ -80,7 +81,7 @@
                 android:id="@+id/etContraseniaError"
                 android:layout_width="match_parent"
                 android:layout_height="90dp"
-                android:hint="Contraseña"
+                android:hint="@string/contrasenia"
                 android:textColorHint="@color/colorBlanco"
                 app:errorEnabled="true"
                 app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
@@ -110,7 +111,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Nivel de privilegio"
+                        android:text="@string/nivel_de_privilegio"
                         android:textColor="@color/colorBlanco"
                         android:textSize="18sp" />
 
@@ -118,7 +119,7 @@
                         android:id="@+id/tvNivelPrivilegio"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Usuario"
+                        android:text="@string/usuario"
                         android:textColor="#CCC" />
                 </LinearLayout>
 
@@ -139,7 +140,8 @@
                     android:layout_width="120dp"
                     android:layout_height="35dp"
                     android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    tools:ignore="UselessParent">
 
                     <ProgressBar
                         android:id="@+id/progressBar"
@@ -156,7 +158,7 @@
                         android:layout_height="match_parent"
                         android:background="@drawable/fondo_claro"
                         android:padding="10dp"
-                        android:text="Registrarse" />
+                        android:text="@string/registrarse" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

@@ -1,16 +1,14 @@
 package com.trampas.trampas;
 
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.trampas.trampas.Adaptadores.AdaptadorListaColocaciones;
-import com.trampas.trampas.Adaptadores.AdaptadorListaTrampasColocar;
 import com.trampas.trampas.BD.BDCliente;
 import com.trampas.trampas.BD.BDInterface;
 import com.trampas.trampas.BD.RespuestaColocaciones;

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 import com.trampas.trampas.BD.BDCliente;
 import com.trampas.trampas.BD.BDInterface;
 import com.trampas.trampas.BD.Respuesta;
-import com.trampas.trampas.BD.RespuestaTrampas;
 import com.trampas.trampas.Clases.Colocacion;
 import com.trampas.trampas.Clases.Trampa;
 import com.trampas.trampas.Clases.Usuario;
@@ -111,6 +109,8 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
         LinearLayout llTempProm;
         @BindView(R.id.llHumProm)
         LinearLayout llHumProm;
+        @BindView(R.id.llBtnIrAlMapa)
+        LinearLayout llBtnIrAlMapa;
         @BindView(R.id.btnIrAlMapa)
         Button btnIrAlMapa;
         @BindView(R.id.btnDatosTrampa)
@@ -202,7 +202,7 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
                     tvColocadaActualmente.setText("Actualmente colocada");
                     tvColocadaActualmente.setTextColor(Color.GREEN);
                     tvDetalles.setText("Información:");
-                    btnIrAlMapa.setVisibility(View.VISIBLE);
+                    llBtnIrAlMapa.setVisibility(View.VISIBLE);
                     final String codigo = String.valueOf(c.getId());
                     btnIrAlMapa.setOnClickListener(new View.OnClickListener() {
                         @Override

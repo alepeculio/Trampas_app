@@ -27,7 +27,7 @@
                 android:id="@+id/tvNombre"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Trampa1"
+                android:text="@string/nombre"
                 android:textColor="#000"
                 android:textSize="25sp" />
 
@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
-                android:text="Temperatura"
+                android:text="@string/temperatura"
                 android:textSize="17sp" />
 
             <com.jjoe64.graphview.GraphView
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
-                android:text="Humedad"
+                android:text="@string/humedad"
                 android:textSize="17sp" />
 
             <com.jjoe64.graphview.GraphView

@@ -35,7 +35,7 @@
                     android:layout_width="90dp"
                     android:layout_height="90dp"
                     android:background="@mipmap/ic_launcher_2_round"
-                    android:contentDescription="imagen usuario" />
+                    android:contentDescription="@string/imagen_del_usuario" />
             </LinearLayout>
 
             <android.support.v7.widget.CardView
@@ -80,19 +80,20 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            tools:ignore="UselessParent">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Nivel de usuario:" />
+                                android:text="@string/nivel_de_privilegio" />
 
                             <TextView
                                 android:id="@+id/tvNivelUsuario"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:gravity="right" />
+                                android:gravity="end" />
                         </LinearLayout>
 
                         <!--  <LinearLayout

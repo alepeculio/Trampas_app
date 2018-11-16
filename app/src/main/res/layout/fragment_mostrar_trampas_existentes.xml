@@ -44,7 +44,7 @@
             android:id="@+id/tvNoHayTrampas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="No hay trampas"
+            android:text="@string/no_hay_trampas"
             android:textAlignment="center"
             android:textSize="30sp" />
     </LinearLayout>

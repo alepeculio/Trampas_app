@@ -21,7 +21,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,7 +31,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.trampas.trampas.Adaptadores.AdaptadorListaTrampasColocar;
 import com.trampas.trampas.Adaptadores.LocalizacionInterface;
 import com.trampas.trampas.Adaptadores.MostrarTrampasColocadasInterface;

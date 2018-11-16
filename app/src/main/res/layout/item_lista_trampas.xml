@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item_lista_trampas"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -25,11 +26,11 @@
 
             <TextView
                 android:id="@+id/nombreTrampa"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:text="Nombre"
+                android:text="@string/nombre"
                 android:textColor="@color/colorBlanco"
                 android:textSize="25sp" />
 
@@ -57,7 +58,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="20dp"
                     android:layout_weight="0"
-                    android:text="Id:"
+                    android:text="@string/id"
                     android:textColor="@color/colorBlanco"
                     android:textSize="15sp" />
 
@@ -67,21 +68,21 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
-                    android:text="1"
                     android:textColor="@color/colorBlanco"
                     android:textSize="15sp" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
+                android:layout_marginBottom="10dp"
+                android:baselineAligned="false"
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
                     android:layout_weight="1">
@@ -90,9 +91,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="0"
-                        android:text="Mac:"
+                        android:text="@string/mac"
                         android:textColor="@color/colorBlanco"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        tools:ignore="NestedWeights" />
 
                     <TextView
                         android:id="@+id/macTrampa"
@@ -106,31 +108,23 @@
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/fondo_rojo"
+                    android:gravity="center">
 
                     <ProgressBar
                         android:id="@+id/progressBarEliminar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="20dp"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:background="@drawable/fondo_rojo"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
                         android:indeterminateTint="@color/colorBlanco"
                         android:visibility="gone" />
 
                     <Button
                         android:id="@+id/btnEliminarTrampa"
-                        android:layout_width="wrap_content"
-                        android:layout_height="20dp"
-                        android:layout_margin="0dp"
-                        android:background="@drawable/fondo_rojo"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:text="Eliminar"
-                        android:textColor="@color/colorBlanco"
-                        android:textSize="10sp"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:background="@drawable/ic_borrar"
                         android:visibility="visible" />
                 </LinearLayout>
             </LinearLayout>
@@ -149,16 +143,23 @@
                     android:layout_marginStart="10dp"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="Jamas colocada anteriormente"
+                    android:text="@string/jamas_colocada_anteriormente"
                     android:textColor="@color/colorBlanco"
                     android:textSize="15sp" />
 
-                <Button
-                    android:id="@+id/btnIrAlMapa"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/ic_localizar_trampa"
-                    android:visibility="gone" />
+                <LinearLayout
+                    android:id="@+id/llBtnIrAlMapa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/fondo_claro"
+                    android:visibility="gone">
+
+                    <Button
+                        android:id="@+id/btnIrAlMapa"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/ic_localizar_trampa" />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -176,7 +177,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:text="Resumen:"
+                    android:text="@string/resumen"
                     android:textColor="@color/colorBlanco"
                     android:textSize="20sp" />
 
@@ -191,7 +192,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="0"
-                        android:text="Inicio:"
+                        android:text="@string/inicio"
                         android:textColor="@color/colorBlanco"
                         android:textSize="15sp" />
 
@@ -216,7 +217,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="0"
-                        android:text="Fin:"
+                        android:text="@string/fin"
                         android:textColor="@color/colorBlanco"
                         android:textSize="15sp" />
 
@@ -242,7 +243,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="0"
-                        android:text="Promedio de temperatura:"
+                        android:text="@string/promedio_de_temperatura"
                         android:textColor="@color/colorBlanco"
                         android:textSize="15sp" />
 
@@ -267,7 +268,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="0"
-                        android:text="Promedio de humedad:"
+                        android:text="@string/promedio_de_humedad"
                         android:textColor="@color/colorBlanco"
                         android:textSize="15sp" />
 
@@ -296,10 +297,11 @@
                         android:background="@drawable/fondo_claro"
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp"
-                        android:text="Mas información"
+                        android:text="@string/mas_informacion"
                         android:textColor="@color/cardview_dark_background"
                         android:textSize="10sp"
-                        android:visibility="visible" />
+                        android:visibility="visible"
+                        tools:ignore="SmallSp" />
 
                 </LinearLayout>
 

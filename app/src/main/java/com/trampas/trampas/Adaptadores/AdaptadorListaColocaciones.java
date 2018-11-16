@@ -1,5 +1,6 @@
 package com.trampas.trampas.Adaptadores;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -112,7 +113,7 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
         }
 
         public void bindColocacion(final Colocacion colocacion) {
-            tvDetalles.setText("Detalles de colocación: " + String.valueOf(colocacion.getId()));
+            tvDetalles.setText(mContext.getString(R.string.detalles_de_colocacion) + String.valueOf(colocacion.getId()));
             etFechaInicio.setText(convertFormat(colocacion.getFechaInicio()));
             etFechaFin.setText(convertFormat(colocacion.getFechaFin()));
             etLat.setText(String.valueOf(colocacion.getLat()));
@@ -200,7 +201,6 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
                 llEditarCampos.setVisibility(View.VISIBLE);
                 llEditar.setVisibility(View.GONE);
             } else {
-                Log.d("setEditable", "entro");
                 llEditarCampos.setVisibility(View.GONE);
                 llEditar.setVisibility(View.VISIBLE);
             }
@@ -243,8 +243,8 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
             try {
                 lat = Double.valueOf(etLat.getText().toString().trim());
                 lon = Double.valueOf(etLon.getText().toString().trim());
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 Date fI = sdf.parse(etFechaInicio.getText().toString().trim());
                 fInicio = simpleDateFormat.format(fI);
                 Date fF = sdf.parse(etFechaFin.getText().toString().trim());
@@ -293,7 +293,7 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
             if (inputDate == null)
                 return "";
 
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             Date date = null;
             try {
                 date = simpleDateFormat.parse(inputDate);
@@ -304,7 +304,7 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
             if (date == null)
                 return "";
 
-            SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
             return convetDateFormat.format(date);
         }
 

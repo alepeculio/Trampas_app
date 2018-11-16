@@ -28,11 +28,10 @@
             android:padding="10dp">
 
             <TextView
-                android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:text="Iniciar sesión"
+                android:text="@string/iniciar_sesion"
                 android:textAlignment="center"
                 android:textColor="@color/colorBlanco"
                 android:textSize="15pt" />
@@ -41,7 +40,7 @@
                 android:id="@+id/etCorreoError"
                 android:layout_width="match_parent"
                 android:layout_height="90dp"
-                android:hint="Correo"
+                android:hint="@string/correo"
                 android:textColorHint="@color/colorBlanco"
                 app:errorEnabled="true"
                 app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
@@ -51,7 +50,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
-                    android:textColor="@color/colorBlanco" />
+                    android:textColor="@color/colorBlanco"
+                    tools:ignore="Autofill" />
             </android.support.design.widget.TextInputLayout>
 
 
@@ -59,7 +59,7 @@
                 android:id="@+id/etContraseniaError"
                 android:layout_width="match_parent"
                 android:layout_height="90dp"
-                android:hint="Contraseña"
+                android:hint="@string/contrasenia"
                 android:textColorHint="@color/colorBlanco"
                 app:errorEnabled="true"
                 app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
@@ -70,7 +70,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:textColor="@color/colorBlanco" />
+                    android:textColor="@color/colorBlanco"
+                    tools:ignore="Autofill" />
             </android.support.design.widget.TextInputLayout>
 
             <LinearLayout
@@ -87,7 +88,7 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/fondo_claro"
                     android:padding="5dp"
-                    android:text="Iniciar sesión"
+                    android:text="@string/iniciar_sesion"
                     android:textColor="@color/cardview_dark_background"
                     android:visibility="visible" />
 
@@ -114,7 +115,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:background="@drawable/fondo_celeste"
-                    android:text="Registrarse"
+                    android:text="@string/registrarse"
                     android:textColor="@color/colorBlanco"
                     android:textSize="12sp" />
             </LinearLayout>

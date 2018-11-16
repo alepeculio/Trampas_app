@@ -10,19 +10,19 @@
                 <item
                     android:id="@+id/nav_mostrar_exitentes"
                     android:icon="@drawable/ic_lista"
-                    android:title="Ver existentes" />
+                    android:title="@string/ver_existentes" />
                 <item
                     android:id="@+id/nav_mostrar_colocadas"
                     android:icon="@drawable/ic_mapa"
-                    android:title="Ver colocadas" />
+                    android:title="@string/ver_colocadas" />
                 <item
                     android:id="@+id/nav_colocar"
                     android:icon="@drawable/ic_colorar_trampa"
-                    android:title="Colocar" />
+                    android:title="@string/colocar" />
                 <item
                     android:id="@+id/nav_extraer"
                     android:icon="@drawable/ic_extraer_trampa"
-                    android:title="Extraer" />
+                    android:title="@string/extraer" />
             </group>
         </menu>
     </item>
@@ -43,9 +43,7 @@
     </item>
 
 
-    <group
-        android:id="@+id/group_cerrar_sesion"
-        android:checkableBehavior="none">
+    <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_cerrar_sesion"
             android:icon="@drawable/ic_cerrar_sesion"
