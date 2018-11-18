@@ -116,4 +116,12 @@ public interface BDInterface {
             @Field("hprom") float hProm,
             @Field("leishmaniasis") int leishmaniasis
     );
+
+    @FormUrlEncoded
+    @POST("cambiarContrasenia")
+    Call<Respuesta> cambiarContrasenia(
+            @Field("id") int id,
+            @Field("contrasenia_actual") String contraseniaActual,
+            @Field("contrasenia_nueva") String contraseniaNueva
+    );
 }

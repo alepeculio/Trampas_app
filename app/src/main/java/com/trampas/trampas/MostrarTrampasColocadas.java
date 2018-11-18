@@ -91,6 +91,9 @@ public class MostrarTrampasColocadas extends Fragment {
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
+    @BindView(R.id.btnMasInformacion)
+    LinearLayout btnMasInformacion;
+
     Calendar calendario = Calendar.getInstance();
 
     public MostrarTrampasColocadas() {
@@ -356,6 +359,35 @@ public class MostrarTrampasColocadas extends Fragment {
                         marcador = marker;
                 }
             });
+
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(final Marker marker) {
+                    if (usuario.getAdmin() == 1) {
+                        btnMasInformacion.setVisibility(View.VISIBLE);
+                        btnMasInformacion.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                for (Colocacion c : colocaciones)
+                                    if (c.getId() == (int) marker.getTag()) {
+                                        Intent intent = new Intent(getActivity(), DatosTrampa.class);
+                                        intent.putExtra("trampa", c.getTrampa());
+                                        getActivity().startActivity(intent);
+                                    }
+                            }
+                        });
+                    }
+                    return false;
+                }
+            });
+
+            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+                    btnMasInformacion.setVisibility(View.GONE);
+                }
+            });
+
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
