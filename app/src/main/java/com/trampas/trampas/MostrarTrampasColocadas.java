@@ -7,6 +7,9 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,6 +34,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -275,6 +279,14 @@ public class MostrarTrampasColocadas extends Fragment {
 
     }
 
+    private BitmapDescriptor getIcon(int icono) {
+        //int height = 80;
+        //int width = 80;
+        //BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(icono);
+        //Bitmap bm = Bitmap.createScaledBitmap(bitmapdraw.getBitmap(), width, height, false);
+        return BitmapDescriptorFactory.fromResource(icono); //BitmapDescriptorFactory.fromBitmap(bm);
+    }
+
     private void prepararMapa(List<Colocacion> colocs) {
         if (colocaciones != null) {
             if (marcadores == null)
@@ -285,57 +297,35 @@ public class MostrarTrampasColocadas extends Fragment {
 
             marcadores.clear();
 
-            if (colocs != null) {
-                for (Colocacion c : colocs) {
-                    Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(c.getLat(), c.getLon())).title(c.getTrampa().getNombre()));
-                    if (c.getFechaFin() == null) {
-                        if (c.getUsuario() == usuario.getId()) {
-                            m.setDraggable(true);
-                            m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                            m.setSnippet(getString(R.string.mensaje_editar_ubicacion));
-                        } else {
-                            m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                            m.setSnippet("Actualmente colocada");
-                        }
-                    } else {
-                        m.setSnippet("Ver gráfica");
-                        m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                    }
-                    m.setTag(c.getId());
-                    marcadores.add(m);
+            if (colocs == null) {
+                colocs = colocaciones;
+            }
 
-                    if (idColocacionCreada != null) {
-                        if (idColocacionCreada.equals(String.valueOf(c.getId()))) {
-                            marcador = m;
-                        }
+            for (Colocacion c : colocs) {
+                Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(c.getLat(), c.getLon())).title(c.getTrampa().getNombre()));
+                if (c.getFechaFin() == null) {
+                    if (c.getUsuario() == usuario.getId()) {
+                        m.setDraggable(true);
+                        m.setIcon(getIcon(R.mipmap.ic_trampas_fondo_celeste_round));
+                        m.setSnippet(getString(R.string.mensaje_editar_ubicacion));
+                    } else {
+                        m.setIcon(getIcon(R.mipmap.ic_trampas_fondo_celeste_round));
+                        m.setSnippet("Actualmente colocada");
                     }
+                } else {
+                    m.setSnippet("Ver gráfica");
+                    m.setIcon(getIcon(R.mipmap.ic_trampas_fondo_blanco_round));
                 }
-            } else {
-                for (Colocacion c : colocaciones) {
-                    Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(c.getLat(), c.getLon())).title(c.getTrampa().getNombre()));
-                    if (c.getFechaFin() == null) {
-                        if (c.getUsuario() == usuario.getId()) {
-                            m.setDraggable(true);
-                            m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                            m.setSnippet("Arrastre para editar ubicación");
-                        } else {
-                            m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                            m.setSnippet("Actualmente colocada");
-                        }
-                    } else {
-                        m.setSnippet("Ver gráfica");
-                        m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                    }
-                    m.setTag(c.getId());
-                    marcadores.add(m);
+                m.setTag(c.getId());
+                marcadores.add(m);
 
-                    if (idColocacionCreada != null) {
-                        if (idColocacionCreada.equals(String.valueOf(c.getId()))) {
-                            marcador = m;
-                        }
+                if (idColocacionCreada != null) {
+                    if (idColocacionCreada.equals(String.valueOf(c.getId()))) {
+                        marcador = m;
                     }
                 }
             }
+
             if (marcador != null) {
                 marcador.showInfoWindow();
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(marcador.getPosition()));
@@ -433,16 +423,11 @@ public class MostrarTrampasColocadas extends Fragment {
         }
     }
 
-    private void centrarMapa(Double lat, Double lon) {
-        LatLng centrar;
-        if (lat != 0 && lon != 0) {
-            centrar = new LatLng(lat, lon);
-        } else {
-            centrar = new LatLng(-32.315827, -58.065113);
-        }
+    private void centrarMapa(LatLng coordenadas) {
+        if (coordenadas == null)
+            coordenadas = new LatLng(-32.315827, -58.065113); //Coordenadas por defecto
 
-        //mMap.animateCamera(CameraUpdateFactory.zoomTo(12.0f));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(centrar, 12.0f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordenadas, 12.0f));
     }
 
 
@@ -451,18 +436,17 @@ public class MostrarTrampasColocadas extends Fragment {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, SOLICITUD_OBTENER_POSICION_ACTUAL);
         } else {
             mFusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                @SuppressLint("MissingPermission")
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null) {
-                        try {
-                            mMap.setMyLocationEnabled(true);
-                            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                        } catch (SecurityException se) {
-                            se.printStackTrace();
-                        }
-                        centrarMapa(0.0, 0.0);
+                        mMap.setMyLocationEnabled(true);
+                        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                        centrarMapa(new LatLng(location.getLatitude(), location.getLongitude()));
                     } else {
-                        centrarMapa(0.0, 0.0);
+                        centrarMapa(null);
+                        mMap.setMyLocationEnabled(false);
+                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
                         // Toast.makeText(getContext(), "No se pudo obtener su ubicación, compruebe la configuración de localización del dispositivo.", Toast.LENGTH_LONG).show();
                     }
                 }
@@ -478,7 +462,7 @@ public class MostrarTrampasColocadas extends Fragment {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     obtenerLocalizacion();
                 } else {
-                    centrarMapa(0.0, 0.0);
+                    centrarMapa(null);
                 }
             }
         }

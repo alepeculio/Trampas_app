@@ -26,7 +26,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="120dp"
+                android:layout_marginTop="110dp"
                 android:elevation="3dp"
                 android:gravity="center"
                 android:orientation="horizontal">
@@ -42,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="5dp"
-                android:layout_marginTop="165dp"
+                android:layout_marginTop="145dp"
                 android:layout_marginRight="5dp"
                 app:cardCornerRadius="20dp"
                 app:cardUseCompatPadding="true">
@@ -69,18 +69,20 @@
                         android:gravity="center"
                         android:textColor="@color/colorPrimary" />
 
-                    <LinearLayout
+                    <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_marginLeft="30dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginRight="30dp"
+                        android:layout_marginBottom="10dp"
                         android:orientation="vertical">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
+                            app:layout_constraintTop_toTopOf="parent"
                             tools:ignore="UselessParent">
 
                             <TextView
@@ -96,24 +98,73 @@
                                 android:gravity="end" />
                         </LinearLayout>
 
-                        <!--  <LinearLayout
-                              android:layout_width="match_parent"
-                              android:layout_height="wrap_content"
-                              android:orientation="horizontal">
+                        <TextView
+                            android:textSize="16sp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/cambiar_contrasenia"
+                            app:layout_constraintBottom_toTopOf="@id/etContraseniaError" />
 
-                              <TextView
-                                  android:layout_width="wrap_content"
-                                  android:layout_height="wrap_content"
-                                  android:text="Trampas colocadas:" />
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/etContraseniaError"
+                            android:layout_width="match_parent"
+                            android:layout_height="90dp"
+                            android:hint="@string/contrasenia"
+                            android:textColorHint="@color/colorBlanco"
+                            app:errorEnabled="true"
+                            app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
+                            app:layout_constraintBottom_toTopOf="@id/etContraseniaNuevaError"
+                            app:passwordToggleEnabled="true">
 
-                              <TextView
-                                  android:id="@+id/tvTrampasColocadas"
-                                  android:layout_width="0dp"
-                                  android:layout_height="wrap_content"
-                                  android:layout_weight="1"
-                                  android:gravity="right" />
-                          </LinearLayout>-->
-                    </LinearLayout>
+                            <EditText
+                                android:id="@+id/etContrasenia"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textPassword"
+                                android:textColor="@color/colorBlanco" />
+                        </android.support.design.widget.TextInputLayout>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/etContraseniaNuevaError"
+                            android:layout_width="match_parent"
+                            android:layout_height="90dp"
+                            android:hint="@string/contrasenia"
+                            android:textColorHint="@color/colorBlanco"
+                            app:errorEnabled="true"
+                            app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
+                            app:layout_constraintBottom_toTopOf="@id/llBtnCambiar"
+                            app:passwordToggleEnabled="true">
+
+                            <EditText
+                                android:id="@+id/etContraseniaNueva"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textPassword"
+                                android:textColor="@color/colorBlanco" />
+                        </android.support.design.widget.TextInputLayout>
+
+                        <LinearLayout
+                            android:id="@+id/llBtnCambiar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:background="@drawable/fondo_celeste">
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:text="Cambiar"
+                                    android:textColor="@color/colorBlanco" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </android.support.constraint.ConstraintLayout>
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>

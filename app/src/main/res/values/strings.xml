@@ -36,7 +36,6 @@
     <string name="solicitud_de_administrador">Solicitud de administrador</string>
     <string name="no_hay_usuarios">No hay usuarios</string>
     <string name="mensaje_colocar_trampa">Mantenga presionando sobre una trampa para colocarla en su ubicación actual.</string>
-    <string name="obteniendo_su_ubicacion">Obteniendo su ubicacion…</string>
     <string name="trampas_vinculadas">Trampas vinculadas</string>
     <string name="mensaje_extraer_trampa">Seleccione una trampa para obtener sus datos y luego precione el botón de extraer.</string>
     <string name="desde">Desde:</string>
@@ -45,7 +44,6 @@
     <string name="guardar_cambios">Guardar cambios</string>
     <string name="no_hay_trampas">No hay trampas</string>
     <string name="imagen_del_usuario">Imagen del usuario</string>
-    <string name="nivel_de_usuario">Nivel de usuario:</string>
     <string name="detalles">Detalles:</string>
     <string name="fecha_de_inicio">Fecha de inicio:</string>
     <string name="fecha_de_fin">Fecha de Fin:</string>
@@ -90,8 +88,6 @@
     <string name="registro_admin_titulo">Privilegio administrador</string>
     <string name="registro_admin_mensaje">Se requiere una validación para esta opción, mientras permanecerá con privilegios de usuario normal.</string>
     <string name="registro_admin_boton">Entendido</string>
-    <string name="obteniendo_ubicacion_gps">Obteniendo ubicación por GPS…</string>
-    <string name="obteniendo_ubicacion_red">Obteniendo ubicación por la red…</string>
     <string name="cambiando_privilegio">Cambiando…</string>
     <string name="datos_incorrectos">Datos incorrectos, verifique.</string>
     <string name="trampas">Trampas</string>
@@ -100,4 +96,7 @@
     <string name="administrar">Administrar</string>
     <string name="cerrar_sesion">Cerrar sesión</string>
     <string name="datos_recibidos_titulo">Datos recibidos</string>
+    <string name="obteniendo_ubicacion">Obteniendo ubicación…</string>
+    <string name="actualmente_colocada">Actualmente colocada</string>
+    <string name="cambiar_contrasenia">Cambiar contraseña</string>
 </resources>

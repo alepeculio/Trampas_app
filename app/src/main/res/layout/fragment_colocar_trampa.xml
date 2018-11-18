@@ -56,7 +56,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="@string/obteniendo_su_ubicacion"
+                        android:text="@string/obteniendo_ubicacion"
                         android:textColor="#000" />
                 </LinearLayout>
             </LinearLayout>

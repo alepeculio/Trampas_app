@@ -1,18 +1,13 @@
 package com.trampas.trampas;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -21,6 +16,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +27,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.trampas.trampas.Adaptadores.AdaptadorListaTrampasColocar;
 import com.trampas.trampas.Adaptadores.LocalizacionInterface;
 import com.trampas.trampas.Adaptadores.MostrarTrampasColocadasInterface;
@@ -55,9 +63,15 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     List<Trampa> trampas;
     private MostrarTrampasColocadasInterface mpi;
     private AdaptadorListaTrampasColocar adaptadorListaTrampasColocar;
+
     private SearchView searchView = null;
     private SearchView.OnQueryTextListener queryTextListener;
     private String ultimaBusqueda = null;
+
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LocationCallback mLocationCallback;
+    private LocationRequest mLocationRequest;
+    public static final int SOLICITUD_LOCALIZACION = 1;
 
     @BindView(R.id.listaTrampas)
     RecyclerView mRecyclerView;
@@ -77,12 +91,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     @BindView(R.id.tvProgressBar)
     TextView tvProgressBar;
 
-    LocationManager locationManager;
-    LocationListener locationListenerCoarse;
-    LocationListener locationListenerFine;
     Location ubicacionActual = null;
-
-    private boolean ubicacionSolicitada = false;
 
     public ColocarTrampa() {
     }
@@ -104,64 +113,10 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
         View view = inflater.inflate(R.layout.fragment_colocar_trampa, container, false);
         ButterKnife.bind(this, view);
 
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        //Obtener ubicacion actual
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        createLocationRequest();
 
-        locationListenerFine = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                ubicacionActual = location;
-                llProgressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-                if (ubicacionActual == null && provider.equals("gps")) {
-                    tvProgressBar.setText(R.string.obteniendo_ubicacion_gps);
-                    llProgressBar.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-                if (ubicacionActual == null && provider.equals("gps")) {
-                    tvProgressBar.setText(R.string.obteniendo_ubicacion_gps);
-                    llProgressBar.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };
-        locationListenerCoarse = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                ubicacionActual = location;
-                llProgressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-                if (ubicacionActual == null && provider.equals("network")) {
-                    tvProgressBar.setText(R.string.obteniendo_ubicacion_red);
-                    llProgressBar.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-                if (ubicacionActual == null && provider.equals("network")) {
-                    tvProgressBar.setText(R.string.obteniendo_ubicacion_red);
-                    llProgressBar.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };
-
-        iniciarLocalizacion();
         setAdaptadorListaTrampas();
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -173,80 +128,93 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
         return view;
     }
 
-    public void iniciarLocalizacion() {
+    private void createLocationRequest() {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         } else {
-            Location g = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            Location n = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            mLocationRequest = new LocationRequest();
+            mLocationRequest.setInterval(10000);
+            mLocationRequest.setFastestInterval(5000);
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-            if (g != null)
-                ubicacionActual = g;
-            else if (n != null)
-                ubicacionActual = n;
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
+            SettingsClient client = LocationServices.getSettingsClient(getActivity());
+            Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
-            String fineProvider = locationManager.getBestProvider(createFineCriteria(), false);
-            String coarseProvider = locationManager.getBestProvider(createCoarseCriteria(), true);
-
-            if (fineProvider != null) {
-                locationManager.requestLocationUpdates(fineProvider, 0, 0f, locationListenerFine);
-                locationListenerFine.onStatusChanged(fineProvider, 1, null);
-            }
-
-            if (coarseProvider != null) {
-                if (coarseProvider.equals("passive")) {
-                    llProgressBar.setVisibility(View.GONE);
-                    mensajeEncenderUbicacion();
-                    locationManager.requestLocationUpdates("network", 2000, 20f, locationListenerCoarse);
-                } else {
-                    locationManager.requestLocationUpdates(coarseProvider, 2000, 20f, locationListenerCoarse);
-                    locationListenerCoarse.onStatusChanged(coarseProvider, 1, null);
+            task.addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
+                @Override
+                public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                    startLocationUpdates();
                 }
+            });
 
-            }
-
+            task.addOnFailureListener(getActivity(), new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    if (e instanceof ResolvableApiException) {
+                        try {
+                            ResolvableApiException resolvable = (ResolvableApiException) e;
+                            resolvable.startResolutionForResult(getActivity(), SOLICITUD_LOCALIZACION);
+                        } catch (IntentSender.SendIntentException sendEx) {
+                            Log.e("task onFailureListener", sendEx.getMessage());
+                        }
+                    }
+                }
+            });
         }
-
     }
 
-    public static Criteria createFineCriteria() {
-        Criteria c = new Criteria();
-        c.setAccuracy(Criteria.ACCURACY_FINE);
-        c.setAltitudeRequired(false);
-        c.setBearingRequired(false);
-        c.setSpeedRequired(false);
-        c.setCostAllowed(true);
-        c.setPowerRequirement(Criteria.POWER_HIGH);
-        return c;
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SOLICITUD_LOCALIZACION) {
+            startLocationUpdates();
+        }
     }
 
-    public static Criteria createCoarseCriteria() {
-        Criteria c = new Criteria();
-        c.setAccuracy(Criteria.ACCURACY_COARSE);
-        c.setAltitudeRequired(false);
-        c.setBearingRequired(false);
-        c.setSpeedRequired(false);
-        c.setCostAllowed(true);
-        c.setPowerRequirement(Criteria.POWER_HIGH);
-        return c;
-
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            return;
+        } else {
+            mLocationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    if (locationResult == null) {
+                        return;
+                    }
+                    for (Location location : locationResult.getLocations()) {
+                        if (ubicacionActual == null) {
+                            llProgressBar.setVisibility(View.GONE);
+                        }
+                        ubicacionActual = location;
+                        Log.d("Localizacion: ", location.getLatitude() + " " + location.getLongitude());
+                    }
+                }
+            };
+            llProgressBar.setVisibility(View.VISIBLE);
+            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+        }
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if (grantResults.length > 0) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    iniciarLocalizacion();
+                    createLocationRequest();
                 }
             }
         } else {
             Toast.makeText(getActivity(), "Su ubicación es necesaria para colocar la trampa.", Toast.LENGTH_LONG).show();
         }
     }
+
+    private void stopLocationUpdates() {
+        if (mLocationCallback != null)
+            mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+    }
+
 
     public void setAdaptadorListaTrampas() {
         if (adaptadorListaTrampasColocar == null) {
@@ -295,7 +263,6 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
         adaptadorListaTrampasColocar.actualizarTrampas(trampasFinal);
         swipeRefresh.setRefreshing(false);
     }
-
 
     private void cargarTrampas() {
         swipeRefresh.setRefreshing(true);
@@ -382,25 +349,99 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     public void onDetach() {
         super.onDetach();
         mpi = null;
-        locationManager.removeUpdates(locationListenerFine);
-        locationManager.removeUpdates(locationListenerCoarse);
+        stopLocationUpdates();
     }
 
     @Override
     public Location obtenerLocalizacion() {
         if (ubicacionActual == null) {
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                iniciarLocalizacion();
+                createLocationRequest();
             } else if (llProgressBar.getVisibility() == View.VISIBLE) {
                 Toast.makeText(getActivity(), "Estableciendo ubicación, aguarde porfavor.", Toast.LENGTH_SHORT).show();
-            } else {
-                mensajeEncenderUbicacion();
             }
         }
         return ubicacionActual;
     }
 
-    public void mensajeEncenderUbicacion() {
+
+
+
+
+
+
+
+
+    /*Otra manera de obtener la lozalizacion (Sin api de google)*/
+    /*
+    LocationManager locationManager;
+    LocationListener locationListenerCoarse;
+    LocationListener locationListenerFine;
+     */
+
+    /*-----------------------------------------------------------------------------------------*/
+    /*Definir los listener en el oncreateview del fragment*/
+        /*
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        locationListenerFine = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                ubicacionActual = location;
+                llProgressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                if (ubicacionActual == null && provider.equals("gps")) {
+                    tvProgressBar.setText(R.string.obteniendo_ubicacion_gps);
+                    llProgressBar.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+                if (ubicacionActual == null && provider.equals("gps")) {
+                    tvProgressBar.setText(R.string.obteniendo_ubicacion_gps);
+                    llProgressBar.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+            }
+        };
+        locationListenerCoarse = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                ubicacionActual = location;
+                llProgressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                if (ubicacionActual == null && provider.equals("network")) {
+                    tvProgressBar.setText(R.string.obteniendo_ubicacion_red);
+                    llProgressBar.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+                if (ubicacionActual == null && provider.equals("network")) {
+                    tvProgressBar.setText(R.string.obteniendo_ubicacion_red);
+                    llProgressBar.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+            }
+        };
+        iniciarLocalizacion();*/
+
+    /*------------------------------------------------------------------------------------------*/
+
+    /* public void mensajeEncenderUbicacion() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
         alertDialog.setTitle("Ubicación apagada");
         alertDialog.setMessage("¿Desea ir al menú para encenderla?");
@@ -420,5 +461,63 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
         alertDialog.show();
     }
 
+        public void iniciarLocalizacion() {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        } else {
+            Location g = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location n = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
+            if (g != null)
+                ubicacionActual = g;
+            else if (n != null)
+                ubicacionActual = n;
+
+            String fineProvider = locationManager.getBestProvider(createFineCriteria(), false);
+            String coarseProvider = locationManager.getBestProvider(createCoarseCriteria(), true);
+
+            if (fineProvider != null) {
+                locationManager.requestLocationUpdates(fineProvider, 0, 0f, locationListenerFine);
+                locationListenerFine.onStatusChanged(fineProvider, 1, null);
+            }
+
+            if (coarseProvider != null) {
+                if (coarseProvider.equals("passive")) {
+                    llProgressBar.setVisibility(View.GONE);
+                    mensajeEncenderUbicacion();
+                    locationManager.requestLocationUpdates("network", 2000, 20f, locationListenerCoarse);
+                } else {
+                    locationManager.requestLocationUpdates(coarseProvider, 2000, 20f, locationListenerCoarse);
+                    locationListenerCoarse.onStatusChanged(coarseProvider, 1, null);
+                }
+
+            }
+
+        }
+
+    }
+
+    public static Criteria createFineCriteria() {
+        Criteria c = new Criteria();
+        c.setAccuracy(Criteria.ACCURACY_FINE);
+        c.setAltitudeRequired(false);
+        c.setBearingRequired(false);
+        c.setSpeedRequired(false);
+        c.setCostAllowed(true);
+        c.setPowerRequirement(Criteria.POWER_HIGH);
+        return c;
+    }
+
+    public static Criteria createCoarseCriteria() {
+        Criteria c = new Criteria();
+        c.setAccuracy(Criteria.ACCURACY_COARSE);
+        c.setAltitudeRequired(false);
+        c.setBearingRequired(false);
+        c.setSpeedRequired(false);
+        c.setCostAllowed(true);
+        c.setPowerRequirement(Criteria.POWER_HIGH);
+        return c;
+
+    }
+*/
 }

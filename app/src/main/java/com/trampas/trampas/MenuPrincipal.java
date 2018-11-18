@@ -32,6 +32,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
     String idColocacionCreada;
     TextView nombre;
     TextView correo;
+    ColocarTrampa colocarTrampa;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -189,9 +190,11 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         switch (id) {
             case R.id.nav_colocar:
                 fragment = new ColocarTrampa();
-                ((ColocarTrampa) fragment).setUsuario(usuario);
+                colocarTrampa = (ColocarTrampa) fragment;
+                colocarTrampa.setUsuario(usuario);
                 fragmentTransaction = true;
                 Objects.requireNonNull(getSupportActionBar()).setTitle("Colocar trampa");
+
                 break;
             case R.id.nav_extraer:
                 fragment = new ExtraerTrampa();
@@ -252,5 +255,14 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_mostrar_colocadas);
         onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_mostrar_colocadas));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == colocarTrampa.SOLICITUD_LOCALIZACION) {
+            colocarTrampa.onActivityResult(requestCode, resultCode, data);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

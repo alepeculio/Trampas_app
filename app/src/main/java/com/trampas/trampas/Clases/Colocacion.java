@@ -6,12 +6,12 @@ public class Colocacion implements Serializable {
     int idColocacion;
     Double lat;
     Double lon;
-    String tempMax;
-    String tempMin;
-    String humMin;
-    String humMax;
-    String tempProm;
-    String humProm;
+    float tempMax;
+    float tempMin;
+    float humMin;
+    float humMax;
+    float tempProm;
+    float humProm;
     String fechaInicio;
     String fechaFin;
     Boolean leishmaniasis;
@@ -42,35 +42,35 @@ public class Colocacion implements Serializable {
         this.lon = lon;
     }
 
-    public String getTempMax() {
+    public float getTempMax() {
         return tempMax;
     }
 
-    public void setTempMax(String tempMax) {
+    public void setTempMax(float tempMax) {
         this.tempMax = tempMax;
     }
 
-    public String getTempMin() {
+    public float getTempMin() {
         return tempMin;
     }
 
-    public void setTempMin(String tempMin) {
+    public void setTempMin(float tempMin) {
         this.tempMin = tempMin;
     }
 
-    public String getHumMin() {
+    public float getHumMin() {
         return humMin;
     }
 
-    public void setHumMin(String humMin) {
+    public void setHumMin(float humMin) {
         this.humMin = humMin;
     }
 
-    public String getHumMax() {
+    public float getHumMax() {
         return humMax;
     }
 
-    public void setHumMax(String humMax) {
+    public void setHumMax(float humMax) {
         this.humMax = humMax;
     }
 
@@ -114,19 +114,19 @@ public class Colocacion implements Serializable {
         this.idColocacion = idColocacion;
     }
 
-    public String getTempProm() {
+    public float getTempProm() {
         return tempProm;
     }
 
-    public void setTempProm(String tempProm) {
+    public void setTempProm(float tempProm) {
         this.tempProm = tempProm;
     }
 
-    public String getHumProm() {
+    public float getHumProm() {
         return humProm;
     }
 
-    public void setHumProm(String humProm) {
+    public void setHumProm(float humProm) {
         this.humProm = humProm;
     }
 

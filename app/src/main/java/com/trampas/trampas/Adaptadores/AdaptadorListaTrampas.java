@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -220,17 +221,16 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
                     llFechaFin.setVisibility(View.VISIBLE);
                     tvFechaFin.setText(convertFormat(fechaFin));
 
-                    String humProm = c.getHumProm();
-                    if (humProm != null) {
-                        tvHumProm.setText(humProm + "%");
+                    try {
+                        tvHumProm.setText(String.valueOf(c.getHumProm()) + "%");
                         llHumProm.setVisibility(View.VISIBLE);
+                        tvTempProm.setText(String.valueOf(c.getTempProm()) + "°C");
+                        llTempProm.setVisibility(View.VISIBLE);
+                    } catch (NumberFormatException nfe) {
+                        Log.d("bindTrampa", nfe.getMessage());
                     }
 
-                    String tempProm = c.getTempProm();
-                    if (tempProm != null) {
-                        tvTempProm.setText(tempProm + "°C");
-                        llTempProm.setVisibility(View.VISIBLE);
-                    }
+
                 }
                 llFechaInicio.setVisibility(View.VISIBLE);
                 tvFechaInicio.setText(convertFormat(c.getFechaInicio()));

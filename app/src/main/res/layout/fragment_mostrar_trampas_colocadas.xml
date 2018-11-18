@@ -8,10 +8,10 @@
     tools:context=".MostrarTrampasColocadas">
 
     <LinearLayout
-        android:background="@drawable/fondo_mapa"
         android:id="@+id/llBuscar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@drawable/fondo_mapa">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -103,15 +103,15 @@
         android:id="@+id/llGuardar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="100dp"
         android:gravity="center"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/fondo_claro"
+            android:layout_height="30dp"
+            android:background="@drawable/fondo_celeste"
             android:gravity="center"
             tools:ignore="UselessParent">
 
@@ -119,7 +119,7 @@
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:indeterminateTint="@color/cardview_dark_background"
+                android:indeterminateTint="@color/colorBlanco"
                 android:visibility="gone" />
 
             <Button
@@ -128,9 +128,37 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:text="@string/guardar_cambios"
+                android:textColor="@color/colorBlanco"
+                android:textSize="12sp"
                 android:visibility="visible" />
         </LinearLayout>
 
     </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/fondo_claro"
+        android:gravity="center"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent">
+
+        <TextView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@mipmap/ic_trampas_fondo_celeste_round" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="@string/actualmente_colocada" />
+    </LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>

@@ -120,29 +120,18 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
             etLat.setText(String.valueOf(colocacion.getLat()));
             etLon.setText(String.valueOf(colocacion.getLon()));
 
-            String tempMin = colocacion.getTempMin();
-            if (tempMin != null)
-                etTempMin.setText(tempMin);
 
-            String tempMax = colocacion.getTempMax();
-            if (tempMax != null)
-                etTempMax.setText(tempMax);
+            try {
+                etTempMin.setText(String.valueOf(colocacion.getTempMin()));
+                etTempMax.setText(String.valueOf(colocacion.getTempMax()));
+                etTempProm.setText(String.valueOf(colocacion.getTempProm()));
+                etHumMin.setText(String.valueOf(colocacion.getHumMin()));
+                etHumMax.setText(String.valueOf(colocacion.getHumMax()));
+                etHumProm.setText(String.valueOf(colocacion.getHumProm()));
+            } catch (NumberFormatException nfe) {
+                Log.d("bindColocacion", nfe.getMessage());
+            }
 
-            String tempProm = colocacion.getTempProm();
-            if (tempProm != null)
-                etTempProm.setText(tempProm);
-
-            String humMin = colocacion.getHumMin();
-            if (humMin != null)
-                etHumMin.setText(humMin);
-
-            String humMax = colocacion.getHumMax();
-            if (humMax != null)
-                etHumMax.setText(humMax);
-
-            String humProm = colocacion.getHumProm();
-            if (humProm != null)
-                etHumProm.setText(humProm);
 
             checkLesishmaniasis(colocacion.getLeishmaniasis());
             cbLeishmaniasis.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
