@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fondo"
+    android:padding="@dimen/padding_fondo"
+    tools:context=".Desarrollado">
+
+    <android.support.v7.widget.CardView
+        cardPreventCornerOverlap="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:backgroundTint="@color/cardview_dark_background"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="10dp"
+        app:cardMaxElevation="@dimen/cardview_default_radius">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="10dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/texto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/desarrollado1"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorBlanco"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/texto2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/desarrollado2"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorBlanco"
+                    android:textSize="20sp"
+                    app:layout_constraintTop_toBottomOf="@id/texto" />
+
+                <TextView
+                    android:id="@+id/texto3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/desarrollado3"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorBlanco"
+                    android:textSize="17sp"
+                    app:layout_constraintTop_toBottomOf="@id/texto2" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/tecnologo"
+                    app:layout_constraintTop_toBottomOf="@id/texto3" />
+            </android.support.constraint.ConstraintLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>

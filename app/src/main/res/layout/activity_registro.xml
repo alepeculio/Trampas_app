@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/degradado"
-    android:padding="10dp"
+    android:background="@drawable/fondo"
+    android:padding="@dimen/padding_fondo"
     tools:context=".Registro">
 
 

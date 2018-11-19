@@ -43,6 +43,14 @@
     </item>
 
 
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_desarrollado"
+            android:icon="@drawable/ic_desarrollado"
+            android:title="@string/desarrollado" />
+    </group>
+
+
     <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_cerrar_sesion"

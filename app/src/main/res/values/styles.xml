@@ -7,14 +7,25 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="colorControlNormal">#ece5e5</item>
-        <item name="colorControlActivated">#77badc</item>
-        <item name="colorControlHighlight">#cfcdcd</item>
+        <item name="colorControlHighlight">@color/colorPrimary</item>
+        <item name="colorControlNormal">@color/colorGris</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- Menu personalizado -->
+    <style name="AppTheme.Menu">
+        <item name="android:windowBackground">@color/colorNegro</item>
+        <item name="android:textColorSecondary">@color/colorBlanco</item>
+        <item name="android:textColorPrimary">@color/colorBlanco</item>
+        <item name="colorPrimary">@color/colorBlanco</item>
+        <item name="android:listDivider">@color/colorGrisTransparente</item>
+        <item name="colorControlHighlight">@color/colorGrisTransparente</item>
+
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -24,4 +35,5 @@
     <style name="TextAppearance.App.TextInputLayout" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
+
 </resources>

@@ -100,4 +100,8 @@
     <string name="actualmente_colocada">Actualmente colocada</string>
     <string name="cambiar_contrasenia">Cambiar contraseña</string>
     <string name="contrasenia_nueva">Contraseña nueva</string>
+    <string name="desarrollado">Desarrollado por</string>
+    <string name="desarrollado1">Aplicación desarrollada por el alumno</string>
+    <string name="desarrollado2">Alejandro Peculio</string>
+    <string name="desarrollado3">pasantía laboral de la carrera</string>
 </resources>

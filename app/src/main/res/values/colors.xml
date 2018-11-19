@@ -6,6 +6,8 @@
     <color name="colorVerde">#43A047</color>
     <color name="colorBlanco">#FFFFFF</color>
     <color name="colorGris">#455a64</color>
+    <color name="colorGrisTransparente">#e1455a64</color>
     <color name="colorRojo">#b71c1c</color>
     <color name="datosRecibidos">#64dd17</color>
+    <color name="colorNegro">#000000</color>
 </resources>

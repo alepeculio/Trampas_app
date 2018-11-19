@@ -229,6 +229,11 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
                 Objects.requireNonNull(getSupportActionBar()).setTitle("Administración usuarios");
                 ((AdministrarUsuarios) fragment).setUsuario(usuario);
                 break;
+            case R.id.nav_desarrollado:
+                fragment = new Desarrollado();
+                fragmentTransaction = true;
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Desarrollado por");
+                break;
             case R.id.nav_cerrar_sesion:
                 cerrarSesion();
                 break;
