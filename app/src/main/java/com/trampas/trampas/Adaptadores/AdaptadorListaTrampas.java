@@ -46,16 +46,21 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
     private List<Trampa> trampas;
     private Context mContext;
     private Usuario usuario;
+    private boolean leishmaniasis;
 
     public AdaptadorListaTrampas(List<Trampa> trampas, Context mContext) {
         this.trampas = trampas;
         this.mContext = mContext;
+        this.leishmaniasis = false;
     }
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 
+    public void setLeishmaniasis(boolean leishmaniasis){
+        this.leishmaniasis = leishmaniasis;
+    }
     @NonNull
     @Override
     public TrampaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -197,6 +202,7 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
                     public void onClick(View v) {
                         Intent intent = new Intent(mContext, DatosTrampa.class);
                         intent.putExtra("trampa", trampa);
+                        intent.putExtra("leishmaniasis", leishmaniasis);
                         mContext.startActivity(intent);
                     }
                 });

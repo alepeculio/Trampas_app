@@ -179,9 +179,9 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
             mLocationCallback = new LocationCallback() {
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
-                    if (locationResult == null) {
+                    if (locationResult == null)
                         return;
-                    }
+
                     for (Location location : locationResult.getLocations()) {
                         if (ubicacionActual == null) {
                             llProgressBar.setVisibility(View.GONE);
@@ -191,7 +191,8 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
                     }
                 }
             };
-            llProgressBar.setVisibility(View.VISIBLE);
+            if (ubicacionActual == null)
+                llProgressBar.setVisibility(View.VISIBLE);
             mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
         }
     }

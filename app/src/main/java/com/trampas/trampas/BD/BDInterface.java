@@ -26,6 +26,9 @@ public interface BDInterface {
     @GET("obtenerTrampas")
     Call<RespuestaTrampas> obtenerTrampas();
 
+    @GET("obtenerTrampasLeishmaniasis")
+    Call<RespuestaTrampas> obtenerTrampasLeishmaniasis();
+
     @GET("obtenerTrampasNoColocadas")
     Call<RespuestaTrampas> obtenerTrampasNoColocadas();
 

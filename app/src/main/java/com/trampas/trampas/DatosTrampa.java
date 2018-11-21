@@ -5,6 +5,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +46,11 @@ public class DatosTrampa extends AppCompatActivity {
     @BindView(R.id.swipeRefresh)
     SwipeRefreshLayout swipeRefresh;
 
+    @BindView(R.id.cbLeishmaniasis)
+    CheckBox cbLeishmaniasis;
+
+    private boolean leishmaniasis;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +58,7 @@ public class DatosTrampa extends AppCompatActivity {
         ButterKnife.bind(this);
 
         final Trampa trampa = (Trampa) getIntent().getSerializableExtra("trampa");
+        leishmaniasis = (boolean) getIntent().getSerializableExtra("leishmaniasis");
         getSupportActionBar().setTitle("Información detallada");
         tvNombre.setText(trampa.getNombre());
         tvIdTrampa.setText(String.valueOf(trampa.getId()));
@@ -62,6 +71,15 @@ public class DatosTrampa extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 cargarColocaciones(trampa.getId());
+            }
+        });
+
+        cbLeishmaniasis.setChecked(leishmaniasis);
+        cbLeishmaniasis.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                leishmaniasis = isChecked;
+                filtrarColocaciones();
             }
         });
     }
@@ -82,7 +100,13 @@ public class DatosTrampa extends AppCompatActivity {
             if (ultimaBusqueda != null) {
                 for (Colocacion t : colocaciones) {
                     if (String.valueOf(t.getId()).toLowerCase().contains(ultimaBusqueda)) {
-                        colocacionesFinal.add(t);
+                        if (leishmaniasis) {
+                            if (t.getLeishmaniasis())
+                                colocacionesFinal.add(t);
+                        } else {
+                            colocacionesFinal.add(t);
+                        }
+
                     }
                 }
 
@@ -96,7 +120,12 @@ public class DatosTrampa extends AppCompatActivity {
                 }
 
             } else {
-                colocacionesFinal = colocaciones;
+                if (leishmaniasis) {
+                    for (Colocacion cl : colocaciones)
+                        if (cl.getLeishmaniasis())
+                            colocacionesFinal.add(cl);
+                } else
+                    colocacionesFinal = colocaciones;
             }
         }
 

@@ -18,6 +18,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +46,7 @@ public class MostrarTrampasExistentes extends Fragment {
     private AdaptadorListaTrampas adaptadorListaTrampas;
     private SearchView searchView = null;
     private String ultimaBusqueda = null;
+    private boolean leishmaniasis = false;
 
     @BindView(R.id.listaTrampas)
     RecyclerView mRecyclerView;
@@ -59,6 +62,9 @@ public class MostrarTrampasExistentes extends Fragment {
 
     @BindView(R.id.btnMostrarAgregarTrampa)
     FloatingActionButton btnMostrarAgregarTrampa;
+
+    @BindView(R.id.cbLeishmaniasis)
+    CheckBox cbLeishmaniasis;
 
     Usuario usuario;
 
@@ -87,7 +93,6 @@ public class MostrarTrampasExistentes extends Fragment {
 
 
         setAdaptadorListaTrampas();
-        swipeRefresh.setRefreshing(true);
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -101,6 +106,15 @@ public class MostrarTrampasExistentes extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AgregarTrampa.class);
                 startActivity(intent);
+            }
+        });
+
+        cbLeishmaniasis.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                leishmaniasis = isChecked;
+                adaptadorListaTrampas.setLeishmaniasis(leishmaniasis);
+                cargarTrampas();
             }
         });
 
@@ -164,8 +178,9 @@ public class MostrarTrampasExistentes extends Fragment {
                 if (trampasFinal.size() == 0) {
                     if (!ultimaBusqueda.equals("")) {
                         tvNoHayTrampas.setText("No hay resultados para \"" + ultimaBusqueda + "\"");
+                    } else if (leishmaniasis) {
+                        tvNoHayTrampas.setText("No hay trampas con Leishmaniasis");
                     } else {
-                        Toast.makeText(getActivity(), String.valueOf(trampas.size()), Toast.LENGTH_SHORT).show();
                         trampasFinal = trampas;
                         tvNoHayTrampas.setText(R.string.no_hay_trampas);
                     }
@@ -173,10 +188,17 @@ public class MostrarTrampasExistentes extends Fragment {
 
             } else {
                 trampasFinal = trampas;
-                if (trampasFinal.size() == 0)
-                    tvNoHayTrampas.setText(R.string.no_hay_trampas);
+                if (trampasFinal.size() == 0) {
+                    if (leishmaniasis)
+                        tvNoHayTrampas.setText("No hay trampas con Leishmaniasis");
+                    else
+                        tvNoHayTrampas.setText(R.string.no_hay_trampas);
+                }
             }
         }
+
+        if(leishmaniasis)
+            tvNoHayTrampas.setText("No hay trampas con Leishmaniasis");
 
         if (trampasFinal.size() == 0) {
             noHayTrampas.setVisibility(View.VISIBLE);
@@ -209,8 +231,13 @@ public class MostrarTrampasExistentes extends Fragment {
 
 
     private void cargarTrampas() {
+        swipeRefresh.setRefreshing(true);
         BDInterface bd = BDCliente.getClient().create(BDInterface.class);
-        Call<RespuestaTrampas> call = bd.obtenerTrampas();
+        Call<RespuestaTrampas> call;
+        if (leishmaniasis)
+            call = bd.obtenerTrampasLeishmaniasis();
+        else
+            call = bd.obtenerTrampas();
         call.enqueue(new Callback<RespuestaTrampas>() {
             @Override
             public void onResponse(Call<RespuestaTrampas> call, Response<RespuestaTrampas> response) {
