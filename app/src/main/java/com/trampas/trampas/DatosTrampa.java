@@ -18,6 +18,7 @@ import com.trampas.trampas.BD.RespuestaColocaciones;
 import com.trampas.trampas.Clases.Colocacion;
 import com.trampas.trampas.Clases.Trampa;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,8 @@ public class DatosTrampa extends AppCompatActivity {
         ButterKnife.bind(this);
 
         final Trampa trampa = (Trampa) getIntent().getSerializableExtra("trampa");
-        leishmaniasis = (boolean) getIntent().getSerializableExtra("leishmaniasis");
+        Serializable l = getIntent().getSerializableExtra("leishmaniasis");
+        leishmaniasis = (boolean)((l != null) ?  l : false);
         getSupportActionBar().setTitle("Información detallada");
         tvNombre.setText(trampa.getNombre());
         tvIdTrampa.setText(String.valueOf(trampa.getId()));
