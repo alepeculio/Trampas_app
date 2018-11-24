@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fondo"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_fondo"
+    tools:context=".ExportarDatos">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/cardview_dark_background"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="10dp"
+        app:cardMaxElevation="@dimen/cardview_default_radius"
+        app:cardPreventCornerOverlap="true"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/llExportar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/cardview_light_background"
+                app:cardCornerRadius="5dp"
+                app:cardElevation="10dp"
+                app:cardMaxElevation="@dimen/cardview_default_radius"
+                app:cardPreventCornerOverlap="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:text="@string/mensaje_exportar_datos"
+                        android:textAlignment="center"
+                        android:textSize="17sp" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@color/cardview_light_background"
+                app:cardCornerRadius="5dp"
+                app:cardElevation="10dp"
+                app:cardMaxElevation="@dimen/cardview_default_radius"
+                app:cardPreventCornerOverlap="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="5dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/desde"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/tvDesde"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/vacio"
+                            android:textColor="#000"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/hasta"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/tvHasta"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/vacio"
+                            android:textColor="#000"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/fondo_claro"
+                android:gravity="center">
+
+                <ProgressBar
+                    android:id="@+id/progressBarExportar"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:indeterminateTint="@color/colorNegro"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btnExportar"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:background="@null"
+                    android:text="@string/exportar"
+                    android:textColor="@color/colorNegro"
+                    android:visibility="visible" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

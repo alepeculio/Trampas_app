@@ -104,4 +104,7 @@
     <string name="desarrollado1">Aplicación desarrollada por el alumno</string>
     <string name="desarrollado2">Alejandro Peculio</string>
     <string name="desarrollado3">pasantía laboral de la carrera</string>
+    <string name="exportar">Exportar</string>
+    <string name="mensaje_exportar_datos">Seleccione las fechas entre las que desea realizar la exportación, si las deja en blanco se exportarán todos los datos del sistema.\n Los datos en formato CSV serán enviados a su correo.</string>
+    <string name="seleccionar_fecha_fin">Seleccione una fecha de fin</string>
 </resources>

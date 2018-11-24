@@ -3,9 +3,11 @@ package com.trampas.trampas;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -50,6 +52,14 @@ public class DatosTrampa extends AppCompatActivity {
     @BindView(R.id.cbLeishmaniasis)
     CheckBox cbLeishmaniasis;
 
+    @BindView(R.id.cvCheckBox)
+    CardView cvCheckBox;
+
+    @BindView(R.id.tvColocaciones)
+    TextView tvColocaciones;
+
+    int periodo;
+
     private boolean leishmaniasis;
 
     @Override
@@ -60,30 +70,50 @@ public class DatosTrampa extends AppCompatActivity {
 
         final Trampa trampa = (Trampa) getIntent().getSerializableExtra("trampa");
         Serializable l = getIntent().getSerializableExtra("leishmaniasis");
-        leishmaniasis = (boolean)((l != null) ?  l : false);
+        leishmaniasis = (boolean) ((l != null) ? l : false);
+        final Colocacion colocacion = (Colocacion) getIntent().getSerializableExtra("colocacion");
         getSupportActionBar().setTitle("Información detallada");
+        Serializable l2 = getIntent().getSerializableExtra("periodo");
+        periodo = (int) ((l2 != null) ? l2 : 0);
         tvNombre.setText(trampa.getNombre());
         tvIdTrampa.setText(String.valueOf(trampa.getId()));
         tvMacTrampa.setText(String.valueOf(trampa.getMac()));
 
         setAdaptadorListaColocaciones();
-        cargarColocaciones(trampa.getId());
+        if (colocacion != null) {
+            List<Colocacion> cs = new ArrayList<>();
+            cs.add(colocacion);
+            adaptadorListaColocaciones.actualizarColocaciones(cs);
+            cvCheckBox.setVisibility(View.GONE);
+            tvColocaciones.setText("Colocación");
+            swipeRefresh.setEnabled(false);
+        } else {
+            cargarColocaciones(trampa.getId());
 
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                cargarColocaciones(trampa.getId());
-            }
-        });
+            swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    cargarColocaciones(trampa.getId());
+                }
+            });
 
-        cbLeishmaniasis.setChecked(leishmaniasis);
-        cbLeishmaniasis.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                leishmaniasis = isChecked;
-                filtrarColocaciones();
-            }
-        });
+            cbLeishmaniasis.setChecked(leishmaniasis);
+            cbLeishmaniasis.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    leishmaniasis = isChecked;
+                    filtrarColocaciones();
+                }
+            });
+        }
+
+        if (periodo != 0) {
+            cvCheckBox.setVisibility(View.GONE);
+            swipeRefresh.setEnabled(false);
+            tvColocaciones.setText("Colocación/es(periodo "+periodo+")");
+        }
+
+
     }
 
     public void setAdaptadorListaColocaciones() {
@@ -104,6 +134,9 @@ public class DatosTrampa extends AppCompatActivity {
                     if (String.valueOf(t.getId()).toLowerCase().contains(ultimaBusqueda)) {
                         if (leishmaniasis) {
                             if (t.getLeishmaniasis())
+                                colocacionesFinal.add(t);
+                        } else if (periodo != 0) {
+                            if (t.getPeriodo() == periodo)
                                 colocacionesFinal.add(t);
                         } else {
                             colocacionesFinal.add(t);

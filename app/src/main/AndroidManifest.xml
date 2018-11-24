@@ -24,8 +24,8 @@
             android:name=".MenuPrincipal"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_menu_principal"
-            android:screenOrientation="portrait"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -60,7 +60,11 @@
         <activity
             android:name=".ColocacionGrafica"
             android:parentActivityName=".MenuPrincipal"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ExportarDatos"
+            android:parentActivityName=".MenuPrincipal"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

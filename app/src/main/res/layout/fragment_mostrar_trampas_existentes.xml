@@ -45,6 +45,19 @@
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnExportarDatos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="23dp"
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/ic_exportar"
+        android:visibility="visible"
+        app:backgroundTint="@color/colorBlanco"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnMostrarAgregarTrampa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

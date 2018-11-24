@@ -127,4 +127,18 @@ public interface BDInterface {
             @Field("contrasenia_actual") String contraseniaActual,
             @Field("contrasenia_nueva") String contraseniaNueva
     );
+
+    @FormUrlEncoded
+    @POST("obtenerColocacionesGrafica")
+    Call<RespuestaColocaciones> obtenerColocacionesGrafica(
+            @Field("id_periodo") int periodo
+    );
+
+    @FormUrlEncoded
+    @POST("exportarDatos")
+    Call<Respuesta> exportarDatos(
+            @Field("correo") String correo,
+            @Field("desde") String desde,
+            @Field("hasta") String hasta
+    );
 }

@@ -84,6 +84,27 @@
         </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/btnExportar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="73dp"
+        android:elevation="1dp"
+        android:background="@drawable/fondo_claro_transparente"
+        android:gravity="center"
+        android:padding="7dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent">
+
+        <TextView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/ic_exportar" />
+
+    </LinearLayout>
+
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"

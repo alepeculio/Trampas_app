@@ -66,6 +66,9 @@ public class MostrarTrampasExistentes extends Fragment {
     @BindView(R.id.cbLeishmaniasis)
     CheckBox cbLeishmaniasis;
 
+    @BindView(R.id.btnExportarDatos)
+    FloatingActionButton btnExportarDatos;
+
     Usuario usuario;
 
     public MostrarTrampasExistentes() {
@@ -88,8 +91,10 @@ public class MostrarTrampasExistentes extends Fragment {
         View view = inflater.inflate(R.layout.fragment_mostrar_trampas_existentes, container, false);
         ButterKnife.bind(this, view);
 
-        if (usuario.getAdmin() != 1)
+        if (usuario.getAdmin() != 1) {
             btnMostrarAgregarTrampa.setVisibility(View.GONE);
+            btnExportarDatos.setVisibility(View.GONE);
+        }
 
 
         setAdaptadorListaTrampas();
@@ -105,6 +110,15 @@ public class MostrarTrampasExistentes extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AgregarTrampa.class);
+                startActivity(intent);
+            }
+        });
+
+        btnExportarDatos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ExportarDatos.class);
+                intent.putExtra("usuario", usuario);
                 startActivity(intent);
             }
         });
@@ -197,7 +211,7 @@ public class MostrarTrampasExistentes extends Fragment {
             }
         }
 
-        if(leishmaniasis)
+        if (leishmaniasis)
             tvNoHayTrampas.setText("No hay trampas con Leishmaniasis");
 
         if (trampasFinal.size() == 0) {

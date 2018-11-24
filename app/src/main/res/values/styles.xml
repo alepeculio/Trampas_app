@@ -7,7 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="colorControlHighlight">@color/colorPrimary</item>
+        <item name="colorControlHighlight">#bdbdbd</item>
         <item name="colorControlNormal">@color/colorGris</item>
         <item name="colorControlActivated">@color/colorPrimary</item>
     </style>
@@ -25,7 +25,6 @@
         <item name="colorPrimary">@color/colorBlanco</item>
         <item name="android:listDivider">@color/colorGrisTransparente</item>
         <item name="colorControlHighlight">@color/colorGrisTransparente</item>
-
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

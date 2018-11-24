@@ -169,7 +169,7 @@ public class AdministrarUsuarios extends Fragment {
                     usuarios = null;
                     filtrarUsuarios();
                     if (getActivity() != null) {
-                        Toast.makeText(getActivity(), "Error interno del servidor, Reintente", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -179,7 +179,7 @@ public class AdministrarUsuarios extends Fragment {
                 usuarios = null;
                 filtrarUsuarios();
                 if (getActivity() != null) {
-                    Toast.makeText(getActivity(), "Error de conexión con el servidor: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -94,6 +94,9 @@ public class MostrarTrampasColocadas extends Fragment {
     @BindView(R.id.btnMasInformacion)
     LinearLayout btnMasInformacion;
 
+    @BindView(R.id.btnExportar)
+    LinearLayout btnExportar;
+
     Calendar calendario = Calendar.getInstance();
 
     public MostrarTrampasColocadas() {
@@ -206,8 +209,8 @@ public class MostrarTrampasColocadas extends Fragment {
             return;
         }
 
-        String fechaDesde = tvDesde.getText().toString();
-        String fechaHasta = tvHasta.getText().toString();
+        final String fechaDesde = tvDesde.getText().toString();
+        final String fechaHasta = tvHasta.getText().toString();
         Date inicio = null;
         Date fin = null;
         List<Colocacion> colocs = new ArrayList<>();
@@ -244,6 +247,22 @@ public class MostrarTrampasColocadas extends Fragment {
                 colocs.add(c);
 
         }
+
+        if (colocs.size() > 0 && usuario.getAdmin() == 1) {
+            btnExportar.setVisibility(View.VISIBLE);
+            btnExportar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), ExportarDatos.class);
+                    intent.putExtra("usuario", usuario);
+                    intent.putExtra("desde", fechaDesde);
+                    intent.putExtra("hasta", fechaHasta);
+                    startActivity(intent);
+                }
+            });
+        } else
+            btnExportar.setVisibility(View.GONE);
+
 
         prepararMapa(colocs);
 
@@ -372,6 +391,7 @@ public class MostrarTrampasColocadas extends Fragment {
                                     if (c.getId() == (int) marker.getTag()) {
                                         Intent intent = new Intent(getActivity(), DatosTrampa.class);
                                         intent.putExtra("trampa", c.getTrampa());
+                                        intent.putExtra("colocacion", c);
                                         getActivity().startActivity(intent);
                                     }
                             }

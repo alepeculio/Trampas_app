@@ -15,6 +15,7 @@ public class Colocacion implements Serializable {
     String fechaInicio;
     String fechaFin;
     Boolean leishmaniasis;
+    int periodo;
     Trampa trampa;
     int usuario;
 
@@ -136,5 +137,13 @@ public class Colocacion implements Serializable {
 
     public void setLeishmaniasis(Boolean leishmaniasis) {
         this.leishmaniasis = leishmaniasis;
+    }
+
+    public int getPeriodo() {
+        return periodo;
+    }
+
+    public void setPeriodo(int periodo) {
+        this.periodo = periodo;
     }
 }

@@ -1,8 +1,9 @@
 package com.trampas.trampas.Clases;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Usuario {
+public class Usuario implements Serializable {
     int id;
     String correo;
     String nombre;
