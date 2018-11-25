@@ -107,4 +107,8 @@
     <string name="exportar">Exportar</string>
     <string name="mensaje_exportar_datos">Seleccione las fechas entre las que desea realizar la exportación, si las deja en blanco se exportarán todos los datos del sistema.\n Los datos en formato CSV serán enviados a su correo.</string>
     <string name="seleccionar_fecha_fin">Seleccione una fecha de fin</string>
+    <string name="cantidad_de_flevotomo">Cantidad de flevotomo:</string>
+    <string name="perros">Perros infectados</string>
+    <string name="no_hay_colocaciones_con_leishmaniasis">No hay colocaciones con leishmaniasis</string>
+    <string name="no_hay_trampas_para_colocar">No hay trampas para colocar</string>
 </resources>

@@ -117,7 +117,9 @@ public interface BDInterface {
             @Field("hmin") float hMin,
             @Field("hmax") float hMax,
             @Field("hprom") float hProm,
-            @Field("leishmaniasis") int leishmaniasis
+            @Field("leishmaniasis") int leishmaniasis,
+            @Field("flevotomo") String flevotomo,
+            @Field("perros") String perros
     );
 
     @FormUrlEncoded

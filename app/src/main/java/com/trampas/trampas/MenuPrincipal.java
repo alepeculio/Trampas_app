@@ -194,7 +194,6 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
                 colocarTrampa.setUsuario(usuario);
                 fragmentTransaction = true;
                 Objects.requireNonNull(getSupportActionBar()).setTitle("Colocar trampa");
-
                 break;
             case R.id.nav_extraer:
                 fragment = new ExtraerTrampa();
@@ -264,10 +263,11 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == colocarTrampa.SOLICITUD_LOCALIZACION) {
+        if (colocarTrampa != null && requestCode == ColocarTrampa.SOLICITUD_LOCALIZACION)
             colocarTrampa.onActivityResult(requestCode, resultCode, data);
-        } else {
+        else
             super.onActivityResult(requestCode, resultCode, data);
-        }
+
     }
+
 }

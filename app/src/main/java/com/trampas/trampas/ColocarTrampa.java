@@ -167,11 +167,15 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == SOLICITUD_LOCALIZACION) {
-            startLocationUpdates();
+            if (resultCode == -1)
+                startLocationUpdates();
         }
     }
 
     private void startLocationUpdates() {
+        if (getActivity() == null)
+            return;
+
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
             return;
@@ -229,7 +233,6 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
 
     private void filtrarTrampas() {
         List<Trampa> trampasFinal = new ArrayList<>();
-        tvNoHayTrampas.setText("No hay trampas para colocar");
 
         if (trampas != null) {
             if (ultimaBusqueda != null) {
@@ -356,10 +359,10 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     @Override
     public Location obtenerLocalizacion() {
         if (ubicacionActual == null) {
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                createLocationRequest();
-            } else if (llProgressBar.getVisibility() == View.VISIBLE) {
+            if (llProgressBar.getVisibility() == View.VISIBLE) {
                 Toast.makeText(getActivity(), "Estableciendo ubicación, aguarde porfavor.", Toast.LENGTH_SHORT).show();
+            } else {
+                createLocationRequest();
             }
         }
         return ubicacionActual;

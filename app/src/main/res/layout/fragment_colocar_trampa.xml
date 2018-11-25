@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,89 +8,88 @@
     android:padding="@dimen/padding_fondo"
     tools:context=".ColocarTrampa">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
-        <android.support.v7.widget.CardView
+    <android.support.v7.widget.CardView
+        android:id="@+id/cvMensajeColocar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp"
+        app:cardBackgroundColor="@color/cardview_light_background"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="10dp"
+        app:cardMaxElevation="@dimen/cardview_default_radius"
+        app:cardPreventCornerOverlap="true"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="4dp"
-            app:cardBackgroundColor="@color/cardview_light_background"
-            app:cardCornerRadius="5dp"
-            app:cardElevation="10dp"
-            app:cardMaxElevation="@dimen/cardview_default_radius"
-            app:cardPreventCornerOverlap="true">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/mensaje_colocar_trampa"
+                android:textAlignment="center" />
 
             <LinearLayout
+                android:id="@+id/llProgressBar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:visibility="gone">
 
-                <TextView
+                <ProgressBar
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:text="@string/mensaje_colocar_trampa"
-                    android:textAlignment="center" />
+                    android:indeterminateTint="@color/colorGrisClaro" />
 
-                <LinearLayout
-                    android:id="@+id/llProgressBar"
+                <TextView
+                    android:id="@+id/tvProgressBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="5dp"
-                    android:visibility="gone">
-
-                    <ProgressBar
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:indeterminateTint="@color/colorGrisClaro" />
-
-                    <TextView
-                        android:id="@+id/tvProgressBar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/obteniendo_ubicacion"
-                        android:textColor="@color/colorGrisClaro" />
-                </LinearLayout>
+                    android:text="@string/obteniendo_ubicacion"
+                    android:textColor="@color/colorGrisClaro" />
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRefresh"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cvMensajeColocar">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/listaTrampas"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/listaTrampas"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </android.support.v4.widget.SwipeRefreshLayout>
-    </LinearLayout>
+            android:layout_height="wrap_content" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <LinearLayout
         android:id="@+id/noHayTrampas"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="190dp"
+        android:layout_height="0dp"
         android:animateLayoutChanges="true"
-        android:gravity="top"
+        android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/swipeRefresh"
+        app:layout_constraintTop_toTopOf="@id/swipeRefresh">
 
         <TextView
             android:id="@+id/tvNoHayTrampas"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/no_hay_trampas"
-            android:textAlignment="center"
-            android:textSize="30sp" />
+            android:text="@string/no_hay_trampas_para_colocar"
+            android:textSize="20sp" />
     </LinearLayout>
-</FrameLayout>
+</android.support.constraint.ConstraintLayout>

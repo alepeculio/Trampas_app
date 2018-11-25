@@ -105,6 +105,12 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
         Button btnGuardar;
         @BindView(R.id.btnCancelar)
         Button btnCancelar;
+        @BindView(R.id.llLeishmaniasis)
+        LinearLayout llLeishmaniasis;
+        @BindView(R.id.perros)
+        EditText etPerros;
+        @BindView(R.id.cantFlevotomo)
+        EditText etCantFlevotomo;
 
 
         public ColocacionViewHolder(View itemView) {
@@ -134,6 +140,9 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
 
 
             checkLesishmaniasis(colocacion.getLeishmaniasis());
+            etCantFlevotomo.setText(String.valueOf(colocacion.getFlevotomo()));
+            etPerros.setText(String.valueOf(colocacion.getPerros()));
+
             cbLeishmaniasis.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -186,6 +195,8 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
             etHumMax.setEnabled(editable);
             etHumProm.setEnabled(editable);
             cbLeishmaniasis.setEnabled(editable);
+            etCantFlevotomo.setEnabled(editable);
+            etPerros.setEnabled(editable);
 
             if (editable) {
                 llEditarCampos.setVisibility(View.VISIBLE);
@@ -208,12 +219,17 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
                 llProgressBar.setVisibility(View.GONE);
         }
 
-        public void checkLesishmaniasis(boolean leishmaniasis) {
+        public boolean checkLesishmaniasis(boolean leishmaniasis) {
             cbLeishmaniasis.setChecked(leishmaniasis);
-            if (leishmaniasis)
+            if (leishmaniasis) {
                 cbLeishmaniasis.setTextColor(mContext.getResources().getColor(R.color.colorRojo));
-            else
+                llLeishmaniasis.setVisibility(View.VISIBLE);
+            } else {
                 cbLeishmaniasis.setTextColor(mContext.getResources().getColor(R.color.colorGris));
+                llLeishmaniasis.setVisibility(View.GONE);
+            }
+
+            return leishmaniasis;
         }
 
         private void guardarCambios(Colocacion colocacion) {
@@ -251,9 +267,12 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
                 return;
             }
 
+            String flevotomo = etCantFlevotomo.getText().toString().trim();
+            String perros = etPerros.getText().toString().trim();
+
 
             BDInterface bd = BDCliente.getClient().create(BDInterface.class);
-            Call<Respuesta> call = bd.actualizarColocacion(colocacion.getId(), lat, lon, fInicio, fFin, tMin, tMax, tProm, hMin, hMax, hProm, leishmaniasis);
+            Call<Respuesta> call = bd.actualizarColocacion(colocacion.getId(), lat, lon, fInicio, fFin, tMin, tMax, tProm, hMin, hMax, hProm, leishmaniasis, flevotomo, perros);
             call.enqueue(new Callback<Respuesta>() {
                 @Override
                 public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {

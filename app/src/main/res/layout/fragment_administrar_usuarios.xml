@@ -47,20 +47,21 @@
     <LinearLayout
         android:id="@+id/noHayUsuarios"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
+        android:layout_height="0dp"
         android:animateLayoutChanges="true"
-        android:gravity="top"
+        android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/swipeRefresh"
+        app:layout_constraintTop_toTopOf="@id/swipeRefresh">
 
         <TextView
             android:id="@+id/tvNoHayUsuarios"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_hay_usuarios"
             android:textAlignment="center"
-            android:textSize="30sp" />
+            android:textSize="20sp" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

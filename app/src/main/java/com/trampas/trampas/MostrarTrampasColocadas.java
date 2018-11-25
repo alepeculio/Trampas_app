@@ -318,9 +318,13 @@ public class MostrarTrampasColocadas extends Fragment {
                 m.remove();
 
             marcadores.clear();
+            btnMasInformacion.setVisibility(View.GONE);
 
             if (colocs == null) {
                 colocs = colocaciones;
+            } else if (colocs.size() == 0) {
+                Toast.makeText(getActivity(), "Sin resultados.", Toast.LENGTH_SHORT).show();
+                return;
             }
 
             for (Colocacion c : colocs) {

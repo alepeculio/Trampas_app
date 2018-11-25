@@ -213,6 +213,8 @@ public class MostrarTrampasExistentes extends Fragment {
 
         if (leishmaniasis)
             tvNoHayTrampas.setText("No hay trampas con Leishmaniasis");
+        else
+            tvNoHayTrampas.setText(R.string.no_hay_trampas);
 
         if (trampasFinal.size() == 0) {
             noHayTrampas.setVisibility(View.VISIBLE);

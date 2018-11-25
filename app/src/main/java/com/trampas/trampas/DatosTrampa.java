@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +33,6 @@ import retrofit2.Response;
 
 public class DatosTrampa extends AppCompatActivity {
     List<Colocacion> colocaciones;
-    private String ultimaBusqueda = null;
     AdaptadorListaColocaciones adaptadorListaColocaciones;
     @BindView(R.id.listaTrampas)
     RecyclerView mRecyclerView;
@@ -57,6 +57,9 @@ public class DatosTrampa extends AppCompatActivity {
 
     @BindView(R.id.tvColocaciones)
     TextView tvColocaciones;
+
+    @BindView(R.id.noHayColocaciones)
+    LinearLayout noHayColocaciones;
 
     int periodo;
 
@@ -110,7 +113,7 @@ public class DatosTrampa extends AppCompatActivity {
         if (periodo != 0) {
             cvCheckBox.setVisibility(View.GONE);
             swipeRefresh.setEnabled(false);
-            tvColocaciones.setText("Colocación/es(periodo "+periodo+")");
+            tvColocaciones.setText("Colocaciones (periodo " + periodo + ")");
         }
 
 
@@ -129,39 +132,24 @@ public class DatosTrampa extends AppCompatActivity {
         List<Colocacion> colocacionesFinal = new ArrayList<>();
 
         if (colocaciones != null) {
-            if (ultimaBusqueda != null) {
-                for (Colocacion t : colocaciones) {
-                    if (String.valueOf(t.getId()).toLowerCase().contains(ultimaBusqueda)) {
-                        if (leishmaniasis) {
-                            if (t.getLeishmaniasis())
-                                colocacionesFinal.add(t);
-                        } else if (periodo != 0) {
-                            if (t.getPeriodo() == periodo)
-                                colocacionesFinal.add(t);
-                        } else {
-                            colocacionesFinal.add(t);
-                        }
-
-                    }
-                }
-
-                if (colocacionesFinal.size() == 0) {
-                    if (!ultimaBusqueda.equals("")) {
-                        // tvNoHayTrampas.setText("No hay resultados para \"" + ultimaBusqueda + "\"");
-                    } else {
-                        Toast.makeText(this, String.valueOf(colocaciones.size()), Toast.LENGTH_SHORT).show();
-                        colocacionesFinal = colocaciones;
-                    }
-                }
-
-            } else {
+            for (Colocacion c : colocaciones) {
                 if (leishmaniasis) {
-                    for (Colocacion cl : colocaciones)
-                        if (cl.getLeishmaniasis())
-                            colocacionesFinal.add(cl);
-                } else
-                    colocacionesFinal = colocaciones;
+                    if (c.getLeishmaniasis())
+                        colocacionesFinal.add(c);
+                } else if (periodo != 0) {
+                    if (c.getPeriodo() == periodo) {
+                        colocacionesFinal.add(c);
+                    }
+
+                } else {
+                    colocacionesFinal.add(c);
+                }
             }
+
+            if (colocacionesFinal.size() == 0 && leishmaniasis)
+                noHayColocaciones.setVisibility(View.VISIBLE);
+            else
+                noHayColocaciones.setVisibility(View.GONE);
         }
 
         adaptadorListaColocaciones.actualizarColocaciones(colocacionesFinal);
