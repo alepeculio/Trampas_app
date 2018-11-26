@@ -112,7 +112,7 @@ public class DatosTrampa extends AppCompatActivity {
 
         if (periodo != 0) {
             cvCheckBox.setVisibility(View.GONE);
-            tvColocaciones.setText("Colocaciones (periodo " + periodo + ")");
+            tvColocaciones.setText("Colocaciones del periodo " + periodo);
         }
 
 
