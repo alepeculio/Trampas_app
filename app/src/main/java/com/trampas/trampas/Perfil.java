@@ -75,6 +75,9 @@ public class Perfil extends Fragment {
         View v = inflater.inflate(R.layout.fragment_perfil, container, false);
         ButterKnife.bind(this, v);
 
+        if (usuario == null && getActivity() != null)
+            usuario = ((MenuPrincipal) getActivity()).getUsuario();
+
         tvNombre.setText(usuario.getNombre() + " " + usuario.getApellido());
         tvCorreo.setText(usuario.getCorreo());
         String priviegio;

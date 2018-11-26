@@ -119,6 +119,10 @@ public class MostrarTrampasColocadas extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_mostrar_trampas_colocadas, container, false);
         ButterKnife.bind(this, v);
+
+        if (usuario == null && getActivity() != null)
+            usuario = ((MenuPrincipal) getActivity()).getUsuario();
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         final DatePickerDialog.OnDateSetListener fechaDesde = new DatePickerDialog.OnDateSetListener() {
@@ -210,7 +214,7 @@ public class MostrarTrampasColocadas extends Fragment {
         }
 
         final String fechaDesde = tvDesde.getText().toString();
-        final String fechaHasta = tvHasta.getText().toString();
+        String fechaHasta = tvHasta.getText().toString();
         Date inicio = null;
         Date fin = null;
         List<Colocacion> colocs = new ArrayList<>();
@@ -225,8 +229,12 @@ public class MostrarTrampasColocadas extends Fragment {
                 Toast.makeText(getActivity(), R.string.seleccionar_fecha_inicio, Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (fin == null)
+            if (fin == null) {
                 fin = new Date();
+                fechaHasta = sdf.format(fin);
+                tvHasta.setText(fechaHasta);
+            }
+
 
         }
 
@@ -248,6 +256,8 @@ public class MostrarTrampasColocadas extends Fragment {
 
         }
 
+        final String fechaHastaFinal = fechaHasta;
+
         if (colocs.size() > 0 && usuario.getAdmin() == 1) {
             btnExportar.setVisibility(View.VISIBLE);
             btnExportar.setOnClickListener(new View.OnClickListener() {
@@ -256,17 +266,16 @@ public class MostrarTrampasColocadas extends Fragment {
                     Intent intent = new Intent(getActivity(), ExportarDatos.class);
                     intent.putExtra("usuario", usuario);
                     intent.putExtra("desde", fechaDesde);
-                    intent.putExtra("hasta", fechaHasta);
+                    intent.putExtra("hasta", fechaHastaFinal);
                     startActivity(intent);
                 }
             });
         } else
             btnExportar.setVisibility(View.GONE);
 
-
         prepararMapa(colocs);
-
     }
+
 
     private void cargarColocaciones() {
         BDInterface bd = BDCliente.getClient().create(BDInterface.class);
@@ -419,6 +428,7 @@ public class MostrarTrampasColocadas extends Fragment {
                         if (c.getId() == (int) marker.getTag() && c.getFechaFin() != null) {
                             Intent intent = new Intent(getActivity(), ColocacionGrafica.class);
                             intent.putExtra("colocacion", c);
+                            intent.putExtra("usuario", usuario);
                             Objects.requireNonNull(getActivity()).startActivity(intent);
                         }
                 }

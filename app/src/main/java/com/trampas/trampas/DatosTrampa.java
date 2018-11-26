@@ -112,7 +112,6 @@ public class DatosTrampa extends AppCompatActivity {
 
         if (periodo != 0) {
             cvCheckBox.setVisibility(View.GONE);
-            swipeRefresh.setEnabled(false);
             tvColocaciones.setText("Colocaciones (periodo " + periodo + ")");
         }
 
@@ -140,7 +139,6 @@ public class DatosTrampa extends AppCompatActivity {
                     if (c.getPeriodo() == periodo) {
                         colocacionesFinal.add(c);
                     }
-
                 } else {
                     colocacionesFinal.add(c);
                 }
@@ -154,6 +152,10 @@ public class DatosTrampa extends AppCompatActivity {
 
         adaptadorListaColocaciones.actualizarColocaciones(colocacionesFinal);
         swipeRefresh.setRefreshing(false);
+
+        if (periodo != 0)
+            swipeRefresh.setEnabled(false);
+
     }
 
     private void cargarColocaciones(int id) {

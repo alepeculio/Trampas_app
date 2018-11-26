@@ -23,6 +23,7 @@ import com.trampas.trampas.BD.BDInterface;
 import com.trampas.trampas.BD.RespuestaColocaciones;
 import com.trampas.trampas.BD.RespuestaTrampas;
 import com.trampas.trampas.Clases.Colocacion;
+import com.trampas.trampas.Clases.Usuario;
 
 import java.util.List;
 import java.util.Objects;
@@ -45,10 +46,14 @@ public class ColocacionGrafica extends AppCompatActivity {
     @BindView(R.id.tvNombre)
     TextView tvNombre;
 
+    @BindView(R.id.tvPeriodo)
+    TextView tvPeriodo;
+
     @BindView(R.id.btnMasInformacion)
     LinearLayout btnMasInformacion;
 
     List<Colocacion> colocaciones;
+    Usuario usuario;
 
     public void setColocacion(Colocacion colocacion) {
         this.colocacion = colocacion;
@@ -60,20 +65,28 @@ public class ColocacionGrafica extends AppCompatActivity {
         setContentView(R.layout.activity_colocacion_grafica);
 
         colocacion = (Colocacion) getIntent().getSerializableExtra("colocacion");
+        usuario = (Usuario) getIntent().getSerializableExtra("usuario");
+
         ButterKnife.bind(this);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Gráfica");
-        tvNombre.setText(colocacion.getTrampa().getNombre() + "(periodo " + colocacion.getPeriodo() + ")");
 
-        btnMasInformacion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ColocacionGrafica.this, DatosTrampa.class);
-                intent.putExtra("trampa", colocacion.getTrampa());
-                intent.putExtra("periodo", colocacion.getPeriodo());
-                startActivity(intent);
+        tvPeriodo.setText("Periodo " + colocacion.getPeriodo());
+        tvNombre.setText(colocacion.getTrampa().getNombre());
 
-            }
-        });
+        if (usuario.getAdmin() == 1) {
+            btnMasInformacion.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ColocacionGrafica.this, DatosTrampa.class);
+                    intent.putExtra("trampa", colocacion.getTrampa());
+                    intent.putExtra("periodo", colocacion.getPeriodo());
+                    startActivity(intent);
+
+                }
+            });
+
+            btnMasInformacion.setVisibility(View.VISIBLE);
+        }
 
         //Graficas
         cargarPeriodo(colocacion.getPeriodo());

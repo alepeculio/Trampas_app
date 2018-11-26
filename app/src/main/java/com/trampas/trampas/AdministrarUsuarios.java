@@ -86,6 +86,9 @@ public class AdministrarUsuarios extends Fragment {
         View v = inflater.inflate(R.layout.fragment_administrar_usuarios, container, false);
         ButterKnife.bind(this, v);
 
+        if (usuario == null && getActivity() != null)
+            usuario = ((MenuPrincipal) getActivity()).getUsuario();
+
         setAdaptadorListaUsuarios();
 
         swipeRefresh.setRefreshing(true);
@@ -157,6 +160,7 @@ public class AdministrarUsuarios extends Fragment {
                 if (response.body() != null) {
                     if (response.body().getCodigo().equals("1")) {
                         usuarios = response.body().getUsuarios();
+                        removerLogueado();
                         filtrarUsuarios();
                     } else {
                         usuarios = null;
@@ -185,18 +189,17 @@ public class AdministrarUsuarios extends Fragment {
         });
     }
 
+    private void removerLogueado() {
+        for (int i = 0; i < usuarios.size(); i++)
+            if (usuarios.get(i).getId() == usuario.getId())
+                usuarios.remove(i);
+    }
+
     private void filtrarUsuarios() {
         List<Usuario> usuariosFinal = new ArrayList<>();
 
         if (usuarios != null) {
-            //Remover usuario logueado de la lista y agregar los que solicitaron admin si el cb esta chequedo.
-            for (int i = 0; i < usuarios.size(); i++) {
-                if (usuarios.get(i).getId() == usuario.getId()) {
-                    usuarios.remove(i);
-                } else if (usuarios.get(i).getAdmin() == 2 && cbSolicitudAdmin.isChecked())
-                    usuariosFinal.add(usuarios.get(i));
-            }
-
+            Boolean busquedaVacia = false;
             if (ultimaBusqueda != null) {
                 usuariosFinal.clear();
                 for (Usuario u : usuarios) {
@@ -208,30 +211,28 @@ public class AdministrarUsuarios extends Fragment {
                             usuariosFinal.add(u);
                     }
                 }
-                if (usuariosFinal.size() == 0) {
-                    if (!ultimaBusqueda.equals("")) {
-                        tvNoHayUsuarios.setText("No hay resultados para \"" + ultimaBusqueda + "\"");
-                    } else if (cbSolicitudAdmin.isChecked()) {
-                        tvNoHayUsuarios.setText("No hay usuarios solicitantes");
-                    } else {
-                        usuariosFinal = usuarios;
-                        tvNoHayUsuarios.setText("No hay usuarios");
-                    }
+                if (usuariosFinal.size() == 0 && !ultimaBusqueda.equals("")) {
+                    tvNoHayUsuarios.setText("No hay resultados para \"" + ultimaBusqueda + "\"");
+                    busquedaVacia = true;
                 }
 
             } else {
-                if (usuariosFinal.size() == 0 && !cbSolicitudAdmin.isChecked())
+                if (cbSolicitudAdmin.isChecked()) {
+                    for (Usuario u1 : usuarios)
+                        if (u1.getAdmin() == 2)
+                            usuariosFinal.add(u1);
+                } else
                     usuariosFinal = usuarios;
-
-                if (usuariosFinal.size() == 0) {
-                    if (cbSolicitudAdmin.isChecked())
-                        tvNoHayUsuarios.setText("No hay usuarios solicitantes");
-                    else
-                        tvNoHayUsuarios.setText("No hay usuarios");
-
-                }
-
             }
+
+            if (usuariosFinal.size() == 0 && !busquedaVacia) {
+                if (cbSolicitudAdmin.isChecked())
+                    tvNoHayUsuarios.setText(R.string.no_hay_usuarios_solicitantes);
+                else
+                    tvNoHayUsuarios.setText(R.string.no_hay_usuarios);
+            }
+        } else {
+            tvNoHayUsuarios.setText(R.string.no_hay_usuarios);
         }
 
         if (usuariosFinal.size() == 0) {

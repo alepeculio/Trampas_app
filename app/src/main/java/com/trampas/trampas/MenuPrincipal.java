@@ -38,7 +38,9 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (verificarLogin()) {
+        usuario = getUsuario();
+
+        if (usuario != null) {
             setContentView(R.layout.activity_menu_principal);
             Toolbar toolbar = findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
@@ -62,18 +64,18 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         }
     }
 
-    private Boolean verificarLogin() {
+    public Usuario getUsuario() {
         SharedPreferences sp = getSharedPreferences("usuario_guardado", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sp.getString("usuario", null);
 
-        if (json != null) {
-            usuario = gson.fromJson(json, Usuario.class);
-            return true;
-        } else {
+        if (json != null)
+            return gson.fromJson(json, Usuario.class);
+        else {
             cerrarSesion();
-            return false;
+            return null;
         }
+
     }
 
     public void cerrarSesion() {

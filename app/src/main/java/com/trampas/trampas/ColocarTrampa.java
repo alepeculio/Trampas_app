@@ -113,6 +113,9 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
         View view = inflater.inflate(R.layout.fragment_colocar_trampa, container, false);
         ButterKnife.bind(this, view);
 
+        if (usuario == null && getActivity() != null)
+            usuario = ((MenuPrincipal) getActivity()).getUsuario();
+
         //Obtener ubicacion actual
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         createLocationRequest();
@@ -233,7 +236,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
 
     private void filtrarTrampas() {
         List<Trampa> trampasFinal = new ArrayList<>();
-
+        Boolean busquedaVacia = false;
         if (trampas != null) {
             if (ultimaBusqueda != null) {
                 for (Trampa t : trampas) {
@@ -242,24 +245,19 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
                     }
                 }
 
-                if (trampasFinal.size() == 0) {
-                    if (!ultimaBusqueda.equals("")) {
-                        tvNoHayTrampas.setText("No hay resultados para \"" + ultimaBusqueda + "\"");
-                    } else {
-                        Toast.makeText(getActivity(), String.valueOf(trampas.size()), Toast.LENGTH_SHORT).show();
-                        trampasFinal = trampas;
-                        tvNoHayTrampas.setText("No hay trampas para colocar");
-                    }
+                if (trampasFinal.size() == 0 && !ultimaBusqueda.equals("")) {
+                    tvNoHayTrampas.setText("No hay resultados para \"" + ultimaBusqueda + "\"");
+                    busquedaVacia = true;
                 }
 
             } else {
                 trampasFinal = trampas;
-                if (trampasFinal.size() == 0)
-                    tvNoHayTrampas.setText("No hay trampas para colocar");
             }
         }
 
         if (trampasFinal.size() == 0) {
+            if (!busquedaVacia)
+                tvNoHayTrampas.setText(R.string.no_hay_trampas);
             noHayTrampas.setVisibility(View.VISIBLE);
         } else {
             noHayTrampas.setVisibility(View.GONE);

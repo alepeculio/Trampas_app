@@ -91,6 +91,9 @@ public class MostrarTrampasExistentes extends Fragment {
         View view = inflater.inflate(R.layout.fragment_mostrar_trampas_existentes, container, false);
         ButterKnife.bind(this, view);
 
+        if (usuario == null && getActivity() != null)
+            usuario = ((MenuPrincipal) getActivity()).getUsuario();
+
         if (usuario.getAdmin() != 1) {
             btnMostrarAgregarTrampa.setVisibility(View.GONE);
             btnExportarDatos.setVisibility(View.GONE);
@@ -183,44 +186,45 @@ public class MostrarTrampasExistentes extends Fragment {
         List<Trampa> trampasFinal = new ArrayList<>();
 
         if (trampas != null) {
+            Boolean busquedaVacia = false;
             if (ultimaBusqueda != null) {
+                //Filtrar las trampas por la busqueda realizada
                 for (Trampa t : trampas) {
                     if (t.getNombre().toLowerCase().contains(ultimaBusqueda) || String.valueOf(t.getId()).toLowerCase().contains(ultimaBusqueda)) {
                         trampasFinal.add(t);
                     }
                 }
-                if (trampasFinal.size() == 0) {
-                    if (!ultimaBusqueda.equals("")) {
-                        tvNoHayTrampas.setText("No hay resultados para \"" + ultimaBusqueda + "\"");
-                    } else if (leishmaniasis) {
-                        tvNoHayTrampas.setText("No hay trampas con Leishmaniasis");
-                    } else {
-                        trampasFinal = trampas;
-                        tvNoHayTrampas.setText(R.string.no_hay_trampas);
-                    }
+
+                //Si la busqueda no tuvo resultados
+                if (trampasFinal.size() == 0 && !ultimaBusqueda.equals("")) {
+                    tvNoHayTrampas.setText("No hay resultados para \"" + ultimaBusqueda + "\"");
+                    busquedaVacia = true;
                 }
 
             } else {
                 trampasFinal = trampas;
-                if (trampasFinal.size() == 0) {
-                    if (leishmaniasis)
-                        tvNoHayTrampas.setText("No hay trampas con Leishmaniasis");
-                    else
-                        tvNoHayTrampas.setText(R.string.no_hay_trampas);
-                }
             }
+
+            //Si la lista no tiene trampas y no se realizo una busqueda o no esta vacia.
+            if (trampasFinal.size() == 0 && !busquedaVacia) {
+                if (leishmaniasis)
+                    tvNoHayTrampas.setText("No hay trampas con Leishmaniasis");
+                else
+                    tvNoHayTrampas.setText(R.string.no_hay_trampas);
+            }
+
+        } else {
+            //Si la lista es nula directamente colocar cartel de no hay trampas
+            tvNoHayTrampas.setText(R.string.no_hay_trampas);
         }
 
-        if (leishmaniasis)
-            tvNoHayTrampas.setText("No hay trampas con Leishmaniasis");
-        else
-            tvNoHayTrampas.setText(R.string.no_hay_trampas);
 
         if (trampasFinal.size() == 0) {
             noHayTrampas.setVisibility(View.VISIBLE);
         } else {
             noHayTrampas.setVisibility(View.GONE);
         }
+
         adaptadorListaTrampas.actualizarTrampas(trampasFinal);
         swipeRefresh.setRefreshing(false);
     }
