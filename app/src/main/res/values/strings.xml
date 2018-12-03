@@ -109,9 +109,10 @@
     <string name="seleccionar_fecha_fin">Seleccione una fecha de fin.</string>
     <string name="cantidad_de_flevotomo">Cantidad de flevotomo:</string>
     <string name="perros">Perros infectados</string>
-    <string name="no_hay_colocaciones_con_leishmaniasis">No hay colocaciones con leishmaniasis</string>
+    <string name="no_hay_colocaciones_con_leishmaniasis">No hay colocaciones con leishmaniasis.</string>
     <string name="no_hay_trampas_para_colocar">No hay trampas para colocar.</string>
     <string name="no_hay_usuarios_solicitantes">No hay usuarios solicitantes.</string>
     <string name="dispositivos_encontrados">Dispositivos encontrados</string>
     <string name="debe_de_seleccionar_un_dispositivo_para_agregar">Debe de seleccionar un dispositivo para agregar.</string>
+    <string name="no_hay_trampas_con_leishmaniasis">No hay trampas con Leishmaniasis.</string>
 </resources>

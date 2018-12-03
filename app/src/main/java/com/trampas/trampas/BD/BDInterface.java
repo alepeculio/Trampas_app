@@ -35,8 +35,8 @@ public interface BDInterface {
     @GET("obtenerTrampasColocadas")
     Call<RespuestaTrampas> obtenerTrampasColocadas();
 
-    @GET("obtenerColocacionesActivas")
-    Call<RespuestaColocaciones> obtenerColocacionesActivas();
+    @GET("obtenerColocaciones")
+    Call<RespuestaColocaciones> obtenerColocaciones();
 
     @GET("obtenerUsuarios")
     Call<RespuestaUsuarios> obtenerUsuarios();

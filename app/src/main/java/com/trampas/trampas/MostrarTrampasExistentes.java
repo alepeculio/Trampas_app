@@ -211,14 +211,16 @@ public class MostrarTrampasExistentes extends Fragment {
             //Si la lista no tiene trampas y no se realizo una busqueda o no esta vacia.
             if (trampasFinal.size() == 0 && !busquedaVacia) {
                 if (leishmaniasis)
-                    tvNoHayTrampas.setText("No hay trampas con Leishmaniasis");
+                    tvNoHayTrampas.setText(R.string.no_hay_trampas_con_leishmaniasis);
                 else
                     tvNoHayTrampas.setText(R.string.no_hay_trampas);
             }
 
         } else {
-            //Si la lista es nula directamente colocar cartel de no hay trampas
-            tvNoHayTrampas.setText(R.string.no_hay_trampas);
+            if (leishmaniasis)
+                tvNoHayTrampas.setText(R.string.no_hay_trampas_con_leishmaniasis);
+            else
+                tvNoHayTrampas.setText(R.string.no_hay_trampas);
         }
 
 

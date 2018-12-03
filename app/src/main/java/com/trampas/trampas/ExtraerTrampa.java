@@ -147,7 +147,7 @@ public class ExtraerTrampa extends Fragment {
                                                          }
 
                                                          tvEstado.setText(R.string.conectando);
-                                                         tvEstado.setTextColor(getResources().getColor(R.color.colorGris));
+                                                         tvEstado.setTextColor(mContext.getResources().getColor(R.color.colorGris));
                                                          // Get the device MAC address, which is the last 17 chars in the View
                                                          String info = ((TextView) v).getText().toString();
                                                          final String address = info.substring(info.length() - 17);
@@ -275,7 +275,7 @@ public class ExtraerTrampa extends Fragment {
                         mConnectedThread.write("c"); //Obtener dato de Temperatura.
                     } else {
                         tvEstado.setText(R.string.conexion_fallo);
-                        tvEstado.setTextColor(getResources().getColor(R.color.colorRojo));
+                        tvEstado.setTextColor(mContext.getResources().getColor(R.color.colorRojo));
                     }
 
                 }
@@ -286,7 +286,7 @@ public class ExtraerTrampa extends Fragment {
         if (mBTArrayAdapter == null) {
             // Device does not support Bluetooth
             tvEstado.setText(R.string.bluetooth_no_encontrado);
-            tvEstado.setTextColor(getResources().getColor(R.color.colorRojo));
+            tvEstado.setTextColor(mContext.getResources().getColor(R.color.colorRojo));
             Toast.makeText(mContext, R.string.bluetooth_no_encontrado, Toast.LENGTH_SHORT).show();
         } else {
 
@@ -382,7 +382,7 @@ public class ExtraerTrampa extends Fragment {
         } else {
             btnConectarBT.setBackgroundResource(R.drawable.ic_bluetooth_conectado);
             tvEstado.setText(R.string.bluetooth_encendido);
-            tvEstado.setTextColor(getResources().getColor(R.color.colorVerde));
+            tvEstado.setTextColor(mContext.getResources().getColor(R.color.colorVerde));
             dispositivosVinculados();
         }
     }
@@ -397,12 +397,12 @@ public class ExtraerTrampa extends Fragment {
                 // The user picked a contact.
                 // The Intent's data Uri identifies which contact was selected.
                 tvEstado.setText(R.string.bluetooth_encendido);
-                tvEstado.setTextColor(getResources().getColor(R.color.colorVerde));
+                tvEstado.setTextColor(mContext.getResources().getColor(R.color.colorVerde));
                 btnConectarBT.setBackgroundResource(R.drawable.ic_bluetooth_conectado);
                 dispositivosVinculados();
             } else {
                 tvEstado.setText(R.string.bluetooth_apagado);
-                tvEstado.setTextColor(getResources().getColor(R.color.colorRojo));
+                tvEstado.setTextColor(mContext.getResources().getColor(R.color.colorRojo));
             }
             llProgressBarLista.setVisibility(View.GONE);
         }
@@ -412,7 +412,7 @@ public class ExtraerTrampa extends Fragment {
     private void apagarBT() {
         mBTAdapter.disable();
         tvEstado.setText(R.string.bluetooth_apagado);
-        tvEstado.setTextColor(getResources().getColor(R.color.colorRojo));
+        tvEstado.setTextColor(mContext.getResources().getColor(R.color.colorRojo));
         btnConectarBT.setBackgroundResource(R.drawable.ic_bluetooth);
         Toast.makeText(mContext, R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
     }
@@ -544,6 +544,13 @@ public class ExtraerTrampa extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if (mConnectedThread != null)
+            mConnectedThread.cancel();
     }
 }
 

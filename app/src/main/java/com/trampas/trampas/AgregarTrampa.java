@@ -482,4 +482,11 @@ public class AgregarTrampa extends AppCompatActivity {
 
         });
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mConnectedThread != null)
+            mConnectedThread.cancel();
+    }
 }

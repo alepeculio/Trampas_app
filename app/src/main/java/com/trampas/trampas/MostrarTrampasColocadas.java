@@ -282,7 +282,7 @@ public class MostrarTrampasColocadas extends Fragment {
 
     private void cargarColocaciones() {
         BDInterface bd = BDCliente.getClient().create(BDInterface.class);
-        Call<RespuestaColocaciones> call = bd.obtenerColocacionesActivas();
+        Call<RespuestaColocaciones> call = bd.obtenerColocaciones();
         call.enqueue(new Callback<RespuestaColocaciones>() {
             @Override
             public void onResponse(Call<RespuestaColocaciones> call, Response<RespuestaColocaciones> response) {
@@ -474,6 +474,8 @@ public class MostrarTrampasColocadas extends Fragment {
 
                                 @Override
                                 public void onFailure(Call<Respuesta> call, Throwable t) {
+                                    btnGuardar.setVisibility(View.VISIBLE);
+                                    progressBar.setVisibility(View.GONE);
                                     Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                                 }
                             });
