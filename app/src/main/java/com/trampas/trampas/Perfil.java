@@ -2,9 +2,9 @@ package com.trampas.trampas;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -57,6 +57,8 @@ public class Perfil extends Fragment {
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
+    private Context mContext;
+
     /*@BindView(R.id.tvTrampasColocadas)
     TextView tvTrampasColocadas;*/
 
@@ -75,8 +77,8 @@ public class Perfil extends Fragment {
         View v = inflater.inflate(R.layout.fragment_perfil, container, false);
         ButterKnife.bind(this, v);
 
-        if (usuario == null && getActivity() != null)
-            usuario = ((MenuPrincipal) getActivity()).getUsuario();
+        if (usuario == null && mContext != null)
+            usuario = ((MenuPrincipal) mContext).getUsuario();
 
         tvNombre.setText(usuario.getNombre() + " " + usuario.getApellido());
         tvCorreo.setText(usuario.getCorreo());
@@ -148,16 +150,16 @@ public class Perfil extends Fragment {
                 btnCambiar.setVisibility(View.VISIBLE);
                 if (response.body() != null) {
                     if (response.body().getCodigo().equals("1")) {
-                        Snackbar.make(getView(), response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(((MenuPrincipal) mContext).getWindow().getDecorView().getRootView(), response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
                         etContrasenia.setText("");
                         etContraseniaNueva.setText("");
                     } else if (response.body().getCodigo().equals("2")) {
                         etContraseniaError.setError(response.body().getMensaje());
                     } else {
-                        Toast.makeText(getActivity(), response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -165,9 +167,14 @@ public class Perfil extends Fragment {
             public void onFailure(Call<Respuesta> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 btnCambiar.setVisibility(View.VISIBLE);
-                Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
 }

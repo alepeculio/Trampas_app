@@ -90,13 +90,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="73dp"
-        android:elevation="1dp"
         android:background="@drawable/fondo_claro_transparente"
+        android:elevation="1dp"
         android:gravity="center"
         android:padding="7dp"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent">
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="25dp"
@@ -119,6 +119,19 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp" />
 
+    <LinearLayout
+        android:id="@+id/llProgressBarMapa"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@id/map"
+        app:layout_constraintTop_toTopOf="@id/map">
+
+        <ProgressBar
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/llGuardar"

@@ -3,6 +3,7 @@ package com.trampas.trampas;
 
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -71,6 +72,8 @@ public class MostrarTrampasExistentes extends Fragment {
 
     Usuario usuario;
 
+    private Context mContext;
+
     public MostrarTrampasExistentes() {
         // Required empty public constructor
     }
@@ -91,8 +94,8 @@ public class MostrarTrampasExistentes extends Fragment {
         View view = inflater.inflate(R.layout.fragment_mostrar_trampas_existentes, container, false);
         ButterKnife.bind(this, view);
 
-        if (usuario == null && getActivity() != null)
-            usuario = ((MenuPrincipal) getActivity()).getUsuario();
+        if (usuario == null && mContext != null)
+            usuario = ((MenuPrincipal) mContext).getUsuario();
 
         if (usuario.getAdmin() != 1) {
             btnMostrarAgregarTrampa.setVisibility(View.GONE);
@@ -112,7 +115,7 @@ public class MostrarTrampasExistentes extends Fragment {
         btnMostrarAgregarTrampa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AgregarTrampa.class);
+                Intent intent = new Intent(mContext, AgregarTrampa.class);
                 startActivity(intent);
             }
         });
@@ -120,7 +123,7 @@ public class MostrarTrampasExistentes extends Fragment {
         btnExportarDatos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ExportarDatos.class);
+                Intent intent = new Intent(mContext, ExportarDatos.class);
                 intent.putExtra("usuario", usuario);
                 startActivity(intent);
             }
@@ -143,13 +146,13 @@ public class MostrarTrampasExistentes extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(getActivity().SEARCH_SERVICE);
+        SearchManager searchManager = (SearchManager) mContext.getSystemService(((MenuPrincipal) mContext).SEARCH_SERVICE);
 
         if (searchItem != null) {
             searchView = (SearchView) searchItem.getActionView();
         }
         if (searchView != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(((MenuPrincipal) mContext).getComponentName()));
 
             SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
                 @Override
@@ -173,10 +176,10 @@ public class MostrarTrampasExistentes extends Fragment {
 
     public void setAdaptadorListaTrampas() {
         if (adaptadorListaTrampas == null) {
-            adaptadorListaTrampas = new AdaptadorListaTrampas(new ArrayList<Trampa>(), getActivity());
+            adaptadorListaTrampas = new AdaptadorListaTrampas(new ArrayList<Trampa>(), mContext);
             adaptadorListaTrampas.setUsuario(usuario);
             mRecyclerView.setAdapter(adaptadorListaTrampas);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
             mRecyclerView.setHasFixedSize(true);
         }
     }
@@ -253,11 +256,13 @@ public class MostrarTrampasExistentes extends Fragment {
     private void cargarTrampas() {
         swipeRefresh.setRefreshing(true);
         BDInterface bd = BDCliente.getClient().create(BDInterface.class);
+
         Call<RespuestaTrampas> call;
         if (leishmaniasis)
             call = bd.obtenerTrampasLeishmaniasis();
         else
             call = bd.obtenerTrampas();
+
         call.enqueue(new Callback<RespuestaTrampas>() {
             @Override
             public void onResponse(Call<RespuestaTrampas> call, Response<RespuestaTrampas> response) {
@@ -268,16 +273,13 @@ public class MostrarTrampasExistentes extends Fragment {
                     } else {
                         trampas = null;
                         filtrarTrampas();
-                        if (getActivity() != null) {
-                            Toast.makeText(getActivity(), response.body().getMensaje(), Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     trampas = null;
                     filtrarTrampas();
-                    if (getActivity() != null) {
-                        Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
+
                 }
             }
 
@@ -285,11 +287,14 @@ public class MostrarTrampasExistentes extends Fragment {
             public void onFailure(Call<RespuestaTrampas> call, Throwable t) {
                 trampas = null;
                 filtrarTrampas();
-                if (getActivity() != null) {
-                    Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
 }

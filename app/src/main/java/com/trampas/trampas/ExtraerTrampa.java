@@ -2,7 +2,6 @@ package com.trampas.trampas;
 
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -35,7 +34,6 @@ import com.trampas.trampas.Clases.Trampa;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -114,34 +112,28 @@ public class ExtraerTrampa extends Fragment {
     float promH = 0;
     float promT = 0;
 
-
-    private Handler mHandler; // Our main handler that will receive callback notifications
-    private ConnectedThread mConnectedThread; // bluetooth background worker thread to send and receive data
-    private BluetoothSocket mBTSocket = null; // bi-directional client-to-client data path
-
+    private Handler mHandler;
+    private ConnectedThread mConnectedThread;
+    private BluetoothSocket mBTSocket = null;
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
+    private final static int REQUEST_ENABLE_BT = 1;
+    private final static int MESSAGE_READ = 2;
+    private final static int CONNECTING_STATUS = 3;
 
-    // #defines for identifying shared types between calling functions
-    private final static int REQUEST_ENABLE_BT = 1; // used to identify adding bluetooth names
-
-    private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
-
-    private final static int CONNECTING_STATUS = 3; // used in bluetooth handler to identify message status
+    private Context mContext;
 
     public ExtraerTrampa() {
-        // Required empty public constructor
     }
 
 
     @SuppressLint("HandlerLeak")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_extraer_trampa, container, false);
         ButterKnife.bind(this, v);
 
-        mBTArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
+        mBTArrayAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1);
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // get a handle on the bluetooth radio
 
         listaDispositivos.setAdapter(mBTArrayAdapter); // assign model to view
@@ -150,7 +142,7 @@ public class ExtraerTrampa extends Fragment {
                                                      public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
 
                                                          if (!mBTAdapter.isEnabled()) {
-                                                             Toast.makeText(getActivity(), R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
+                                                             Toast.makeText(mContext, R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
                                                              return;
                                                          }
 
@@ -169,7 +161,7 @@ public class ExtraerTrampa extends Fragment {
                                                                      mBTSocket = createBluetoothSocket(device);
                                                                  } catch (IOException e) {
                                                                      fail = true;
-                                                                     Toast.makeText(getActivity(), "Socket creation failed", Toast.LENGTH_SHORT).show();
+                                                                     Toast.makeText(mContext, "Socket creation failed", Toast.LENGTH_SHORT).show();
                                                                  }
                                                                  // Establish the Bluetooth socket connection.
                                                                  try {
@@ -181,7 +173,7 @@ public class ExtraerTrampa extends Fragment {
                                                                          mHandler.obtainMessage(CONNECTING_STATUS, -1, -1).sendToTarget();
                                                                      } catch (IOException e2) {
                                                                          //insert code to deal with this
-                                                                         Toast.makeText(getActivity(), "Socket creation failed", Toast.LENGTH_SHORT).show();
+                                                                         Toast.makeText(mContext, "Socket creation failed", Toast.LENGTH_SHORT).show();
                                                                      }
                                                                  }
                                                                  if (!fail) {
@@ -260,9 +252,7 @@ public class ExtraerTrampa extends Fragment {
                         mConnectedThread.cancel();
 
                         tvEstado.setText(R.string.datos_recibidos);
-                        Activity activity = getActivity();
-                        if (activity != null)
-                            tvEstado.setTextColor(getResources().getColor(R.color.colorVerde));
+                        tvEstado.setTextColor(mContext.getResources().getColor(R.color.colorVerde));
 
                         //Mostrar datos en los TextViews
                         tvDatosRecibidos.setText("Datos de " + trampa.getNombre() + " recibidos");
@@ -280,9 +270,7 @@ public class ExtraerTrampa extends Fragment {
                     if (msg.arg1 == 1) {
                         String estado = "Conectado al dispositivo: " + (String) (msg.obj);
                         tvEstado.setText(estado.trim());
-                        Activity activity = getActivity();
-                        if (activity != null)
-                            tvEstado.setTextColor(getResources().getColor(R.color.colorVerde));
+                        tvEstado.setTextColor(mContext.getResources().getColor(R.color.colorVerde));
                         getLlProgressBarDatos.setVisibility(View.VISIBLE);
                         mConnectedThread.write("c"); //Obtener dato de Temperatura.
                     } else {
@@ -299,7 +287,7 @@ public class ExtraerTrampa extends Fragment {
             // Device does not support Bluetooth
             tvEstado.setText(R.string.bluetooth_no_encontrado);
             tvEstado.setTextColor(getResources().getColor(R.color.colorRojo));
-            Toast.makeText(getActivity(), R.string.bluetooth_no_encontrado, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.bluetooth_no_encontrado, Toast.LENGTH_SHORT).show();
         } else {
 
             btnConectarBT.setOnClickListener(new View.OnClickListener() {
@@ -349,7 +337,7 @@ public class ExtraerTrampa extends Fragment {
                     getLlProgressBarDatos.setVisibility(View.GONE);
                     if (response.body() != null) {
                         if (response.body().getCodigo().equals("1")) {
-                            Snackbar.make(getView(), response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(((MenuPrincipal) mContext).getWindow().getDecorView().getRootView(), response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
                             trampa = null;
                             tvDatosRecibidos.setText(R.string.datos_recibidos);
                             tvTempMin.setText("");
@@ -360,15 +348,11 @@ public class ExtraerTrampa extends Fragment {
                             tvTempProm.setText("");
                             cargarTrampas();
                         } else {
-                            if (getActivity() != null) {
-                                Toast.makeText(getActivity(), response.body().getMensaje(), Toast.LENGTH_SHORT).show();
-                            }
+                            Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+
                         }
                     } else {
-                        if (getActivity() != null) {
-                            Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
-                        }
-
+                        Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -376,14 +360,12 @@ public class ExtraerTrampa extends Fragment {
                 public void onFailure(Call<Respuesta> call, Throwable t) {
                     tvProgressBarDatos.setText(R.string.obteniendo_datos);
                     getLlProgressBarDatos.setVisibility(View.GONE);
-                    if (getActivity() != null) {
-                        Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                 }
             });
 
         } else {
-            Toast.makeText(getActivity(), "Antes debe de seleccionar una trampa", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Antes debe de seleccionar una trampa", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -411,7 +393,7 @@ public class ExtraerTrampa extends Fragment {
         // Check which request we're responding to
         if (requestCode == REQUEST_ENABLE_BT) {
             // Make sure the request was successful
-            if (resultCode == getActivity().RESULT_OK) {
+            if (resultCode == ((MenuPrincipal) mContext).RESULT_OK) {
                 // The user picked a contact.
                 // The Intent's data Uri identifies which contact was selected.
                 tvEstado.setText(R.string.bluetooth_encendido);
@@ -432,7 +414,7 @@ public class ExtraerTrampa extends Fragment {
         tvEstado.setText(R.string.bluetooth_apagado);
         tvEstado.setTextColor(getResources().getColor(R.color.colorRojo));
         btnConectarBT.setBackgroundResource(R.drawable.ic_bluetooth);
-        Toast.makeText(getActivity(), R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -448,16 +430,29 @@ public class ExtraerTrampa extends Fragment {
         // Check if the device is already discovering
         if (mBTAdapter.isDiscovering()) {
             mBTAdapter.cancelDiscovery();
-            Toast.makeText(getActivity(), R.string.escaneo_detenido, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.escaneo_detenido, Toast.LENGTH_SHORT).show();
+            llProgressBarLista.setVisibility(View.GONE);
         } else {
             if (mBTAdapter.isEnabled()) {
                 mBTArrayAdapter.clear(); // clear items
                 mBTAdapter.startDiscovery();
-                Toast.makeText(getActivity(), R.string.escaneando, Toast.LENGTH_SHORT).show();
+                llProgressBarLista.setVisibility(View.VISIBLE);
+
+                //Ocultar progressBar despues de 12(tiempo que escanea la función startDiscovery() ) segundos si no se encontró ningún dipositivo bt.
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (llProgressBarLista.getVisibility() == View.VISIBLE)
+                            llProgressBarLista.setVisibility(View.GONE);
+                    }
+                }, 12000);
+
+                Toast.makeText(mContext, R.string.escaneando, Toast.LENGTH_SHORT).show();
                 tvTituloLista.setText(R.string.trampas_encontradas);
-                Objects.requireNonNull(getActivity()).registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+                mContext.registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
             } else {
-                Toast.makeText(getActivity(), R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -465,6 +460,7 @@ public class ExtraerTrampa extends Fragment {
     final BroadcastReceiver blReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            llProgressBarLista.setVisibility(View.GONE);
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
@@ -508,7 +504,7 @@ public class ExtraerTrampa extends Fragment {
             tvTituloLista.setText(R.string.trampas_vinculadas);
             llProgressBarLista.setVisibility(View.GONE);
         } else
-            Toast.makeText(getActivity(), R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
     }
 
     private void cargarTrampas() {
@@ -524,16 +520,12 @@ public class ExtraerTrampa extends Fragment {
                         encenderBT();
                     } else {
                         trampas = null;
-                        if (getActivity() != null) {
-                            Toast.makeText(getActivity(), response.body().getMensaje(), Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
                         llProgressBarLista.setVisibility(View.GONE);
                     }
                 } else {
                     trampas = null;
-                    if (getActivity() != null) {
-                        Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                     llProgressBarLista.setVisibility(View.GONE);
 
                 }
@@ -542,12 +534,16 @@ public class ExtraerTrampa extends Fragment {
             @Override
             public void onFailure(Call<RespuestaTrampas> call, Throwable t) {
                 trampas = null;
-                if (getActivity() != null) {
-                    Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                 llProgressBarLista.setVisibility(View.GONE);
             }
         });
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
     }
 }
 

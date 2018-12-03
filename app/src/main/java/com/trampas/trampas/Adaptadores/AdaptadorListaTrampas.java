@@ -58,9 +58,10 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
         this.usuario = usuario;
     }
 
-    public void setLeishmaniasis(boolean leishmaniasis){
+    public void setLeishmaniasis(boolean leishmaniasis) {
         this.leishmaniasis = leishmaniasis;
     }
+
     @NonNull
     @Override
     public TrampaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

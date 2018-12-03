@@ -4,12 +4,10 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -53,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -97,6 +94,11 @@ public class MostrarTrampasColocadas extends Fragment {
     @BindView(R.id.btnExportar)
     LinearLayout btnExportar;
 
+    @BindView(R.id.llProgressBarMapa)
+    LinearLayout llProgressBarMapa;
+
+    private Context mContext;
+
     Calendar calendario = Calendar.getInstance();
 
     public MostrarTrampasColocadas() {
@@ -120,10 +122,10 @@ public class MostrarTrampasColocadas extends Fragment {
         View v = inflater.inflate(R.layout.fragment_mostrar_trampas_colocadas, container, false);
         ButterKnife.bind(this, v);
 
-        if (usuario == null && getActivity() != null)
-            usuario = ((MenuPrincipal) getActivity()).getUsuario();
+        if (usuario == null && mContext != null)
+            usuario = ((MenuPrincipal) mContext).getUsuario();
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
 
         final DatePickerDialog.OnDateSetListener fechaDesde = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -143,7 +145,7 @@ public class MostrarTrampasColocadas extends Fragment {
         tvDesde.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerDialog dialog1 = new DatePickerDialog(getActivity(),
+                DatePickerDialog dialog1 = new DatePickerDialog(mContext,
                         fechaDesde,
                         calendario.get(Calendar.YEAR),
                         calendario.get(Calendar.MONTH),
@@ -178,7 +180,7 @@ public class MostrarTrampasColocadas extends Fragment {
         tvHasta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerDialog dialog2 = new DatePickerDialog(getActivity(),
+                DatePickerDialog dialog2 = new DatePickerDialog(mContext,
                         fechaHasta,
                         calendario.get(Calendar.YEAR),
                         calendario.get(Calendar.MONTH),
@@ -204,12 +206,13 @@ public class MostrarTrampasColocadas extends Fragment {
             }
         });
 
+        new LongOperationMap().execute();
         return v;
     }
 
     private void filtrarColocaciones() {
         if (colocaciones == null) {
-            Toast.makeText(getActivity(), "No hay trampas colocadas", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "No hay trampas colocadas", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -226,7 +229,7 @@ public class MostrarTrampasColocadas extends Fragment {
             fin = sdf.parse(fechaHasta);
         } catch (ParseException pe) {
             if (inicio == null) {
-                Toast.makeText(getActivity(), R.string.seleccionar_fecha_inicio, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.seleccionar_fecha_inicio, Toast.LENGTH_SHORT).show();
                 return;
             }
             if (fin == null) {
@@ -239,7 +242,7 @@ public class MostrarTrampasColocadas extends Fragment {
         }
 
         if (inicio.after(fin)) {
-            Toast.makeText(getActivity(), "La fecha de comienzo debe ser anterior a la de finalización", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "La fecha de comienzo debe ser anterior a la de finalización", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -263,7 +266,7 @@ public class MostrarTrampasColocadas extends Fragment {
             btnExportar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), ExportarDatos.class);
+                    Intent intent = new Intent(mContext, ExportarDatos.class);
                     intent.putExtra("usuario", usuario);
                     intent.putExtra("desde", fechaDesde);
                     intent.putExtra("hasta", fechaHastaFinal);
@@ -283,28 +286,26 @@ public class MostrarTrampasColocadas extends Fragment {
         call.enqueue(new Callback<RespuestaColocaciones>() {
             @Override
             public void onResponse(Call<RespuestaColocaciones> call, Response<RespuestaColocaciones> response) {
+                llProgressBarMapa.setVisibility(View.GONE);
                 if (response.body() != null) {
                     if (response.body().getCodigo().equals("1")) {
                         colocaciones = response.body().getColocaciones();
                         prepararMapa(null);
                     } else {
                         colocaciones = null;
-                        if (getActivity() != null)
-                            Toast.makeText(getActivity(), response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     colocaciones = null;
-                    if (getActivity() != null)
-                        Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<RespuestaColocaciones> call, Throwable t) {
+                llProgressBarMapa.setVisibility(View.GONE);
                 colocaciones = null;
-                if (getActivity() != null)
-                    Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
-
+                Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -332,7 +333,7 @@ public class MostrarTrampasColocadas extends Fragment {
             if (colocs == null) {
                 colocs = colocaciones;
             } else if (colocs.size() == 0) {
-                Toast.makeText(getActivity(), "Sin resultados.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Sin resultados.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -342,7 +343,7 @@ public class MostrarTrampasColocadas extends Fragment {
                     if (c.getUsuario() == usuario.getId()) {
                         m.setDraggable(true);
                         m.setIcon(getIcon(R.mipmap.ic_trampas_fondo_celeste_round));
-                        m.setSnippet(getString(R.string.mensaje_editar_ubicacion));
+                        m.setSnippet(mContext.getString(R.string.mensaje_editar_ubicacion));
                     } else {
                         m.setIcon(getIcon(R.mipmap.ic_trampas_fondo_celeste_round));
                         m.setSnippet("Actualmente colocada");
@@ -402,10 +403,10 @@ public class MostrarTrampasColocadas extends Fragment {
                             public void onClick(View v) {
                                 for (Colocacion c : colocaciones)
                                     if (c.getId() == (int) marker.getTag()) {
-                                        Intent intent = new Intent(getActivity(), DatosTrampa.class);
+                                        Intent intent = new Intent(mContext, DatosTrampa.class);
                                         intent.putExtra("trampa", c.getTrampa());
                                         intent.putExtra("colocacion", c);
-                                        getActivity().startActivity(intent);
+                                        mContext.startActivity(intent);
                                     }
                             }
                         });
@@ -426,10 +427,10 @@ public class MostrarTrampasColocadas extends Fragment {
                 public void onInfoWindowClick(Marker marker) {
                     for (Colocacion c : colocaciones)
                         if (c.getId() == (int) marker.getTag() && c.getFechaFin() != null) {
-                            Intent intent = new Intent(getActivity(), ColocacionGrafica.class);
+                            Intent intent = new Intent(mContext, ColocacionGrafica.class);
                             intent.putExtra("colocacion", c);
                             intent.putExtra("usuario", usuario);
-                            Objects.requireNonNull(getActivity()).startActivity(intent);
+                            mContext.startActivity(intent);
                         }
                 }
             });
@@ -462,22 +463,18 @@ public class MostrarTrampasColocadas extends Fragment {
                                         if (response.body().getCodigo().equals("1")) {
                                             llGuardar.setVisibility(View.GONE);
                                             marcador = null;
-                                            Snackbar.make(getView(), response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
+                                            Snackbar.make(((MenuPrincipal) mContext).getWindow().getDecorView().getRootView(), response.body().getMensaje(), Snackbar.LENGTH_LONG).show();
                                         } else {
-                                            if (getActivity() != null)
-                                                Toast.makeText(getActivity(), response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
                                         }
                                     } else {
-                                        if (getActivity() != null)
-                                            Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<Respuesta> call, Throwable t) {
-                                    if (getActivity() != null)
-                                        Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
-
+                                    Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
@@ -498,10 +495,10 @@ public class MostrarTrampasColocadas extends Fragment {
 
 
     public void obtenerLocalizacion() {
-        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, SOLICITUD_OBTENER_POSICION_ACTUAL);
         } else {
-            mFusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+            mFusedLocationClient.getLastLocation().addOnSuccessListener((MenuPrincipal) mContext, new OnSuccessListener<Location>() {
                 @SuppressLint("MissingPermission")
                 @Override
                 public void onSuccess(Location location) {
@@ -535,11 +532,11 @@ public class MostrarTrampasColocadas extends Fragment {
     }
 
     @Override
-    public void onAttachFragment(Fragment childFragment) {
-        super.onAttachFragment(childFragment);
-        //Cargar mapa en segundo plano con asynctask
-        new LongOperationMap().execute();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
     }
+
 
     private class LongOperationMap extends AsyncTask<Void, Void, Void> {
 
@@ -570,7 +567,7 @@ public class MostrarTrampasColocadas extends Fragment {
     }
 
     public void mostrarMensaje() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("Cambios no guardados");
         builder.setMessage("Si continua perderá los cambios del último marcador");
 
@@ -609,5 +606,6 @@ public class MostrarTrampasColocadas extends Fragment {
         @SuppressLint("SimpleDateFormat") SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return convetDateFormat.format(date);
     }
+
 }
 

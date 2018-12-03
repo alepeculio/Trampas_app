@@ -92,6 +92,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     TextView tvProgressBar;
 
     Location ubicacionActual = null;
+    private Context mContext;
 
     public ColocarTrampa() {
     }
@@ -107,20 +108,19 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_colocar_trampa, container, false);
         ButterKnife.bind(this, view);
 
-        if (usuario == null && getActivity() != null)
-            usuario = ((MenuPrincipal) getActivity()).getUsuario();
+        if (usuario == null && mContext != null)
+            usuario = ((MenuPrincipal) mContext).getUsuario();
 
-        //Obtener ubicacion actual
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        //Obtener provedor de localizacion de google.
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
         createLocationRequest();
 
         setAdaptadorListaTrampas();
+
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -132,7 +132,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     }
 
     private void createLocationRequest() {
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         } else {
             mLocationRequest = new LocationRequest();
@@ -141,23 +141,23 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
             mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
             LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
-            SettingsClient client = LocationServices.getSettingsClient(getActivity());
+            SettingsClient client = LocationServices.getSettingsClient(mContext);
             Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
-            task.addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
+            task.addOnSuccessListener((MenuPrincipal) mContext, new OnSuccessListener<LocationSettingsResponse>() {
                 @Override
                 public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                     startLocationUpdates();
                 }
             });
 
-            task.addOnFailureListener(getActivity(), new OnFailureListener() {
+            task.addOnFailureListener((MenuPrincipal) mContext, new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     if (e instanceof ResolvableApiException) {
                         try {
                             ResolvableApiException resolvable = (ResolvableApiException) e;
-                            resolvable.startResolutionForResult(getActivity(), SOLICITUD_LOCALIZACION);
+                            resolvable.startResolutionForResult((MenuPrincipal) mContext, SOLICITUD_LOCALIZACION);
                         } catch (IntentSender.SendIntentException sendEx) {
                             Log.e("task onFailureListener", sendEx.getMessage());
                         }
@@ -176,10 +176,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     }
 
     private void startLocationUpdates() {
-        if (getActivity() == null)
-            return;
-
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
             return;
         } else {
@@ -209,12 +206,12 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults.length > 0) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     createLocationRequest();
                 }
             }
         } else {
-            Toast.makeText(getActivity(), "Su ubicación es necesaria para colocar la trampa.", Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, "Su ubicación es necesaria para colocar la trampa.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -226,10 +223,10 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
 
     public void setAdaptadorListaTrampas() {
         if (adaptadorListaTrampasColocar == null) {
-            adaptadorListaTrampasColocar = new AdaptadorListaTrampasColocar(new ArrayList<Trampa>(), getActivity(), this);
+            adaptadorListaTrampasColocar = new AdaptadorListaTrampasColocar(new ArrayList<Trampa>(), mContext, this);
             adaptadorListaTrampasColocar.setUsuario(usuario);
             mRecyclerView.setAdapter(adaptadorListaTrampasColocar);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
             mRecyclerView.setHasFixedSize(true);
         }
     }
@@ -257,7 +254,8 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
 
         if (trampasFinal.size() == 0) {
             if (!busquedaVacia)
-                tvNoHayTrampas.setText(R.string.no_hay_trampas);
+                tvNoHayTrampas.setText(R.string.no_hay_trampas_para_colocar);
+
             noHayTrampas.setVisibility(View.VISIBLE);
         } else {
             noHayTrampas.setVisibility(View.GONE);
@@ -280,17 +278,12 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
                     } else {
                         trampas = null;
                         filtrarTrampas();
-                        if (getActivity() != null) {
-                            Toast.makeText(getActivity(), response.body().getMensaje(), Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     trampas = null;
                     filtrarTrampas();
-                    if (getActivity() != null) {
-                        Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
-                    }
-
+                    Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -298,9 +291,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
             public void onFailure(Call<RespuestaTrampas> call, Throwable t) {
                 trampas = null;
                 filtrarTrampas();
-                if (getActivity() != null) {
-                    Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -309,13 +300,13 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(getActivity().SEARCH_SERVICE);
+        SearchManager searchManager = (SearchManager) mContext.getSystemService(mContext.SEARCH_SERVICE);
 
         if (searchItem != null) {
             searchView = (SearchView) searchItem.getActionView();
         }
         if (searchView != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(((MenuPrincipal) mContext).getComponentName()));
 
             queryTextListener = new SearchView.OnQueryTextListener() {
                 @Override
@@ -340,6 +331,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         if (context instanceof MostrarTrampasColocadasInterface) {
             mpi = (MostrarTrampasColocadasInterface) context;
         } else {
@@ -350,7 +342,6 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     @Override
     public void onDetach() {
         super.onDetach();
-        mpi = null;
         stopLocationUpdates();
     }
 
@@ -358,7 +349,7 @@ public class ColocarTrampa extends Fragment implements LocalizacionInterface {
     public Location obtenerLocalizacion() {
         if (ubicacionActual == null) {
             if (llProgressBar.getVisibility() == View.VISIBLE) {
-                Toast.makeText(getActivity(), "Estableciendo ubicación, aguarde porfavor.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Estableciendo ubicación, aguarde porfavor.", Toast.LENGTH_SHORT).show();
             } else {
                 createLocationRequest();
             }

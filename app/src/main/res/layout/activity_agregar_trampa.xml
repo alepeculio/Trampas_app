@@ -83,7 +83,7 @@
         app:layout_constraintBottom_toTopOf="@id/cvEstado"
         app:layout_constraintTop_toBottomOf="@+id/llBotones">
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -94,37 +94,45 @@
                 android:layout_height="wrap_content"
                 android:text="@string/dispositivos_vinculados"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/tvMensaje"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/mensaje_agregar_trampa"
                 android:textAlignment="center"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                app:layout_constraintTop_toBottomOf="@id/tvTituloLista" />
+
+            <ListView
+                android:id="@+id/listaDispositivos"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:choiceMode="singleChoice"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvMensaje" />
+
 
             <LinearLayout
                 android:id="@+id/llProgressBarLista"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:visibility="gone">
+                app:layout_constraintBottom_toBottomOf="@id/listaDispositivos"
+                app:layout_constraintTop_toTopOf="@id/listaDispositivos">
 
                 <ProgressBar
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:indeterminate="true"
-                    android:indeterminateTint="#000" />
+                    android:indeterminateTint="@color/colorGrisClaro" />
             </LinearLayout>
 
-            <ListView
-                android:id="@+id/listaDispositivos"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:choiceMode="singleChoice" />
-        </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
@@ -212,6 +220,9 @@
                     android:layout_height="90dp"
                     android:hint="@string/nombre"
                     android:textColorHint="@color/colorBlanco"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="250"
+                    app:counterTextAppearance="@style/TextAppearance.App.TextInputLayout"
                     app:errorEnabled="true"
                     app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
 

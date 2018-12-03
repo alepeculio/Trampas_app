@@ -85,12 +85,27 @@
                 app:layout_constraintBottom_toTopOf="@id/glCentro"
                 app:layout_constraintTop_toBottomOf="@id/tvTemperatura" />
 
+            <LinearLayout
+                android:id="@+id/llProgressBarTemp"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:elevation="1dp"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="@id/graphTemp"
+                app:layout_constraintTop_toTopOf="@id/graphTemp">
+
+                <ProgressBar
+                    android:layout_width="100dp"
+                    android:layout_height="100dp" />
+            </LinearLayout>
+
             <android.support.constraint.Guideline
                 android:id="@+id/glCentro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.55" />
+
 
             <TextView
                 android:id="@+id/tvHumedad"
@@ -108,6 +123,20 @@
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvHumedad" />
+
+            <LinearLayout
+                android:id="@+id/llProgressBarHum"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:elevation="1dp"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="@id/graphHum"
+                app:layout_constraintTop_toTopOf="@id/graphHum">
+
+                <ProgressBar
+                    android:layout_width="100dp"
+                    android:layout_height="100dp" />
+            </LinearLayout>
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.CardView>

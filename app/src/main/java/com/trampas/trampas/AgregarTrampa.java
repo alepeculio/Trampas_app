@@ -88,34 +88,35 @@ public class AgregarTrampa extends AppCompatActivity {
     //Datos obtenidos de la trampa
     String nombre = null;
 
-    private Handler mHandler; // Our main handler that will receive callback notifications
-    private ConnectedThread mConnectedThread; // bluetooth background worker thread to send and receive data
-    private BluetoothSocket mBTSocket = null; // bi-directional client-to-client data path
-
+    private Handler mHandler;
+    private ConnectedThread mConnectedThread;
+    private BluetoothSocket mBTSocket = null;
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
-
-    // #defines for identifying shared types between calling functions
-    private final static int REQUEST_ENABLE_BT = 1; // used to identify adding bluetooth names
-
-    private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
-
-    private final static int CONNECTING_STATUS = 3; // used in bluetooth handler to identify message status
+    private final static int REQUEST_ENABLE_BT = 1;
+    private final static int MESSAGE_READ = 2;
+    private final static int CONNECTING_STATUS = 3;
 
     @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agregar_trampa);
+
+        //Cambiar titulo de la barra superior.
         ActionBar barra = getSupportActionBar();
         if (barra != null)
             barra.setTitle("Agregar trampa");
+
+        //Evitar que el teclado se abra cuando se inicia la actividad.
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
         ButterKnife.bind(this);
 
-        mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-        mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // get a handle on the bluetooth radio
+        mBTAdapter = BluetoothAdapter.getDefaultAdapter(); //Obtener un adaptador para el bt.
+        mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1); //Crear un adaptador simple para la lista de dispositivos bt.
+        listaDispositivos.setAdapter(mBTArrayAdapter); //Setear adaptador a la lista.
 
-        listaDispositivos.setAdapter(mBTArrayAdapter); // assign model to view
+        //Setear los eventos a realizar al seleccionar un dispositivo bt.
         listaDispositivos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                                      @Override
                                                      public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
@@ -126,23 +127,27 @@ public class AgregarTrampa extends AppCompatActivity {
                                                          }
 
                                                          tvEstado.setText(R.string.conectando);
-                                                         // Get the device MAC address, which is the last 17 chars in the View
+
+                                                         //Se obtiene la mac del dispositivo(últimos 17 caracteres).
                                                          String info = ((TextView) v).getText().toString();
                                                          final String address = info.substring(info.length() - 17);
                                                          final String name = info.substring(0, info.length() - 17);
 
-                                                         // Spawn a new thread to avoid blocking the GUI one
+                                                         //Se crea un nuevo hilo para no bloquear el GUI
                                                          new Thread() {
                                                              public void run() {
                                                                  boolean fail = false;
                                                                  BluetoothDevice device = mBTAdapter.getRemoteDevice(address);
+
+                                                                 //Se crea un socket de conexión bt.
                                                                  try {
                                                                      mBTSocket = createBluetoothSocket(device);
                                                                  } catch (IOException e) {
                                                                      fail = true;
-                                                                     Toast.makeText(AgregarTrampa.this, "Socket creation failed", Toast.LENGTH_SHORT).show();
+                                                                     Toast.makeText(AgregarTrampa.this, "Falló la creación del socket", Toast.LENGTH_SHORT).show();
                                                                  }
-                                                                 // Establish the Bluetooth socket connection.
+
+                                                                 //Se conecta el socket.
                                                                  try {
                                                                      mBTSocket.connect();
                                                                  } catch (IOException e) {
@@ -151,14 +156,20 @@ public class AgregarTrampa extends AppCompatActivity {
                                                                          mBTSocket.close();
                                                                          mHandler.obtainMessage(CONNECTING_STATUS, -1, -1).sendToTarget();
                                                                      } catch (IOException e2) {
-                                                                         //insert code to deal with this
-                                                                         Toast.makeText(AgregarTrampa.this, "Socket creation failed", Toast.LENGTH_SHORT).show();
+                                                                         Toast.makeText(AgregarTrampa.this, "Falló la creación del socket", Toast.LENGTH_SHORT).show();
                                                                      }
                                                                  }
+
+                                                                 //Si la conexión fue exitosa.
                                                                  if (!fail) {
+                                                                     //Se crea un hilo para menejar la conexión.
                                                                      mConnectedThread = new ConnectedThread(mBTSocket, mHandler, MESSAGE_READ);
                                                                      mConnectedThread.start();
+
+                                                                     //Se guarda la mac del dispositivo conectado.
                                                                      mac = address;
+
+                                                                     //Se llama al handler del hilo para indicar al GUI que se conectó el dispositivo.
                                                                      mHandler.obtainMessage(CONNECTING_STATUS, 1, -1, name).sendToTarget();
                                                                  }
                                                              }
@@ -167,56 +178,66 @@ public class AgregarTrampa extends AppCompatActivity {
                                                  }
         );
 
-
+        //Se crea un handler para manejar los dos hilos.
         mHandler = new Handler() {
             @Override
             public void handleMessage(android.os.Message msg) {
-                if (msg.what == MESSAGE_READ) {
-                    String readMessage = null;
-                    try {
-                        readMessage = new String((byte[]) msg.obj, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (readMessage != null) {
-                        nombre = readMessage.substring(0, 7);
-                    }
-                    etNombre.setText(nombre);
-                    mConnectedThread.cancel();
-                    llProgressBarDatos.setVisibility(View.GONE);
-                    etNombreError.setVisibility(View.VISIBLE);
-                    tvEstado.setText(R.string.datos_recibidos);
-                }
-
                 if (msg.what == CONNECTING_STATUS) {
                     if (msg.arg1 == 1) {
+                        //Si se conectó correctamente con el dispositivo.
                         String estado = getString(R.string.conectado) + (msg.obj);
                         tvEstado.setText(estado.trim());
-                        llProgressBarDatos.setVisibility(View.VISIBLE);
+
                         etNombreError.setVisibility(View.GONE);
-                        mConnectedThread.write("a"); //Obtener nombre
+                        llProgressBarDatos.setVisibility(View.VISIBLE);
+
+                        //Solicitar a la trampa su nombre
+                        mConnectedThread.write("a");
                     } else {
                         tvEstado.setText(R.string.conexion_fallo);
                     }
 
                 }
+
+                //Si se recibió un mensaje desde el dispositivo (enviado por el hilo ConnectedThread).
+                if (msg.what == MESSAGE_READ) {
+                    //Leer el mensaje.
+                    String readMessage = null;
+                    try {
+                        readMessage = new String((byte[]) msg.obj, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        //Si falla al leer el mensaje volver a solicitar.
+                        e.printStackTrace();
+                        mConnectedThread.write("a");
+                    }
+
+                    //Si se pudo leer correctamente.
+                    if (readMessage != null) {
+                        nombre = readMessage.substring(0, 7);
+                        etNombre.setText(nombre);
+                        //Desconectar dispositivo.
+                        mConnectedThread.cancel();
+
+                        tvEstado.setText(R.string.datos_recibidos);
+                        llProgressBarDatos.setVisibility(View.GONE);
+                        etNombreError.setVisibility(View.VISIBLE);
+                    }
+                }
             }
         };
 
+        //Si el teléfono no soporta bt.
         if (mBTArrayAdapter == null) {
-            // Device does not support Bluetooth
             tvEstado.setText(R.string.bluetooth_no_encontrado);
             Toast.makeText(this, R.string.bluetooth_no_encontrado, Toast.LENGTH_SHORT).show();
         } else {
-
+            //Sino, setear eventos para manejar el bt.
             btnConectarBT.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     controlarBT();
                 }
             });
-
             btnDispositivosVinculados.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -232,6 +253,7 @@ public class AgregarTrampa extends AppCompatActivity {
             });
         }
 
+        //Setear evento para agregar la trampa.
         btnAgregar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -239,14 +261,13 @@ public class AgregarTrampa extends AppCompatActivity {
             }
         });
 
-        llProgressBarLista.setVisibility(View.VISIBLE);
         cargarTrampas();
     }
 
-
+    //Agregar trampa con el nombre del EditText "nombreTrampa" y la mac guardada.
     public void agregarTrampa() {
         if (mac == null) {
-            Toast.makeText(this, "Debe de seleccionar un dispositivo para agregar", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.debe_de_seleccionar_un_dispositivo_para_agregar, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -254,7 +275,7 @@ public class AgregarTrampa extends AppCompatActivity {
         etNombreError.setError("");
 
         if (nombreTrampa.equals("")) {
-            etNombreError.setError("El nombre no puede quedar vacío.");
+            etNombreError.setError(getString(R.string.campo_requerido));
             return;
         } else if (nombreTrampa.length() > 250) {
             etNombreError.setError("El nombre es demasiado largo.");
@@ -289,6 +310,7 @@ public class AgregarTrampa extends AppCompatActivity {
         });
     }
 
+    //Crear socket para conexión bt.
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         return device.createRfcommSocketToServiceRecord(BTMODULEUUID);
         //creates secure outgoing connection with BT device using UUID
@@ -307,15 +329,13 @@ public class AgregarTrampa extends AppCompatActivity {
         }
     }
 
-    // Enter here after user selects "yes" or "no" to enabling radio
+    //Se entra acá cuando el usuario decide o no encender el bt.
     public void onActivityResult(int requestCode, int resultCode, Intent Data) {
-        // Check which request we're responding to
         if (requestCode == REQUEST_ENABLE_BT) {
-            // Make sure the request was successful
+            //Si el usuario aceptó la solicitud de enceder bt.
             if (resultCode == RESULT_OK) {
-                // The user picked a contact.
-                // The Intent's data Uri identifies which contact was selected.
                 tvEstado.setText(R.string.bluetooth_encendido);
+                //Cambiar a icono encendido.
                 btnConectarBT.setBackgroundResource(R.drawable.ic_bluetooth_conectado);
                 dispositivosVinculados();
             } else
@@ -324,7 +344,7 @@ public class AgregarTrampa extends AppCompatActivity {
         }
     }
 
-
+    //Apagar bluetooth.
     private void apagarBT() {
         mBTAdapter.disable();
         tvEstado.setText(R.string.bluetooth_apagado);
@@ -332,7 +352,7 @@ public class AgregarTrampa extends AppCompatActivity {
         Toast.makeText(this, "Bluetooth apagado", Toast.LENGTH_SHORT).show();
     }
 
-
+    //Manejar bluetooth.
     private void controlarBT() {
         if (mBTAdapter.isEnabled())
             apagarBT();
@@ -342,16 +362,32 @@ public class AgregarTrampa extends AppCompatActivity {
     }
 
     private void escanear() {
-        // Check if the device is already discovering
+        //Si ya esta escaneando, detener.
         if (mBTAdapter.isDiscovering()) {
             mBTAdapter.cancelDiscovery();
             Toast.makeText(this, R.string.escaneo_detenido, Toast.LENGTH_SHORT).show();
+            llProgressBarLista.setVisibility(View.GONE);
         } else {
+            //Sino, si el bt esta encendido comenzar a escanear.
             if (mBTAdapter.isEnabled()) {
                 mBTArrayAdapter.clear(); // clear items
                 mBTAdapter.startDiscovery();
+                llProgressBarLista.setVisibility(View.VISIBLE);
+
+                //Ocultar progressBar despues de 12 segundos( tiempo que escanea la función startDiscovery() )  si no se encontró ningún dipositivo bt.
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (llProgressBarLista.getVisibility() == View.VISIBLE)
+                            llProgressBarLista.setVisibility(View.GONE);
+                    }
+                }, 12000);
+
                 Toast.makeText(this, R.string.escaneando, Toast.LENGTH_SHORT).show();
-                tvTituloLista.setText(R.string.trampas_encontradas);
+                tvTituloLista.setText(R.string.dispositivos_encontrados);
+
+                //Registrar recibidor para que sea llamado al encontrar dispositivos.
                 registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
             } else {
                 Toast.makeText(this, R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
@@ -359,14 +395,17 @@ public class AgregarTrampa extends AppCompatActivity {
         }
     }
 
+    //Se crea recibidor para meanjer los dispositivos encontrados.
     final BroadcastReceiver blReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            llProgressBarLista.setVisibility(View.GONE);
+            //Si se encontró algún dispositivo bt.
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // add the name to the list
 
+                //Verificar que el dispositivo no esté ya agregado como trampa.
                 Boolean agregar = true;
                 if (trampas != null) {
                     for (Trampa t : trampas) {
@@ -384,13 +423,13 @@ public class AgregarTrampa extends AppCompatActivity {
         }
     };
 
+    //Listar dispositivos bt vinculados al teléfono.
     private void dispositivosVinculados() {
+        llProgressBarLista.setVisibility(View.VISIBLE);
         Set<BluetoothDevice> mPairedDevices = mBTAdapter.getBondedDevices();
         if (mBTAdapter.isEnabled()) {
-            // put it's one to the adapter
             mBTArrayAdapter.clear();
             for (BluetoothDevice device : mPairedDevices) {
-
                 Boolean agregar = true;
                 if (trampas != null) {
                     for (Trampa t : trampas) {
@@ -398,17 +437,20 @@ public class AgregarTrampa extends AppCompatActivity {
                             agregar = false;
                     }
                 }
-
                 if (agregar)
                     mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
 
             }
             tvTituloLista.setText(R.string.dispositivos_vinculados);
             llProgressBarLista.setVisibility(View.GONE);
-        } else
+        } else {
             Toast.makeText(this, R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
+            llProgressBarLista.setVisibility(View.GONE);
+        }
+
     }
 
+    //Obtener trampas desde el servidor.
     private void cargarTrampas() {
         BDInterface bd = BDCliente.getClient().create(BDInterface.class);
         Call<RespuestaTrampas> call = bd.obtenerTrampas();

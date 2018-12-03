@@ -59,7 +59,7 @@
                 <ImageView
                     android:id="@+id/imgTecnologo"
                     android:layout_width="match_parent"
-                    android:layout_height="90dp"
+                    android:layout_height="200dp"
                     android:src="@drawable/tecnologo"
                     app:layout_constraintTop_toBottomOf="@id/texto3" />
 

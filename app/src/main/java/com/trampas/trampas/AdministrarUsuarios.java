@@ -2,6 +2,7 @@ package com.trampas.trampas;
 
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -60,8 +61,9 @@ public class AdministrarUsuarios extends Fragment {
     @BindView(R.id.cbSolicitudAdmin)
     CheckBox cbSolicitudAdmin;
 
+    Context mContext;
+
     public AdministrarUsuarios() {
-        // Required empty public constructor
     }
 
     public void setUsuario(Usuario usuario) {
@@ -82,16 +84,16 @@ public class AdministrarUsuarios extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_administrar_usuarios, container, false);
         ButterKnife.bind(this, v);
 
-        if (usuario == null && getActivity() != null)
-            usuario = ((MenuPrincipal) getActivity()).getUsuario();
+        //Si el usuario logueado está nulo obtenerlo del menu principal.
+        if (usuario == null && mContext != null)
+            usuario = ((MenuPrincipal) mContext).getUsuario();
 
         setAdaptadorListaUsuarios();
 
-        swipeRefresh.setRefreshing(true);
+        //Setear evento para recargar lista de usuarios al hacer el swipe.
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -99,6 +101,7 @@ public class AdministrarUsuarios extends Fragment {
             }
         });
 
+        //Setear evento para filtrar usuarios que solicitaron ser admin.
         cbSolicitudAdmin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -110,26 +113,28 @@ public class AdministrarUsuarios extends Fragment {
         return v;
     }
 
+    //Crear y setear el adaptador a la lista de usuarios.
     public void setAdaptadorListaUsuarios() {
         if (adaptadorListaUsuarios == null) {
-            adaptadorListaUsuarios = new AdaptadorListaUsuarios(new ArrayList<Usuario>(), getActivity(), this);
+            adaptadorListaUsuarios = new AdaptadorListaUsuarios(new ArrayList<Usuario>(), mContext, this);
             mRecyclerView.setAdapter(adaptadorListaUsuarios);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
             mRecyclerView.setHasFixedSize(true);
         }
     }
 
+    //Crear la barra de busqueda.
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(getActivity().SEARCH_SERVICE);
+        SearchManager searchManager = (SearchManager) mContext.getSystemService(((MenuPrincipal) mContext).SEARCH_SERVICE);
 
         if (searchItem != null) {
             searchView = (SearchView) searchItem.getActionView();
         }
         if (searchView != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(((MenuPrincipal) mContext).getComponentName()));
 
             queryTextListener = new SearchView.OnQueryTextListener() {
                 @Override
@@ -151,7 +156,9 @@ public class AdministrarUsuarios extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    //cargar usuarios desde la bd
     private void cargarUsuarios() {
+        swipeRefresh.setRefreshing(true);
         BDInterface bd = BDCliente.getClient().create(BDInterface.class);
         Call<RespuestaUsuarios> call = bd.obtenerUsuarios();
         call.enqueue(new Callback<RespuestaUsuarios>() {
@@ -165,16 +172,14 @@ public class AdministrarUsuarios extends Fragment {
                     } else {
                         usuarios = null;
                         filtrarUsuarios();
-                        if (getActivity() != null) {
-                            Toast.makeText(getActivity(), response.body().getMensaje(), Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(mContext, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
+
                     }
                 } else {
                     usuarios = null;
                     filtrarUsuarios();
-                    if (getActivity() != null) {
-                        Toast.makeText(getActivity(), R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(mContext, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
+
                 }
             }
 
@@ -182,19 +187,19 @@ public class AdministrarUsuarios extends Fragment {
             public void onFailure(Call<RespuestaUsuarios> call, Throwable t) {
                 usuarios = null;
                 filtrarUsuarios();
-                if (getActivity() != null) {
-                    Toast.makeText(getActivity(), R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(mContext, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    //Quitar usuario logueado de la lista.
     private void removerLogueado() {
         for (int i = 0; i < usuarios.size(); i++)
             if (usuarios.get(i).getId() == usuario.getId())
                 usuarios.remove(i);
     }
 
+    //Filtrar usuarios por busqueda o los que solicitaron ser admin.
     private void filtrarUsuarios() {
         List<Usuario> usuariosFinal = new ArrayList<>();
 
@@ -242,5 +247,11 @@ public class AdministrarUsuarios extends Fragment {
         }
         adaptadorListaUsuarios.actualizarUsuarios(usuariosFinal);
         swipeRefresh.setRefreshing(false);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
     }
 }

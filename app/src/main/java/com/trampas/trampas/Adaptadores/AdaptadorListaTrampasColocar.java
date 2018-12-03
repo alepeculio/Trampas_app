@@ -124,10 +124,11 @@ public class AdaptadorListaTrampasColocar extends RecyclerView.Adapter<Adaptador
                             trampas.remove(trampa);
                             notifyItemRemoved(posicion);
                             final String codigo = response.body().getCodigo();
-                            Snackbar snackbar = Snackbar.make(itemView, response.body().getMensaje(), Snackbar.LENGTH_LONG);
+                            final Snackbar snackbar = Snackbar.make(itemView, response.body().getMensaje(), Snackbar.LENGTH_LONG);
                             snackbar.setAction("Ver mapa", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    snackbar.dismiss();
                                     mpi.irAlMapa(codigo);
                                 }
                             });

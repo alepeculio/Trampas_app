@@ -13,15 +13,12 @@ import android.widget.Toast;
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
-import com.jjoe64.graphview.ValueDependentColor;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
-import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.trampas.trampas.BD.BDCliente;
 import com.trampas.trampas.BD.BDInterface;
 import com.trampas.trampas.BD.RespuestaColocaciones;
-import com.trampas.trampas.BD.RespuestaTrampas;
 import com.trampas.trampas.Clases.Colocacion;
 import com.trampas.trampas.Clases.Usuario;
 
@@ -52,6 +49,12 @@ public class ColocacionGrafica extends AppCompatActivity {
     @BindView(R.id.btnMasInformacion)
     LinearLayout btnMasInformacion;
 
+    @BindView(R.id.llProgressBarHum)
+    LinearLayout llProgressBarHum;
+
+    @BindView(R.id.llProgressBarTemp)
+    LinearLayout llProgressBarTemp;
+
     List<Colocacion> colocaciones;
     Usuario usuario;
 
@@ -64,6 +67,7 @@ public class ColocacionGrafica extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_colocacion_grafica);
 
+        //Obtener datos pasados por el intent.
         colocacion = (Colocacion) getIntent().getSerializableExtra("colocacion");
         usuario = (Usuario) getIntent().getSerializableExtra("usuario");
 
@@ -88,7 +92,7 @@ public class ColocacionGrafica extends AppCompatActivity {
             btnMasInformacion.setVisibility(View.VISIBLE);
         }
 
-        //Graficas
+        //Gráficas
         cargarPeriodo(colocacion.getPeriodo());
 
     }
@@ -174,6 +178,7 @@ public class ColocacionGrafica extends AppCompatActivity {
             });
             staticLabelsFormatter.setHorizontalLabels(new String[]{etiqueta1, etiqueta2, etiqueta3});
             graphTemp.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+            llProgressBarTemp.setVisibility(View.GONE);
         }
     }
 
@@ -258,6 +263,7 @@ public class ColocacionGrafica extends AppCompatActivity {
             });
             staticLabelsFormatter.setHorizontalLabels(new String[]{etiqueta1, etiqueta2, etiqueta3});
             graphHum.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+            llProgressBarHum.setVisibility(View.GONE);
         }
 
 
@@ -319,12 +325,14 @@ public class ColocacionGrafica extends AppCompatActivity {
                     } else {
                         colocaciones = null;
                         Toast.makeText(ColocacionGrafica.this, response.body().getMensaje(), Toast.LENGTH_SHORT).show();
-                        //llProgressBarLista.setVisibility(View.GONE);
+                        llProgressBarHum.setVisibility(View.GONE);
+                        llProgressBarTemp.setVisibility(View.GONE);
                     }
                 } else {
                     colocaciones = null;
                     Toast.makeText(ColocacionGrafica.this, R.string.error_interno_servidor, Toast.LENGTH_SHORT).show();
-                    //llProgressBarLista.setVisibility(View.GONE);
+                    llProgressBarHum.setVisibility(View.GONE);
+                    llProgressBarTemp.setVisibility(View.GONE);
                 }
             }
 
@@ -332,7 +340,8 @@ public class ColocacionGrafica extends AppCompatActivity {
             public void onFailure(Call<RespuestaColocaciones> call, Throwable t) {
                 colocaciones = null;
                 Toast.makeText(ColocacionGrafica.this, R.string.error_conexion_servidor, Toast.LENGTH_SHORT).show();
-                //llProgressBarLista.setVisibility(View.GONE);
+                llProgressBarHum.setVisibility(View.GONE);
+                llProgressBarTemp.setVisibility(View.GONE);
             }
 
         });
