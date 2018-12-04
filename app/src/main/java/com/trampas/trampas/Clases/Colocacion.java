@@ -16,8 +16,15 @@ public class Colocacion implements Serializable {
     String fechaFin;
     Boolean leishmaniasis;
     int periodo;
-    int flevotomo;
-    int perros;
+    int flebotomo;
+    int habitantes;
+    String observaciones;
+    int perrosExitentes;
+    int perrosMuestreados;
+    int perrosPositivos;
+    String perrosProcedencia;
+    int perrosEutanasiados;
+    String otrasAcciones;
     Trampa trampa;
     int usuario;
 
@@ -149,19 +156,75 @@ public class Colocacion implements Serializable {
         this.periodo = periodo;
     }
 
-    public int getFlevotomo() {
-        return flevotomo;
+    public int getFlebotomo() {
+        return flebotomo;
     }
 
-    public void setFlevotomo(int flevotomo) {
-        this.flevotomo = flevotomo;
+    public void setFlebotomo(int flebotomo) {
+        this.flebotomo = flebotomo;
     }
 
-    public int getPerros() {
-        return perros;
+    public int getPerrosExitentes() {
+        return perrosExitentes;
     }
 
-    public void setPerros(int perros) {
-        this.perros = perros;
+    public void setPerrosExitentes(int perrosExitentes) {
+        this.perrosExitentes = perrosExitentes;
+    }
+
+    public int getHabitantes() {
+        return habitantes;
+    }
+
+    public void setHabitantes(int habitantes) {
+        this.habitantes = habitantes;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public int getPerrosMuestreados() {
+        return perrosMuestreados;
+    }
+
+    public void setPerrosMuestreados(int perrosMuestreados) {
+        this.perrosMuestreados = perrosMuestreados;
+    }
+
+    public int getPerrosPositivos() {
+        return perrosPositivos;
+    }
+
+    public void setPerrosPositivos(int perrosPositivos) {
+        this.perrosPositivos = perrosPositivos;
+    }
+
+    public String getPerrosProcedencia() {
+        return perrosProcedencia;
+    }
+
+    public void setPerrosProcedencia(String perrosProcedencia) {
+        this.perrosProcedencia = perrosProcedencia;
+    }
+
+    public int getPerrosEutanasiados() {
+        return perrosEutanasiados;
+    }
+
+    public void setPerrosEutanasiados(int perrosEutanasiados) {
+        this.perrosEutanasiados = perrosEutanasiados;
+    }
+
+    public String getOtrasAcciones() {
+        return otrasAcciones;
+    }
+
+    public void setOtrasAcciones(String otrasAcciones) {
+        this.otrasAcciones = otrasAcciones;
     }
 }

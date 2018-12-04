@@ -107,12 +107,19 @@
     <string name="exportar">Exportar</string>
     <string name="mensaje_exportar_datos">Seleccione las fechas entre las que desea realizar la exportación, si las deja en blanco se exportarán todos los datos del sistema.\n Los datos en formato CSV serán enviados a su correo.</string>
     <string name="seleccionar_fecha_fin">Seleccione una fecha de fin.</string>
-    <string name="cantidad_de_flevotomo">Cantidad de flevotomo:</string>
-    <string name="perros">Perros infectados</string>
+    <string name="perros_existentes">Perros existentes en el área:</string>
     <string name="no_hay_colocaciones_con_leishmaniasis">No hay colocaciones con leishmaniasis.</string>
     <string name="no_hay_trampas_para_colocar">No hay trampas para colocar.</string>
     <string name="no_hay_usuarios_solicitantes">No hay usuarios solicitantes.</string>
     <string name="dispositivos_encontrados">Dispositivos encontrados</string>
     <string name="debe_de_seleccionar_un_dispositivo_para_agregar">Debe de seleccionar un dispositivo para agregar.</string>
     <string name="no_hay_trampas_con_leishmaniasis">No hay trampas con Leishmaniasis.</string>
+    <string name="observaciones">Observaciones:</string>
+    <string name="habitantes_de_la_vivienda">Habitantes de la vivienda:</string>
+    <string name="flebotomos_capturados">Flebótomos capturados:</string>
+    <string name="perros_muestreados">Perros muestreados:</string>
+    <string name="lugar_de_procedencia_de_perros_positivos">Lugar de procedencia de perros positivos:</string>
+    <string name="otras_acciones_implementadas">Otras acciones implementadas:</string>
+    <string name="perros_eutanasiados">Perros eutanasiados:</string>
+    <string name="perros_positivos">Perros positivos:</string>
 </resources>

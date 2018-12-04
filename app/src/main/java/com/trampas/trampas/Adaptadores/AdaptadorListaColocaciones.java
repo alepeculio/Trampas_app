@@ -107,11 +107,24 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
         Button btnCancelar;
         @BindView(R.id.llLeishmaniasis)
         LinearLayout llLeishmaniasis;
-        @BindView(R.id.perros)
-        EditText etPerros;
-        @BindView(R.id.cantFlevotomo)
-        EditText etCantFlevotomo;
-
+        @BindView(R.id.flebotomosCapturados)
+        EditText flebotomosCapturados;
+        @BindView(R.id.habitantesVivienda)
+        EditText habitantesVivienda;
+        @BindView(R.id.observaciones)
+        EditText observaciones;
+        @BindView(R.id.perrosExistentes)
+        EditText perrosExistentes;
+        @BindView(R.id.perrosMuestreados)
+        EditText perrosMuestreados;
+        @BindView(R.id.perrosPositivos)
+        EditText perrosPositivos;
+        @BindView(R.id.perrosProcedencia)
+        EditText perrosProcedencia;
+        @BindView(R.id.perrosEutanasiados)
+        EditText perrosEutanasiados;
+        @BindView(R.id.otrasAcciones)
+        EditText otrasAcciones;
 
         public ColocacionViewHolder(View itemView) {
             super(itemView);
@@ -140,8 +153,15 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
 
 
             checkLesishmaniasis(colocacion.getLeishmaniasis());
-            etCantFlevotomo.setText(String.valueOf(colocacion.getFlevotomo()));
-            etPerros.setText(String.valueOf(colocacion.getPerros()));
+            flebotomosCapturados.setText(String.valueOf(colocacion.getFlebotomo()));
+            habitantesVivienda.setText(String.valueOf(colocacion.getHabitantes()));
+            observaciones.setText(colocacion.getObservaciones());
+            perrosExistentes.setText(String.valueOf(colocacion.getPerrosExitentes()));
+            perrosMuestreados.setText(String.valueOf(colocacion.getPerrosMuestreados()));
+            perrosPositivos.setText(String.valueOf(colocacion.getPerrosPositivos()));
+            perrosEutanasiados.setText(String.valueOf(colocacion.getPerrosEutanasiados()));
+            perrosProcedencia.setText(colocacion.getPerrosProcedencia());
+            otrasAcciones.setText(colocacion.getOtrasAcciones());
 
             cbLeishmaniasis.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -195,8 +215,15 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
             etHumMax.setEnabled(editable);
             etHumProm.setEnabled(editable);
             cbLeishmaniasis.setEnabled(editable);
-            etCantFlevotomo.setEnabled(editable);
-            etPerros.setEnabled(editable);
+            flebotomosCapturados.setEnabled(editable);
+            habitantesVivienda.setEnabled(editable);
+            observaciones.setEnabled(editable);
+            perrosExistentes.setEnabled(editable);
+            perrosMuestreados.setEnabled(editable);
+            perrosPositivos.setEnabled(editable);
+            perrosProcedencia.setEnabled(editable);
+            perrosEutanasiados.setEnabled(editable);
+            otrasAcciones.setEnabled(editable);
 
             if (editable) {
                 llEditarCampos.setVisibility(View.VISIBLE);
@@ -246,6 +273,17 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
             float hProm = 0;
             int leishmaniasis = (cbLeishmaniasis.isChecked()) ? 1 : 0;
 
+            int flebotomos = 0;
+            int habitantes = 0;
+            int pExistentes = 0;
+            int pMuestreados = 0;
+            int pPositivos = 0;
+            int pEutanasiados = 0;
+            String pProcedencia = "";
+            String obsers = "";
+            String oAcciones = "";
+
+
             try {
                 lat = Double.valueOf(etLat.getText().toString().trim());
                 lon = Double.valueOf(etLon.getText().toString().trim());
@@ -267,12 +305,27 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
                 return;
             }
 
-            String flevotomo = etCantFlevotomo.getText().toString().trim();
-            String perros = etPerros.getText().toString().trim();
+            if (cbLeishmaniasis.isChecked()) {
+                try {
+                    flebotomos = Integer.valueOf(flebotomosCapturados.getText().toString().trim());
+                    habitantes = Integer.valueOf(habitantesVivienda.getText().toString().trim());
+                    obsers = observaciones.getText().toString().trim();
+                    pExistentes = Integer.valueOf(perrosExistentes.getText().toString().trim());
+                    pMuestreados = Integer.valueOf(perrosMuestreados.getText().toString().trim());
+                    pPositivos = Integer.valueOf(perrosPositivos.getText().toString().trim());
+                    pProcedencia = perrosProcedencia.getText().toString().trim();
+                    pEutanasiados = Integer.valueOf(perrosEutanasiados.getText().toString().trim());
+                    oAcciones = otrasAcciones.getText().toString().trim();
+                } catch (NumberFormatException nfe) {
+                    Toast.makeText(mContext, R.string.datos_incorrectos, Toast.LENGTH_SHORT).show();
+                    setCargando(false);
+                    return;
+                }
+            }
 
 
             BDInterface bd = BDCliente.getClient().create(BDInterface.class);
-            Call<Respuesta> call = bd.actualizarColocacion(colocacion.getId(), lat, lon, fInicio, fFin, tMin, tMax, tProm, hMin, hMax, hProm, leishmaniasis, flevotomo, perros);
+            Call<Respuesta> call = bd.actualizarColocacion(colocacion.getId(), lat, lon, fInicio, fFin, tMin, tMax, tProm, hMin, hMax, hProm, leishmaniasis, flebotomos, habitantes, obsers, pExistentes, pMuestreados, pPositivos, pProcedencia, pEutanasiados, oAcciones);
             call.enqueue(new Callback<Respuesta>() {
                 @Override
                 public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {

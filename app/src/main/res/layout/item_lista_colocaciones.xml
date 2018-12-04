@@ -333,10 +333,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <LinearLayout
-                android:id="@+id/llCantFlevotomo"
+                android:id="@+id/llFlebotomosCapturados"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginBottom="5dp"
@@ -348,11 +348,11 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0"
                     android:gravity="center"
-                    android:text="@string/cantidad_de_flevotomo"
+                    android:text="@string/flebotomos_capturados"
                     android:textSize="15sp" />
 
                 <EditText
-                    android:id="@+id/cantFlevotomo"
+                    android:id="@+id/flebotomosCapturados"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -364,7 +364,60 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llPerros"
+                android:id="@+id/llHabitantesVivienda"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="5dp"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:gravity="center"
+                    android:text="@string/habitantes_de_la_vivienda"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/habitantesVivienda"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/cardview_dark_background"
+                    android:textSize="15sp"
+                    tools:ignore="Autofill" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llObservaciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:gravity="center"
+                    android:text="@string/observaciones"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/observaciones"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapSentences|textMultiLine|textAutoCorrect"
+                    android:lines="3"
+                    android:textColor="@color/cardview_dark_background"
+                    tools:ignore="Autofill" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llPerrosExistentes"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginBottom="5dp"
@@ -375,11 +428,11 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0"
                     android:gravity="center"
-                    android:text="@string/perros"
+                    android:text="@string/perros_existentes"
                     android:textSize="15sp" />
 
                 <EditText
-                    android:id="@+id/perros"
+                    android:id="@+id/perrosExistentes"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -387,6 +440,140 @@
                     android:inputType="numberDecimal"
                     android:textColor="@color/cardview_dark_background"
                     android:textSize="15sp"
+                    tools:ignore="Autofill" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llPerrosMuestreados"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="5dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:gravity="center"
+                    android:text="@string/perros_muestreados"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/perrosMuestreados"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/cardview_dark_background"
+                    android:textSize="15sp"
+                    tools:ignore="Autofill" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llPerrosPositivos"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="5dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:gravity="center"
+                    android:text="@string/perros_positivos"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/perrosPositivos"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/cardview_dark_background"
+                    android:textSize="15sp"
+                    tools:ignore="Autofill" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llPerrosProcedencia"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="5dp"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:gravity="center"
+                    android:text="@string/lugar_de_procedencia_de_perros_positivos"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/perrosProcedencia"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:inputType="text"
+                    android:textColor="@color/cardview_dark_background"
+                    android:textSize="15sp"
+                    tools:ignore="Autofill" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llPerrosEutanasiados"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="5dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:gravity="center"
+                    android:text="@string/perros_eutanasiados"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/perrosEutanasiados"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/cardview_dark_background"
+                    android:textSize="15sp"
+                    tools:ignore="Autofill" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llOtrasAcciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:gravity="center"
+                    android:text="@string/otras_acciones_implementadas"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/otrasAcciones"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapSentences|textMultiLine|textAutoCorrect"
+                    android:lines="3"
+                    android:textColor="@color/cardview_dark_background"
                     tools:ignore="Autofill" />
             </LinearLayout>
         </LinearLayout>
