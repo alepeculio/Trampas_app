@@ -594,7 +594,7 @@ public class MostrarTrampasColocadas extends Fragment {
         if (inputDate == null)
             return "";
 
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = null;
         try {
             date = simpleDateFormat.parse(inputDate);

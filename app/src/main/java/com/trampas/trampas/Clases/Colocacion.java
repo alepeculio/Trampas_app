@@ -16,10 +16,10 @@ public class Colocacion implements Serializable {
     String fechaFin;
     Boolean leishmaniasis;
     int periodo;
-    int flebotomo;
+    int flebotomos;
     int habitantes;
     String observaciones;
-    int perrosExitentes;
+    int perrosExistentes;
     int perrosMuestreados;
     int perrosPositivos;
     String perrosProcedencia;
@@ -156,20 +156,20 @@ public class Colocacion implements Serializable {
         this.periodo = periodo;
     }
 
-    public int getFlebotomo() {
-        return flebotomo;
+    public int getFlebotomos() {
+        return flebotomos;
     }
 
-    public void setFlebotomo(int flebotomo) {
-        this.flebotomo = flebotomo;
+    public void setFlebotomos(int flebotomos) {
+        this.flebotomos = flebotomos;
     }
 
-    public int getPerrosExitentes() {
-        return perrosExitentes;
+    public int getPerrosExistentes() {
+        return perrosExistentes;
     }
 
-    public void setPerrosExitentes(int perrosExitentes) {
-        this.perrosExitentes = perrosExitentes;
+    public void setPerrosExistentes(int perrosExistentes) {
+        this.perrosExistentes = perrosExistentes;
     }
 
     public int getHabitantes() {

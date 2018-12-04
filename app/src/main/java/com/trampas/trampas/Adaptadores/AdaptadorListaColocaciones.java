@@ -153,10 +153,10 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
 
 
             checkLesishmaniasis(colocacion.getLeishmaniasis());
-            flebotomosCapturados.setText(String.valueOf(colocacion.getFlebotomo()));
+            flebotomosCapturados.setText(String.valueOf(colocacion.getFlebotomos()));
             habitantesVivienda.setText(String.valueOf(colocacion.getHabitantes()));
             observaciones.setText(colocacion.getObservaciones());
-            perrosExistentes.setText(String.valueOf(colocacion.getPerrosExitentes()));
+            perrosExistentes.setText(String.valueOf(colocacion.getPerrosExistentes()));
             perrosMuestreados.setText(String.valueOf(colocacion.getPerrosMuestreados()));
             perrosPositivos.setText(String.valueOf(colocacion.getPerrosPositivos()));
             perrosEutanasiados.setText(String.valueOf(colocacion.getPerrosEutanasiados()));
@@ -287,8 +287,8 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
             try {
                 lat = Double.valueOf(etLat.getText().toString().trim());
                 lon = Double.valueOf(etLon.getText().toString().trim());
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date fI = sdf.parse(etFechaInicio.getText().toString().trim());
                 fInicio = simpleDateFormat.format(fI);
                 Date fF = sdf.parse(etFechaFin.getText().toString().trim());
@@ -355,7 +355,7 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
             if (inputDate == null)
                 return "";
 
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = null;
             try {
                 date = simpleDateFormat.parse(inputDate);
@@ -366,7 +366,7 @@ public class AdaptadorListaColocaciones extends RecyclerView.Adapter<AdaptadorLi
             if (date == null)
                 return "";
 
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             return convetDateFormat.format(date);
         }
 

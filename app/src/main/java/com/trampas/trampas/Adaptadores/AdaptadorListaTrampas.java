@@ -307,7 +307,7 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
             if (inputDate == null)
                 return "";
 
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = null;
             try {
                 date = simpleDateFormat.parse(inputDate);
@@ -318,7 +318,7 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
             if (date == null)
                 return "";
 
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat convetDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             return convetDateFormat.format(date);
         }
 
