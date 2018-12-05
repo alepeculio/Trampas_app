@@ -118,11 +118,12 @@
     <string name="habitantes_de_la_vivienda">Habitantes de la vivienda:</string>
     <string name="flebotomos_capturados">Flebótomos capturados:</string>
     <string name="perros_muestreados">Perros muestreados:</string>
-    <string name="lugar_de_procedencia_de_perros_positivos">Lugar de procedencia de perros positivos:</string>
+    <string name="procedencia_de_perros_positivos">Procedencia de perros positivos:</string>
     <string name="otras_acciones_implementadas">Otras acciones implementadas:</string>
     <string name="perros_eutanasiados">Perros eutanasiados:</string>
     <string name="perros_positivos">Perros positivos:</string>
     <string name="informacion_ultima_vez">Información última vez:</string>
     <string name="no_colocada_actualmente">No colocada actualmente</string>
     <string name="informacion">Información:</string>
+    <string name="agregando_trampa">Agregando trampa…</string>
 </resources>

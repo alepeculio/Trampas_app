@@ -81,6 +81,12 @@ public class AgregarTrampa extends AppCompatActivity {
     @BindView(R.id.btnAgregar)
     Button btnAgregar;
 
+    @BindView(R.id.llBtnAgregar)
+    LinearLayout llBtnAgregar;
+
+    @BindView(R.id.tvProgressBarDatos)
+    TextView tvProgressBarDatos;
+
     List<Trampa> trampas;
 
     String mac = null;  //Direcccion mac de la trampa seleccionada
@@ -187,9 +193,8 @@ public class AgregarTrampa extends AppCompatActivity {
                         //Si se conectó correctamente con el dispositivo.
                         String estado = getString(R.string.conectado) + (msg.obj);
                         tvEstado.setText(estado.trim());
-
-                        etNombreError.setVisibility(View.GONE);
-                        llProgressBarDatos.setVisibility(View.VISIBLE);
+                        tvProgressBarDatos.setText(R.string.obteniendo_datos);
+                        setCargando(true);
 
                         //Solicitar a la trampa su nombre
                         mConnectedThread.write("a");
@@ -219,8 +224,7 @@ public class AgregarTrampa extends AppCompatActivity {
                         mConnectedThread.cancel();
 
                         tvEstado.setText(R.string.datos_recibidos);
-                        llProgressBarDatos.setVisibility(View.GONE);
-                        etNombreError.setVisibility(View.VISIBLE);
+                        setCargando(false);
                     }
                 }
             }
@@ -264,6 +268,18 @@ public class AgregarTrampa extends AppCompatActivity {
         cargarTrampas();
     }
 
+    public void setCargando(boolean cargando) {
+        if (cargando) {
+            etNombreError.setVisibility(View.GONE);
+            llProgressBarDatos.setVisibility(View.VISIBLE);
+            llBtnAgregar.setVisibility(View.GONE);
+        } else {
+            etNombreError.setVisibility(View.VISIBLE);
+            llProgressBarDatos.setVisibility(View.GONE);
+            llBtnAgregar.setVisibility(View.VISIBLE);
+        }
+    }
+
     //Agregar trampa con el nombre del EditText "nombreTrampa" y la mac guardada.
     public void agregarTrampa() {
         if (mac == null) {
@@ -283,12 +299,14 @@ public class AgregarTrampa extends AppCompatActivity {
         }
 
         final Intent menu = getParentActivityIntent();
-
+        tvProgressBarDatos.setText(R.string.agregando_trampa);
+        setCargando(true);
         BDInterface bd = BDCliente.getClient().create(BDInterface.class);
         Call<Respuesta> call = bd.agregarTrampa(nombreTrampa, mac);
         call.enqueue(new Callback<Respuesta>() {
             @Override
             public void onResponse(Call<Respuesta> call, Response<Respuesta> response) {
+                setCargando(false);
                 if (response.body() != null) {
                     if (response.body().getCodigo().equals("-1")) {
                         etNombreError.setError(response.body().getMensaje());
@@ -395,7 +413,7 @@ public class AgregarTrampa extends AppCompatActivity {
         }
     }
 
-    //Se crea recibidor para meanjer los dispositivos encontrados.
+    //Se crea recibidor para manejar los dispositivos encontrados.
     final BroadcastReceiver blReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
