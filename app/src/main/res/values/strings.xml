@@ -64,7 +64,7 @@
     <string name="resumen">Resumen:</string>
     <string name="inicio">Inicio:</string>
     <string name="fin">Fin:</string>
-    <string name="mas_informacion">Mas información</string>
+    <string name="mas_informacion">Más información</string>
     <string name="search">Search</string>
     <string name="detalles_de_colocacion">Detalles de colocación:</string>
     <string name="bluetooth_encendido">Bluetooth encendido.</string>
@@ -122,4 +122,7 @@
     <string name="otras_acciones_implementadas">Otras acciones implementadas:</string>
     <string name="perros_eutanasiados">Perros eutanasiados:</string>
     <string name="perros_positivos">Perros positivos:</string>
+    <string name="informacion_ultima_vez">Información última vez:</string>
+    <string name="no_colocada_actualmente">No colocada actualmente</string>
+    <string name="informacion">Información:</string>
 </resources>

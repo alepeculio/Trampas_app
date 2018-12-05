@@ -209,9 +209,9 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
                 });
 
                 if (fechaFin == null) {
-                    tvColocadaActualmente.setText("Actualmente colocada");
+                    tvColocadaActualmente.setText(R.string.actualmente_colocada);
                     tvColocadaActualmente.setTextColor(Color.GREEN);
-                    tvDetalles.setText("Información:");
+                    tvDetalles.setText(R.string.informacion);
                     llBtnIrAlMapa.setVisibility(View.VISIBLE);
                     final String codigo = String.valueOf(c.getId());
                     btnIrAlMapa.setOnClickListener(new View.OnClickListener() {
@@ -222,9 +222,9 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
                     });
 
                 } else {
-                    tvColocadaActualmente.setText("No colocada actualmente");
+                    tvColocadaActualmente.setText(R.string.no_colocada_actualmente);
                     tvColocadaActualmente.setTextColor(Color.RED);
-                    tvDetalles.setText("Información ultima vez:");
+                    tvDetalles.setText(R.string.informacion_ultima_vez);
                     llFechaFin.setVisibility(View.VISIBLE);
                     tvFechaFin.setText(convertFormat(fechaFin));
 
