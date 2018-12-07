@@ -2,6 +2,9 @@ package com.trampas.trampas.Adaptadores;
 
 import android.content.Context;
 import android.location.Location;
+import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
@@ -123,6 +126,16 @@ public class AdaptadorListaTrampasColocar extends RecyclerView.Adapter<Adaptador
 
                             trampas.remove(trampa);
                             notifyItemRemoved(posicion);
+
+                            //Vibrar por 300ms
+                            Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                v.vibrate(VibrationEffect.createOneShot(300, VibrationEffect.DEFAULT_AMPLITUDE));
+                            } else {
+                                //deprecated in API 26
+                                v.vibrate(300);
+                            }
+
                             final String codigo = response.body().getCodigo();
                             final Snackbar snackbar = Snackbar.make(itemView, response.body().getMensaje(), Snackbar.LENGTH_LONG);
                             snackbar.setAction("Ver mapa", new View.OnClickListener() {
