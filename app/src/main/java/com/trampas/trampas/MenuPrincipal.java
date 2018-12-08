@@ -32,6 +32,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
     String idColocacionCreada;
     TextView nombre;
     TextView correo;
+    int opcionSeleccionada;
     ColocarTrampa colocarTrampa;
 
     @SuppressLint("SetTextI18n")
@@ -59,8 +60,6 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
             correo = headerView.findViewById(R.id.tvCorreo);
             nombre.setText(usuario.getNombre() + " " + usuario.getApellido());
             correo.setText(usuario.getCorreo());
-
-            cargarOpcionSeleccionada();
         }
     }
 
@@ -105,12 +104,12 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         }
 
         try {
-            int opcion = obtenerOpcionSeleccionada();
-            if (opcion != 0) {
-                MenuItem mi = navigationView.getMenu().findItem(opcion);
+            int opcionSeleccionada = obtenerOpcionSeleccionada();
+            if (opcionSeleccionada != 0) {
+                MenuItem mi = navigationView.getMenu().findItem(opcionSeleccionada);
                 if (mi != null) {
                     onNavigationItemSelected(mi);
-                    navigationView.setCheckedItem(opcion);
+                    navigationView.setCheckedItem(opcionSeleccionada);
                 } else
                     throw new Exception();
 
@@ -126,10 +125,10 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         }
     }
 
-    private void guardarOpcionSeleccionada(int opcion) {
+    private void guardarOpcionSeleccionada() {
         SharedPreferences sp = getSharedPreferences(getString(R.string.opcion_menu), MODE_PRIVATE);
         SharedPreferences.Editor et = sp.edit();
-        et.putString("opcion", String.valueOf(opcion));
+        et.putString("opcion", String.valueOf(opcionSeleccionada));
         et.apply();
     }
 
@@ -143,6 +142,18 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         SharedPreferences.Editor ed = sp.edit();
         ed.clear();
         ed.apply();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarOpcionSeleccionada();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        guardarOpcionSeleccionada();
     }
 
     @Override
@@ -185,7 +196,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        guardarOpcionSeleccionada(id);
+        opcionSeleccionada = id;
         Fragment fragment = null;
         boolean fragmentTransaction = false;
 
