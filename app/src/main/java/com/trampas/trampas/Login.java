@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.trampas.trampas.BD.BDCliente;
 import com.trampas.trampas.BD.BDInterface;
 import com.trampas.trampas.BD.RespuestaLogin;
+import com.trampas.trampas.Clases.Sha1Hash;
 import com.trampas.trampas.Clases.Usuario;
 
 import butterknife.BindView;
@@ -45,7 +46,6 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        verificarLogin();
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
@@ -97,6 +97,12 @@ public class Login extends AppCompatActivity {
         if (contrasenia.equals("")) {
             etContraseniaError.setError(getString(R.string.campo_requerido));
             error = true;
+        } else {
+            try {
+                contrasenia = Sha1Hash.SHA1(contrasenia);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         if (error)
@@ -153,14 +159,6 @@ public class Login extends AppCompatActivity {
         cargarInicio();
     }
 
-    private void verificarLogin() {
-        SharedPreferences sp = getSharedPreferences("usuario_guardado", MODE_PRIVATE);
-        String jsonUsuario = sp.getString("usuario", null);
-
-        if (jsonUsuario != null)
-            cargarInicio();
-
-    }
 
     private void cargarInicio() {
         Intent i = new Intent(Login.this, MenuPrincipal.class);

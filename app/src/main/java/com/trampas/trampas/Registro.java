@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.trampas.trampas.BD.BDCliente;
 import com.trampas.trampas.BD.BDInterface;
 import com.trampas.trampas.BD.Respuesta;
+import com.trampas.trampas.Clases.Sha1Hash;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -150,6 +151,12 @@ public class Registro extends AppCompatActivity {
         if (contrasenia.equals("")) {
             etContraseniaError.setError(getString(R.string.campo_requerido));
             error = true;
+        } else {
+            try {
+                contrasenia = Sha1Hash.SHA1(contrasenia);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         if (error)
@@ -208,3 +215,5 @@ public class Registro extends AppCompatActivity {
         alertDialog.show();
     }
 }
+
+

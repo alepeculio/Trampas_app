@@ -32,7 +32,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
     String idColocacionCreada;
     TextView nombre;
     TextView correo;
-    int opcionSeleccionada;
+    int opcionSeleccionada = 0;
     ColocarTrampa colocarTrampa;
 
     @SuppressLint("SetTextI18n")
@@ -60,6 +60,8 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
             correo = headerView.findViewById(R.id.tvCorreo);
             nombre.setText(usuario.getNombre() + " " + usuario.getApellido());
             correo.setText(usuario.getCorreo());
+
+            cargarOpcionSeleccionada();
         }
     }
 
@@ -104,7 +106,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         }
 
         try {
-            int opcionSeleccionada = obtenerOpcionSeleccionada();
+            opcionSeleccionada = obtenerOpcionSeleccionada();
             if (opcionSeleccionada != 0) {
                 MenuItem mi = navigationView.getMenu().findItem(opcionSeleccionada);
                 if (mi != null) {
@@ -113,7 +115,8 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
                 } else
                     throw new Exception();
 
-            }
+            } else
+                throw new Exception();
         } catch (Exception e) {
             if (usuario.getAdmin() != 3) {
                 onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_mostrar_exitentes));
@@ -142,13 +145,14 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         SharedPreferences.Editor ed = sp.edit();
         ed.clear();
         ed.apply();
+        opcionSeleccionada = 0;
     }
 
-    @Override
+    /*@Override
     protected void onResume() {
         super.onResume();
         cargarOpcionSeleccionada();
-    }
+    }*/
 
     @Override
     protected void onStop() {

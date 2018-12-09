@@ -234,26 +234,6 @@ public class MostrarTrampasExistentes extends Fragment {
         swipeRefresh.setRefreshing(false);
     }
 
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                // Not implemented here
-                return false;
-            default:
-                break;
-        }
-        searchView.setOnQueryTextListener(queryTextListener);
-        return super.onOptionsItemSelected(item);
-    }*/
-
-
-
-    /*private void hideKeyboard() {
-        InputMethodManager mImMan = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
-        mImMan.hideSoftInputFromWindow(etNombre.getWindowToken(), 0);
-    }*/
-
 
     private void cargarTrampas() {
         swipeRefresh.setRefreshing(true);
@@ -299,4 +279,5 @@ public class MostrarTrampasExistentes extends Fragment {
         super.onAttach(context);
         mContext = context;
     }
+
 }
