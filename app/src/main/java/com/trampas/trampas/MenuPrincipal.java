@@ -65,6 +65,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         }
     }
 
+    //Obtener el usuario loguado o ir al iniciar sesión si no lo está.
     public Usuario getUsuario() {
         SharedPreferences sp = getSharedPreferences("usuario_guardado", MODE_PRIVATE);
         Gson gson = new Gson();
@@ -79,6 +80,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
 
     }
 
+    //Borrar al usuario logueado guardado y dirigirse al iniciar sesión.
     public void cerrarSesion() {
         SharedPreferences sp = getSharedPreferences("usuario_guardado", MODE_PRIVATE);
         SharedPreferences.Editor ed = sp.edit();
@@ -92,6 +94,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         startActivity(i);
     }
 
+    //Cargar la opción seleccionada del menú guardada si existe.
     private void cargarOpcionSeleccionada() {
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -128,6 +131,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         }
     }
 
+    //Guardar la opción del menú seleccionada.
     private void guardarOpcionSeleccionada() {
         SharedPreferences sp = getSharedPreferences(getString(R.string.opcion_menu), MODE_PRIVATE);
         SharedPreferences.Editor et = sp.edit();
@@ -135,11 +139,13 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         et.apply();
     }
 
+    //Recuperar opción del menú guardada.
     private int obtenerOpcionSeleccionada() {
         SharedPreferences sp = getSharedPreferences(getString(R.string.opcion_menu), MODE_PRIVATE);
         return Integer.valueOf(sp.getString("opcion", null));
     }
 
+    //Borrar opción del menú guardada.
     private void borrarOpcionSeleccionada() {
         SharedPreferences sp = getSharedPreferences(getString(R.string.opcion_menu), MODE_PRIVATE);
         SharedPreferences.Editor ed = sp.edit();
@@ -154,12 +160,14 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         cargarOpcionSeleccionada();
     }*/
 
+    //Al detenerse la actividad, guardar la opción del menú actual.
     @Override
     protected void onStop() {
         super.onStop();
         guardarOpcionSeleccionada();
     }
 
+    //Abrir menú al presionar la tecla de atrás.
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -196,6 +204,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
         return super.onOptionsItemSelected(item);
     }
 
+    //Al seleccionar un item en el menú
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -257,7 +266,7 @@ public class MenuPrincipal extends AppCompatActivity implements NavigationView.O
 
         if (fragmentTransaction) {
             FragmentManager fm = getSupportFragmentManager();
-            fm.beginTransaction().replace(R.id.contenido_seleccionado, fragment, (fragment instanceof ExtraerTrampa) ? "remover" : "").commit();
+            fm.beginTransaction().replace(R.id.contenido_seleccionado, fragment).commit();
             item.setChecked(true);
             //Drawable icon = item.getIcon();
             //icon.mutate().setColorFilter(getResources().getColor(R.color.colorBlanco), PorterDuff.Mode.SRC_ATOP);
