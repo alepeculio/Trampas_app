@@ -4,6 +4,7 @@ package com.trampas.trampas;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.trampas.trampas.BD.BDCliente;
 import com.trampas.trampas.BD.BDInterface;
 import com.trampas.trampas.BD.Respuesta;
+import com.trampas.trampas.Clases.Sha1Hash;
 import com.trampas.trampas.Clases.Usuario;
 
 import butterknife.BindView;
@@ -57,6 +59,8 @@ public class Perfil extends Fragment {
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
+    @BindView(R.id.clCambiarContrasenia)
+    ConstraintLayout clCambiarContrasenia;
     private Context mContext;
 
     /*@BindView(R.id.tvTrampasColocadas)
@@ -84,40 +88,44 @@ public class Perfil extends Fragment {
         tvCorreo.setText(usuario.getCorreo());
         String priviegio;
 
+        tvNombre.setFocusable(true);
+
         if (usuario.getAdmin() == 1) {
             priviegio = "Administrador";
         } else if (usuario.getAdmin() == 3) {
             priviegio = "Visitante";
+            clCambiarContrasenia.setVisibility(View.GONE);
         } else {
             priviegio = "Normal";
         }
-
-        tvNombre.setFocusable(true);
-
-        btnCambiar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cambiarContrasenia();
-            }
-        });
-
-        etContrasenia.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
-                    etContraseniaError.setError("");
-            }
-        });
-
-        etContraseniaNueva.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
-                    etContraseniaNuevaError.setError("");
-            }
-        });
-
         tvNivelUsuairo.setText(priviegio);
+
+
+        if (usuario.getAdmin() != 3) {
+            btnCambiar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cambiarContrasenia();
+                }
+            });
+
+            etContrasenia.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus)
+                        etContraseniaError.setError("");
+                }
+            });
+
+            etContraseniaNueva.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus)
+                        etContraseniaNuevaError.setError("");
+                }
+            });
+        }
+
         return v;
     }
 
@@ -129,11 +137,27 @@ public class Perfil extends Fragment {
         if (actual.equals("")) {
             etContraseniaError.setError(getString(R.string.campo_requerido));
             error = true;
+        } else {
+            try {
+                actual = Sha1Hash.SHA1(actual);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(mContext, "No se pudo encriptar la contraseña actual, reintente.", Toast.LENGTH_SHORT).show();
+                error = true;
+            }
         }
 
         if (nueva.equals("")) {
             etContraseniaNuevaError.setError(getString(R.string.campo_requerido));
             error = true;
+        } else {
+            try {
+                nueva = Sha1Hash.SHA1(nueva);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(mContext, "No se pudo encriptar la contraseña nueva, reintente.", Toast.LENGTH_SHORT).show();
+                error = true;
+            }
         }
 
         if (error)

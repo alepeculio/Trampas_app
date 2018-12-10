@@ -102,6 +102,8 @@ public class Login extends AppCompatActivity {
                 contrasenia = Sha1Hash.SHA1(contrasenia);
             } catch (Exception e) {
                 e.printStackTrace();
+                Toast.makeText(this, "No se pudo encriptar la contraseña, reintente.", Toast.LENGTH_SHORT).show();
+                error = true;
             }
         }
 
