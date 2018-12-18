@@ -250,6 +250,9 @@ public class ColocacionGrafica extends AppCompatActivity {
             graphHum.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
             graphHum.getGridLabelRenderer().reloadStyles();
 
+            graphHum.getViewport().setYAxisBoundsManual(true);
+            graphHum.getViewport().setMaxY(100);
+
             //Cambiar las etiquetas
             StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graphHum);
             staticLabelsFormatter.setDynamicLabelFormatter(new DefaultLabelFormatter() {
