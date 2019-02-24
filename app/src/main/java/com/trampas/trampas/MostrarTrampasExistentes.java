@@ -43,35 +43,26 @@ import retrofit2.Response;
 
 
 public class MostrarTrampasExistentes extends Fragment {
+    @BindView(R.id.listaTrampas)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.swipeRefresh)
+    SwipeRefreshLayout swipeRefresh;
+    @BindView(R.id.noHayTrampas)
+    LinearLayout noHayTrampas;
+    @BindView(R.id.tvNoHayTrampas)
+    TextView tvNoHayTrampas;
+    @BindView(R.id.btnMostrarAgregarTrampa)
+    FloatingActionButton btnMostrarAgregarTrampa;
+    @BindView(R.id.cbLeishmaniasis)
+    CheckBox cbLeishmaniasis;
+    @BindView(R.id.btnExportarDatos)
+    FloatingActionButton btnExportarDatos;
+    Usuario usuario;
     private List<Trampa> trampas;
     private AdaptadorListaTrampas adaptadorListaTrampas;
     private SearchView searchView = null;
     private String ultimaBusqueda = null;
     private boolean leishmaniasis = false;
-
-    @BindView(R.id.listaTrampas)
-    RecyclerView mRecyclerView;
-
-    @BindView(R.id.swipeRefresh)
-    SwipeRefreshLayout swipeRefresh;
-
-    @BindView(R.id.noHayTrampas)
-    LinearLayout noHayTrampas;
-
-    @BindView(R.id.tvNoHayTrampas)
-    TextView tvNoHayTrampas;
-
-    @BindView(R.id.btnMostrarAgregarTrampa)
-    FloatingActionButton btnMostrarAgregarTrampa;
-
-    @BindView(R.id.cbLeishmaniasis)
-    CheckBox cbLeishmaniasis;
-
-    @BindView(R.id.btnExportarDatos)
-    FloatingActionButton btnExportarDatos;
-
-    Usuario usuario;
-
     private Context mContext;
 
     public MostrarTrampasExistentes() {

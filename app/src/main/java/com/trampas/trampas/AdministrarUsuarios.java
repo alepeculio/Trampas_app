@@ -39,29 +39,23 @@ import retrofit2.Response;
 
 
 public class AdministrarUsuarios extends Fragment {
+    @BindView(R.id.rvUsuarios)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.swipeRefresh)
+    SwipeRefreshLayout swipeRefresh;
+    @BindView(R.id.noHayUsuarios)
+    LinearLayout noHayUsuarios;
+    @BindView(R.id.tvNoHayUsuarios)
+    TextView tvNoHayUsuarios;
+    @BindView(R.id.cbSolicitudAdmin)
+    CheckBox cbSolicitudAdmin;
+    Context mContext;
     private List<Usuario> usuarios;
     private Usuario usuario;
     private AdaptadorListaUsuarios adaptadorListaUsuarios;
     private SearchView searchView = null;
     private SearchView.OnQueryTextListener queryTextListener;
     private String ultimaBusqueda = null;
-
-    @BindView(R.id.rvUsuarios)
-    RecyclerView mRecyclerView;
-
-    @BindView(R.id.swipeRefresh)
-    SwipeRefreshLayout swipeRefresh;
-
-    @BindView(R.id.noHayUsuarios)
-    LinearLayout noHayUsuarios;
-
-    @BindView(R.id.tvNoHayUsuarios)
-    TextView tvNoHayUsuarios;
-
-    @BindView(R.id.cbSolicitudAdmin)
-    CheckBox cbSolicitudAdmin;
-
-    Context mContext;
 
     public AdministrarUsuarios() {
     }

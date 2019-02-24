@@ -89,8 +89,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="90dp"
                     android:contentDescription="@string/nav_header_desc"
-                    app:layout_constraintTop_toBottomOf="@id/texto5"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/texto5"
                     app:srcCompat="@drawable/logo_intendencia" />
             </android.support.constraint.ConstraintLayout>
         </LinearLayout>

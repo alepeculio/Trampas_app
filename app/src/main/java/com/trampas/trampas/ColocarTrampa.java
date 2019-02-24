@@ -59,39 +59,30 @@ import retrofit2.Response;
 
 
 public class ColocarTrampa extends Fragment implements LocalizacionInterface {
+    public static final int SOLICITUD_LOCALIZACION = 1;
     Usuario usuario;
     List<Trampa> trampas;
+    @BindView(R.id.listaTrampas)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.swipeRefresh)
+    SwipeRefreshLayout swipeRefresh;
+    @BindView(R.id.noHayTrampas)
+    LinearLayout noHayTrampas;
+    @BindView(R.id.tvNoHayTrampas)
+    TextView tvNoHayTrampas;
+    @BindView(R.id.llProgressBar)
+    LinearLayout llProgressBar;
+    @BindView(R.id.tvProgressBar)
+    TextView tvProgressBar;
+    Location ubicacionActual = null;
     private MostrarTrampasColocadasInterface mpi;
     private AdaptadorListaTrampasColocar adaptadorListaTrampasColocar;
-
     private SearchView searchView = null;
     private SearchView.OnQueryTextListener queryTextListener;
     private String ultimaBusqueda = null;
-
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback mLocationCallback;
     private LocationRequest mLocationRequest;
-    public static final int SOLICITUD_LOCALIZACION = 1;
-
-    @BindView(R.id.listaTrampas)
-    RecyclerView mRecyclerView;
-
-    @BindView(R.id.swipeRefresh)
-    SwipeRefreshLayout swipeRefresh;
-
-    @BindView(R.id.noHayTrampas)
-    LinearLayout noHayTrampas;
-
-    @BindView(R.id.tvNoHayTrampas)
-    TextView tvNoHayTrampas;
-
-    @BindView(R.id.llProgressBar)
-    LinearLayout llProgressBar;
-
-    @BindView(R.id.tvProgressBar)
-    TextView tvProgressBar;
-
-    Location ubicacionActual = null;
     private Context mContext;
 
     public ColocarTrampa() {

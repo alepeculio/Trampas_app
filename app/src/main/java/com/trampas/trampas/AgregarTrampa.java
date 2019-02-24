@@ -45,62 +45,72 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AgregarTrampa extends AppCompatActivity {
-    private BluetoothAdapter mBTAdapter;
-    private ArrayAdapter<String> mBTArrayAdapter;
-
-    @BindView(R.id.btnConectarBT)
-    Button btnConectarBT;
-
-    @BindView(R.id.btnDispositivosVinculados)
-    Button btnDispositivosVinculados;
-
-    @BindView(R.id.btnEscanear)
-    Button btnEscanear;
-
-    @BindView(R.id.tvTituloLista)
-    TextView tvTituloLista;
-
-    @BindView(R.id.listaDispositivos)
-    ListView listaDispositivos;
-
-    @BindView(R.id.tvEstado)
-    TextView tvEstado;
-
-    @BindView(R.id.etNombre)
-    EditText etNombre;
-
-    @BindView(R.id.etNombreError)
-    TextInputLayout etNombreError;
-
-    @BindView(R.id.llProgressBarLista)
-    LinearLayout llProgressBarLista;
-
-    @BindView(R.id.llProgressBarDatos)
-    LinearLayout llProgressBarDatos;
-
-    @BindView(R.id.btnAgregar)
-    Button btnAgregar;
-
-    @BindView(R.id.llBtnAgregar)
-    LinearLayout llBtnAgregar;
-
-    @BindView(R.id.tvProgressBarDatos)
-    TextView tvProgressBarDatos;
-
-    List<Trampa> trampas;
-
-    String mac = null;  //Direcccion mac de la trampa seleccionada
-
-    //Datos obtenidos de la trampa
-    String nombre = null;
-
-    private Handler mHandler;
-    private ConnectedThread mConnectedThread;
-    private BluetoothSocket mBTSocket = null;
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
     private final static int REQUEST_ENABLE_BT = 1;
     private final static int MESSAGE_READ = 2;
     private final static int CONNECTING_STATUS = 3;
+    @BindView(R.id.btnConectarBT)
+    Button btnConectarBT;
+    @BindView(R.id.btnDispositivosVinculados)
+    Button btnDispositivosVinculados;
+    @BindView(R.id.btnEscanear)
+    Button btnEscanear;
+    @BindView(R.id.tvTituloLista)
+    TextView tvTituloLista;
+    @BindView(R.id.listaDispositivos)
+    ListView listaDispositivos;
+    @BindView(R.id.tvEstado)
+    TextView tvEstado;
+    @BindView(R.id.etNombre)
+    EditText etNombre;
+    @BindView(R.id.etNombreError)
+    TextInputLayout etNombreError;
+    @BindView(R.id.llProgressBarLista)
+    LinearLayout llProgressBarLista;
+    @BindView(R.id.llProgressBarDatos)
+    LinearLayout llProgressBarDatos;
+    @BindView(R.id.btnAgregar)
+    Button btnAgregar;
+    @BindView(R.id.llBtnAgregar)
+    LinearLayout llBtnAgregar;
+    @BindView(R.id.tvProgressBarDatos)
+    TextView tvProgressBarDatos;
+    List<Trampa> trampas;
+    String mac = null;  //Direcccion mac de la trampa seleccionada
+    //Datos obtenidos de la trampa
+    String nombre = null;
+    private BluetoothAdapter mBTAdapter;
+    private ArrayAdapter<String> mBTArrayAdapter;
+    //Se crea recibidor para manejar los dispositivos encontrados.
+    final BroadcastReceiver blReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            llProgressBarLista.setVisibility(View.GONE);
+            //Si se encontró algún dispositivo bt.
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
+                //Verificar que el dispositivo no esté ya agregado como trampa.
+                Boolean agregar = true;
+                if (trampas != null) {
+                    for (Trampa t : trampas) {
+                        if (t.getMac().equals(device.getAddress()))
+                            agregar = false;
+                    }
+                }
+
+                if (agregar) {
+                    mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                    mBTArrayAdapter.notifyDataSetChanged();
+                }
+
+            }
+        }
+    };
+    private Handler mHandler;
+    private ConnectedThread mConnectedThread;
+    private BluetoothSocket mBTSocket = null;
 
     @SuppressLint("HandlerLeak")
     @Override
@@ -412,34 +422,6 @@ public class AgregarTrampa extends AppCompatActivity {
             }
         }
     }
-
-    //Se crea recibidor para manejar los dispositivos encontrados.
-    final BroadcastReceiver blReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            llProgressBarLista.setVisibility(View.GONE);
-            //Si se encontró algún dispositivo bt.
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
-                //Verificar que el dispositivo no esté ya agregado como trampa.
-                Boolean agregar = true;
-                if (trampas != null) {
-                    for (Trampa t : trampas) {
-                        if (t.getMac().equals(device.getAddress()))
-                            agregar = false;
-                    }
-                }
-
-                if (agregar) {
-                    mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-                    mBTArrayAdapter.notifyDataSetChanged();
-                }
-
-            }
-        }
-    };
 
     //Listar dispositivos bt vinculados al teléfono.
     private void dispositivosVinculados() {

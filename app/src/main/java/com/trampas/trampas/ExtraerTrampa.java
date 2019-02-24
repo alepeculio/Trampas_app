@@ -45,65 +45,46 @@ import retrofit2.Response;
 
 
 public class ExtraerTrampa extends Fragment {
-    private BluetoothAdapter mBTAdapter;
-    private Set<BluetoothDevice> mPairedDevices;
-    private ArrayAdapter<String> mBTArrayAdapter;
-
+    private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
+    private final static int REQUEST_ENABLE_BT = 1;
+    private final static int MESSAGE_READ = 2;
+    private final static int CONNECTING_STATUS = 3;
     @BindView(R.id.btnConectarBT)
     Button btnConectarBT;
-
     @BindView(R.id.btnDispositivosVinculados)
     Button btnDispositivosVinculados;
-
     @BindView(R.id.btnEscanear)
     Button btnEscanear;
-
     @BindView(R.id.tvTituloLista)
     TextView tvTituloLista;
-
     @BindView(R.id.listaDispositivos)
     ListView listaDispositivos;
-
     @BindView(R.id.tvEstado)
     TextView tvEstado;
-
     @BindView(R.id.tempMin)
     TextView tvTempMin;
-
     @BindView(R.id.tempMax)
     TextView tvTempMax;
-
     @BindView(R.id.tempProm)
     TextView tvTempProm;
-
     @BindView(R.id.humMin)
     TextView tvHumMin;
-
     @BindView(R.id.humMax)
     TextView tvHumMax;
-
     @BindView(R.id.humProm)
     TextView tvHumProm;
-
     @BindView(R.id.llProgressBarLista)
     LinearLayout llProgressBarLista;
-
     @BindView(R.id.llProgressBarDatos)
     LinearLayout getLlProgressBarDatos;
-
     @BindView(R.id.tvProgressBarDatos)
     TextView tvProgressBarDatos;
-
     @BindView(R.id.btnExtraer)
     Button btnExtraer;
-
     @BindView(R.id.datosRecibidos)
     TextView tvDatosRecibidos;
-
     List<Trampa> trampas;
-
     Trampa trampa = null;  //Trampa seleccionada
-
     //Datos obtenidos de la trampa
     float tempMin = 0;
     float tempMax = 0;
@@ -111,20 +92,41 @@ public class ExtraerTrampa extends Fragment {
     float humMax = 0;
     float promH = 0;
     float promT = 0;
+    private BluetoothAdapter mBTAdapter;
+    private Set<BluetoothDevice> mPairedDevices;
+    private ArrayAdapter<String> mBTArrayAdapter;
+    final BroadcastReceiver blReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            llProgressBarLista.setVisibility(View.GONE);
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                // add the name to the list
+                Trampa trampa = null;
+                if (trampas != null) {
+                    for (Trampa t : trampas) {
+                        if (t.getMac().equals(device.getAddress())) {
+                            trampa = t;
+                        }
+                    }
+                }
+                if (trampa != null) {
+                    mBTArrayAdapter.add(trampa.getNombre() + "\n" + device.getAddress());
+                    mBTArrayAdapter.notifyDataSetChanged();
+                }
 
+            }
+        }
+    };
     private Handler mHandler;
     private ConnectedThread mConnectedThread;
     private BluetoothSocket mBTSocket = null;
-    private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
-    private final static int REQUEST_ENABLE_BT = 1;
-    private final static int MESSAGE_READ = 2;
-    private final static int CONNECTING_STATUS = 3;
-
     private Context mContext;
+
 
     public ExtraerTrampa() {
     }
-
 
     @SuppressLint("HandlerLeak")
     @Override
@@ -374,6 +376,8 @@ public class ExtraerTrampa extends Fragment {
         //creates secure outgoing connection with BT device using UUID
     }
 
+    // Enter here after user selects "yes" or "no" to enabling radio
+
     //Encender bluetooth
     private void encenderBT() {
         if (!mBTAdapter.isEnabled()) {
@@ -386,8 +390,6 @@ public class ExtraerTrampa extends Fragment {
             dispositivosVinculados();
         }
     }
-
-    // Enter here after user selects "yes" or "no" to enabling radio
 
     public void onActivityResult(int requestCode, int resultCode, Intent Data) {
         // Check which request we're responding to
@@ -408,7 +410,6 @@ public class ExtraerTrampa extends Fragment {
         }
     }
 
-
     private void apagarBT() {
         mBTAdapter.disable();
         tvEstado.setText(R.string.bluetooth_apagado);
@@ -416,7 +417,6 @@ public class ExtraerTrampa extends Fragment {
         btnConectarBT.setBackgroundResource(R.drawable.ic_bluetooth);
         Toast.makeText(mContext, R.string.bluetooth_apagado, Toast.LENGTH_SHORT).show();
     }
-
 
     private void controlarBT() {
         if (mBTAdapter.isEnabled())
@@ -456,31 +456,6 @@ public class ExtraerTrampa extends Fragment {
             }
         }
     }
-
-    final BroadcastReceiver blReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            llProgressBarLista.setVisibility(View.GONE);
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // add the name to the list
-                Trampa trampa = null;
-                if (trampas != null) {
-                    for (Trampa t : trampas) {
-                        if (t.getMac().equals(device.getAddress())) {
-                            trampa = t;
-                        }
-                    }
-                }
-                if (trampa != null) {
-                    mBTArrayAdapter.add(trampa.getNombre() + "\n" + device.getAddress());
-                    mBTArrayAdapter.notifyDataSetChanged();
-                }
-
-            }
-        }
-    };
 
     private void dispositivosVinculados() {
         mPairedDevices = mBTAdapter.getBondedDevices();

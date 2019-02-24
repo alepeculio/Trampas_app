@@ -336,7 +336,6 @@
             android:visibility="visible">
 
             <LinearLayout
-                android:id="@+id/llFlebotomosCapturados"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginBottom="5dp"
@@ -364,7 +363,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llHabitantesVivienda"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginBottom="5dp"
@@ -392,7 +390,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llObservaciones"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
@@ -417,7 +414,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llPerrosExistentes"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginBottom="5dp"
@@ -444,7 +440,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llPerrosMuestreados"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginBottom="5dp"
@@ -471,7 +466,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llPerrosPositivos"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginBottom="5dp"
@@ -498,7 +492,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llPerrosProcedencia"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginBottom="5dp"
@@ -526,7 +519,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llPerrosEutanasiados"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginBottom="5dp"
@@ -553,7 +545,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llOtrasAcciones"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"

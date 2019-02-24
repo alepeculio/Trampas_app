@@ -18,14 +18,6 @@
     </style>
 
     <!-- Menu personalizado -->
-    <style name="AppTheme.Menu">
-        <item name="android:windowBackground">@color/colorNegro</item>
-        <item name="android:textColorSecondary">@color/colorBlanco</item>
-        <item name="android:textColorPrimary">@color/colorBlanco</item>
-        <item name="colorPrimary">@color/colorBlanco</item>
-        <item name="android:listDivider">@color/colorGrisTransparente</item>
-        <item name="colorControlHighlight">@color/colorGrisTransparente</item>
-    </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

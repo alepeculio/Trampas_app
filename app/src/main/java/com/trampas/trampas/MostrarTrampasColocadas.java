@@ -8,14 +8,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +65,26 @@ import retrofit2.Response;
 
 
 public class MostrarTrampasColocadas extends Fragment {
+    public static final int SOLICITUD_OBTENER_POSICION_ACTUAL = 111;
+    @BindView(R.id.llGuardar)
+    LinearLayout llGuardar;
+    @BindView(R.id.btnGuardar)
+    Button btnGuardar;
+    @BindView(R.id.tvDesde)
+    TextView tvDesde;
+    @BindView(R.id.tvHasta)
+    TextView tvHasta;
+    @BindView(R.id.btnBuscar)
+    Button btnBuscar;
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
+    @BindView(R.id.btnMasInformacion)
+    LinearLayout btnMasInformacion;
+    @BindView(R.id.btnExportar)
+    LinearLayout btnExportar;
+    @BindView(R.id.llProgressBarMapa)
+    LinearLayout llProgressBarMapa;
+    Calendar calendario = Calendar.getInstance();
     private SupportMapFragment mapFragment;
     private GoogleMap mMap;
     private Marker marcador;
@@ -68,38 +93,7 @@ public class MostrarTrampasColocadas extends Fragment {
     private Usuario usuario;
     private String idColocacionCreada;
     private FusedLocationProviderClient mFusedLocationClient;
-    public static final int SOLICITUD_OBTENER_POSICION_ACTUAL = 111;
-
-    @BindView(R.id.llGuardar)
-    LinearLayout llGuardar;
-
-    @BindView(R.id.btnGuardar)
-    Button btnGuardar;
-
-    @BindView(R.id.tvDesde)
-    TextView tvDesde;
-
-    @BindView(R.id.tvHasta)
-    TextView tvHasta;
-
-    @BindView(R.id.btnBuscar)
-    Button btnBuscar;
-
-    @BindView(R.id.progressBar)
-    ProgressBar progressBar;
-
-    @BindView(R.id.btnMasInformacion)
-    LinearLayout btnMasInformacion;
-
-    @BindView(R.id.btnExportar)
-    LinearLayout btnExportar;
-
-    @BindView(R.id.llProgressBarMapa)
-    LinearLayout llProgressBarMapa;
-
     private Context mContext;
-
-    Calendar calendario = Calendar.getInstance();
 
     public MostrarTrampasColocadas() {
     }
@@ -340,17 +334,19 @@ public class MostrarTrampasColocadas extends Fragment {
             for (Colocacion c : colocs) {
                 Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(c.getLat(), c.getLon())).title(c.getTrampa().getNombre()));
                 if (c.getFechaFin() == null) {
+                    m.setIcon(bitmapDescriptorFromVector(getActivity(), R.drawable.fondo_celeste_trampa));
                     if (c.getUsuario() == usuario.getId()) {
                         m.setDraggable(true);
-                        m.setIcon(getIcon(R.mipmap.ic_trampas_fondo_celeste_round));
+                        //m.setIcon(getIcon(R.mipmap.ic_trampas_fondo_celeste_round));
                         m.setSnippet(mContext.getString(R.string.mensaje_editar_ubicacion));
                     } else {
-                        m.setIcon(getIcon(R.mipmap.ic_trampas_fondo_celeste_round));
+                        //m.setIcon(getIcon(R.mipmap.ic_trampas_fondo_blanco_round));
                         m.setSnippet("Actualmente colocada");
                     }
                 } else {
                     m.setSnippet("Ver gráfica");
-                    m.setIcon(getIcon(R.mipmap.ic_trampas_fondo_blanco_round));
+                    m.setIcon(bitmapDescriptorFromVector(getActivity(), R.drawable.fondo_blanco_trampa));
+                    //m.setIcon(getIcon(R.mipmap.ic_trampas_fondo_blanco_round));
                 }
                 m.setTag(c.getId());
                 marcadores.add(m);
@@ -539,35 +535,6 @@ public class MostrarTrampasColocadas extends Fragment {
         mContext = context;
     }
 
-
-    private class LongOperationMap extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-            if (mapFragment == null) {
-                FragmentManager fm = getFragmentManager();
-                FragmentTransaction ft = fm.beginTransaction();
-                mapFragment = SupportMapFragment.newInstance();
-                ft.replace(R.id.map, mapFragment).commit();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(GoogleMap googleMap) {
-                    mMap = googleMap;
-                    cargarColocaciones();
-                    obtenerLocalizacion();
-                }
-            });
-        }
-    }
-
     public void mostrarMensaje() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("Cambios no guardados");
@@ -609,5 +576,45 @@ public class MostrarTrampasColocadas extends Fragment {
         return convetDateFormat.format(date);
     }
 
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context,int fondo) {
+        Drawable background = ContextCompat.getDrawable(context, fondo);
+        background.setBounds(0, 0, background.getIntrinsicWidth(), background.getIntrinsicHeight());
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_trampas_sin_fondo);
+        vectorDrawable.setBounds(-35, -30, vectorDrawable.getIntrinsicWidth() - 80, vectorDrawable.getIntrinsicHeight() - 90);
+        Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(), background.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        background.draw(canvas);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    private class LongOperationMap extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+            if (mapFragment == null) {
+                FragmentManager fm = getFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+                mapFragment = SupportMapFragment.newInstance();
+                ft.replace(R.id.map, mapFragment).commit();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mapFragment.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    mMap = googleMap;
+                    cargarColocaciones();
+                    obtenerLocalizacion();
+                }
+            });
+        }
+    }
 }
+
 
