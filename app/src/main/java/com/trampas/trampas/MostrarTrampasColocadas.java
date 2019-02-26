@@ -1,6 +1,8 @@
 package com.trampas.trampas;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -24,6 +26,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
@@ -305,14 +308,6 @@ public class MostrarTrampasColocadas extends Fragment {
 
     }
 
-    private BitmapDescriptor getIcon(int icono) {
-        //int height = 80;
-        //int width = 80;
-        //BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(icono);
-        //Bitmap bm = Bitmap.createScaledBitmap(bitmapdraw.getBitmap(), width, height, false);
-        return BitmapDescriptorFactory.fromResource(icono); //BitmapDescriptorFactory.fromBitmap(bm);
-    }
-
     private void prepararMapa(List<Colocacion> colocs) {
         if (colocaciones != null) {
             if (marcadores == null)
@@ -393,7 +388,32 @@ public class MostrarTrampasColocadas extends Fragment {
                 @Override
                 public boolean onMarkerClick(final Marker marker) {
                     if (usuario.getAdmin() == 1) {
-                        btnMasInformacion.setVisibility(View.VISIBLE);
+                        ObjectAnimator animation = ObjectAnimator.ofFloat(btnMasInformacion, "translationX", -257f);
+                        animation.setDuration(650);
+                        animation.addListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animator) {
+                                btnMasInformacion.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animator) {
+
+                            }
+                        });
+                        animation.start();
+
+
                         btnMasInformacion.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -414,7 +434,30 @@ public class MostrarTrampasColocadas extends Fragment {
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng latLng) {
-                    btnMasInformacion.setVisibility(View.GONE);
+                    ObjectAnimator animation = ObjectAnimator.ofFloat(btnMasInformacion, "translationX", 0f);
+                    animation.setDuration(400);
+                    animation.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            btnMasInformacion.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+                    animation.start();
                 }
             });
 

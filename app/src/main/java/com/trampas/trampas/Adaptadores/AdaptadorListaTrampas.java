@@ -1,5 +1,7 @@
 package com.trampas.trampas.Adaptadores;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -18,6 +20,7 @@ import android.view.ViewPropertyAnimator;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,7 +90,7 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
         @BindView(R.id.item_lista_trampas)
         CardView cardView;
         @BindView(R.id.expandir)
-        LinearLayout expandir;
+        RelativeLayout expandir;
         @BindView(R.id.btnExpandir)
         Button btnExpandir;
         @BindView(R.id.nombreTrampa)
@@ -157,27 +160,77 @@ public class AdaptadorListaTrampas extends RecyclerView.Adapter<AdaptadorListaTr
 
         }
 
-        public void expandir(View v) {
-            if (expandir.getVisibility() == View.GONE && v.getRotation() == 0) {
-                ViewPropertyAnimator viewPropertyAnimator = v.animate().rotationBy(90);
-                viewPropertyAnimator.setDuration(150);
-                viewPropertyAnimator.withEndAction(new Runnable() {
+        public void expandir(View boton) {
+            if (expandir.getVisibility() == View.GONE && boton.getRotation() == 0) {
+                ViewPropertyAnimator rotarDer = boton.animate().rotationBy(90);
+                rotarDer.setDuration(150);
+                rotarDer.withEndAction(new Runnable() {
                     @Override
                     public void run() {
                         expandir.setVisibility(View.VISIBLE);
+                        expandir.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                        int alturaExpandir = expandir.getMeasuredHeight();
+                        ValueAnimator va = ValueAnimator.ofInt(0, alturaExpandir);
+                        va.setDuration(500);
+                        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                            public void onAnimationUpdate(ValueAnimator animation) {
+                                Integer value = (Integer) animation.getAnimatedValue();
+                                expandir.getLayoutParams().height = value;
+                                expandir.requestLayout();
+                            }
+
+                        });
+                        va.start();
                     }
+
                 });
-                viewPropertyAnimator.start();
-            } else if (expandir.getVisibility() == View.VISIBLE && v.getRotation() == 90) {
-                ViewPropertyAnimator viewPropertyAnimator = v.animate().rotationBy(-90);
-                viewPropertyAnimator.setDuration(150);
-                viewPropertyAnimator.withEndAction(new Runnable() {
+                rotarDer.start();
+
+            } else if (expandir.getVisibility() == View.VISIBLE && boton.getRotation() == 90) {
+                ViewPropertyAnimator rotarIzq = boton.animate().rotationBy(-90);
+                rotarIzq.setDuration(150);
+                rotarIzq.withEndAction(new Runnable() {
                     @Override
                     public void run() {
-                        expandir.setVisibility(View.GONE);
+                        expandir.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                        int alturaExpandir = expandir.getMeasuredHeight();
+                        ValueAnimator va = ValueAnimator.ofInt(alturaExpandir, 0);
+                        va.setDuration(500);
+                        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                            public void onAnimationUpdate(ValueAnimator animation) {
+                                Integer value = (Integer) animation.getAnimatedValue();
+                                expandir.getLayoutParams().height = value;
+                                expandir.requestLayout();
+                            }
+
+                        });
+
+                        va.addListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animator) {
+                                expandir.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animator) {
+
+                            }
+                        });
+                        va.start();
+
                     }
                 });
-                viewPropertyAnimator.start();
+                rotarIzq.start();
 
             }
         }
